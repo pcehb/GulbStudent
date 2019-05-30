@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_whatson"
+            android:icon="@drawable/icons8_planner_48"
+            android:title="What's On" />
+        <item
+            android:id="@+id/nav_deals"
+            android:icon="@drawable/icons8_price_tag_48"
+            android:title="Deals" />
+        <item
+            android:id="@+id/nav_blog"
+            android:icon="@drawable/icons8_news_48"
+            android:title="Blog" />
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/icons8_settings_48"
+            android:title="Settings" />
+    </group>
+
+    <item android:title="About">
+        <menu>
+            <item
+                android:id="@+id/nav_gulb"
+                android:icon="@drawable/icons8_theatre_mask_48"
+                android:title="The Gulbenkian" />
+            <item
+                android:id="@+id/nav_gulbcard"
+                android:icon="@drawable/icons8_debit_card_48"
+                android:title="GulbCard" />
+            <item
+                android:id="@+id/nav_gulbuncovered"
+                android:icon="@drawable/icons8_curtains_48"
+                android:title="Gulbenkian Uncovered" />
+            <item
+                android:id="@+id/nav_gulbstudent"
+                android:icon="@drawable/icons8_graduate_48"
+                android:title="GulbStudent" />
+        </menu>
+    </item>
+
+</menu>

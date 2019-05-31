@@ -5,7 +5,19 @@
     <string name="appbar_scrolling_view_behavior" translatable="false">android.support.design.widget.AppBarLayout$ScrollingViewBehavior</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    
+    <string name="gulb_about">Gulbenkian is 50 in summer 2019, forged in a time when conventions were being questioned and traditions being challenged. In 1969, The Vietnam War raged, Woodstock raved, man landed on the moon, the Paris student rebellion was fresh in the mind. Young people felt they could change the world, the University of Kent was a hotbed of radical action, using creative thinking to find answers to society’s problems.
+\n\n50 years on, Gulbenkian remains an organisation with a radical vision. We believe that young people’s voices must be heard and we are committed to providing time, space and opportunities for them to experiment, discover and create. Time that is squeezed from busy daily life, artistic space that is in short supply here in Kent, precious opportunities to speak up and change the world.
+\n\nGulbenkian is a powder keg, where young people, artists, academics and communities meet and exchange ideas. As these new ideas explode, we see confidence grow, careers form, talent get uncovered, work get created and the future unfurl.
+\n\nGulbenkian houses a 340 seat theatre, 300 seat cinema and a café which incorporates an informal cabaret style space for live music, comedy and slam poetry. We programme over 1,000 events including music, comedy, theatre, dance and film per year, enjoyed by more than 100,000 people. The arts centre attracts a range of conferences and events to Kent such as BBC Question Time.
+\n\nOur work with young people includes the Gulbenkian Youth Theatre with over 100 members aged 5-18 years and Gulbenkian Youth Dance Company, run in partnership with Jasmin Vardimon Company. We are also home to ART31, a cultural leadership project, led by young people, TECH31 , SCREEN31 and TECH(Y)31 plus Kent’s international family festival – bOing!
+\n\nA range of companies and artists are based with us including Artswork (South East Bridge), Confidance, Animate Arts Company and the Three Half Pints.
+\n\nIn April 2015 we became an Arts Council of England National Portfolio Organisation in recognition of our developing role as a pioneer in the creative empowerment and engagement of children and young people.
+\n\nThe University of Kent as the UK’s European University, provides invaluable access to Europe through our campuses in Paris, Brussels, Rome and Athens. Our international outlook and the expertise of international colleagues helps to inform our work and develop best practices through initiatives like ART31 and the bOing! International Family Festival.</string>
 
     <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

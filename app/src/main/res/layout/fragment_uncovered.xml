@@ -1,10 +1,8 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/background_light"
-    tools:context="uk.ac.kent.pceh3.gulbstudent.AboutFragment">
+    tools:context="uk.ac.kent.pceh3.gulbstudent.UncoveredFragment">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -19,7 +17,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="16dp"
-                android:text="About The Gulbenkian"
+                android:text="About Gulbenkian Uncovered"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textStyle="bold" />
@@ -31,8 +29,19 @@
                 android:layout_marginBottom="16dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:text="Welcome to Gulbenkian."
+                android:text="Gulbenkian Uncovered gives students the chance to get behind the scenes, develop new skills and run events at Gulbenkian."
                 android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title" />
+
+            <TextView
+                android:id="@+id/textView7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:text="Are you enthusiastic, committed and creative? Do you have a keen interest in theatre? Passionate about film? Love music? Or just want to get that all important work experience?"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
 
             <TextView
                 android:id="@+id/textView2"
@@ -41,7 +50,7 @@
                 android:layout_marginBottom="16dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:text="Gulbenkian is the University of Kent’s Arts Centre offering innovative, engaging and high quality arts activity for the public, staff and students. It provides a key role in delivering the University commitment to public engagement and has a particular focus on the creative empowerment of children and young people."
+                android:text="With the ambition to provide student-led opportunities for involvement and to run their own events, the group currently has 35 members who drop into weekly mentoring sessions and are involved in different projects. Weekly sessions have become an invaluable point to communicate which also provides a platform to pitch ideas and opportunities."
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
             <LinearLayout
@@ -55,7 +64,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/uncovered_photo" />
+                    android:src="@drawable/uncovered" />
 
                 <TextView
                     android:id="@+id/textView6"
@@ -66,7 +75,7 @@
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
                     android:paddingTop="16dp"
-                    android:text="'Altogether, the venue lives and breathes its mission.'"
+                    android:text="'Uncovered provides each of us with support and mentorship from the Gulbenkian team, allowing us to realise our ideas that would otherwise be unachievable.'"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
@@ -78,23 +87,13 @@
                     android:paddingBottom="16dp"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
-                    android:text="- Arts Council England Artistic and Quality Assessment 2016"
+                    android:text="- Imogen (Gulbenkian Student Associate member 2015-2016 &amp; Uncovered member 2016-2018)"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                     android:textSize="14sp"
                     android:textStyle="italic" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/textView3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginTop="16dp"
-                android:text="Gulbenkian’s Story: Radical Roots &amp; Dangerous Ideas"
-                android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title" />
 
             <TextView
                 android:id="@+id/textView5"
@@ -103,29 +102,15 @@
                 android:layout_marginBottom="16dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:text="@string/gulb_about"
+                android:text="The group came into existence following student focus groups where it was identified that students wanted to engage more with our activity. We trialed a Student Associate scheme run by Gulbenkian’s marketing department during October 2015 – May 2016 which was the building blocks that led to the development of the Gulbenkian Uncovered scheme.
+
+\n\nDrop in weekly sessions take place at Gulbenkian on a Tuesday at 6pm.
+
+\n\nFor more information contact Jess Thomas, j.l.thomas@kent.ac.uk
+
+\n\nThese sessions are FREE."
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
-            <TextView
-                android:id="@+id/textView7"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_marginTop="16dp"
-                android:text="Our Vision"
-                android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title" />
-
-            <TextView
-                android:id="@+id/textView9"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:text="Gulbenkian will work with a range of creative partners to become a leading 21st Century international arts centre offering an engaging, innovative and high quality arts programme. We will act as a catalyst developing and curating ideas, spaces and emerging talent. The empowerment of children and young people will be at the core of our activity."
-                android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
         </LinearLayout>
     </ScrollView>

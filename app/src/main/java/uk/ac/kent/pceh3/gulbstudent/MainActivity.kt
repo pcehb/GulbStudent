@@ -96,13 +96,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 AboutFragment()
             }
             R.id.nav_gulbcard -> {
-                AboutFragment()
+                GulbCardFragment()
             }
             R.id.nav_gulbuncovered -> {
-                AboutFragment()
+                UncoveredFragment()
             }
             R.id.nav_gulbstudent -> {
-                AboutFragment()
+                GulbStuFragment()
             }
             else -> {
                 ProfileFragment()

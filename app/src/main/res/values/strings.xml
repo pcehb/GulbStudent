@@ -15,6 +15,9 @@
 \n\nIn April 2015 we became an Arts Council of England National Portfolio Organisation in recognition of our developing role as a pioneer in the creative empowerment and engagement of children and young people.
 \n\nThe University of Kent as the UK’s European University, provides invaluable access to Europe through our campuses in Paris, Brussels, Rome and Athens. Our international outlook and the expertise of international colleagues helps to inform our work and develop best practices through initiatives like ART31 and the bOing! International Family Festival.</string>
 
+    <string name="facebook_app_id">302031594069538</string>
+    <string name="fb_login_protocol_scheme">fb302031594069538</string>
+
     <string name="action_settings">Settings</string>
 
     <!-- TODO: Remove or change this placeholder text -->

@@ -2,11 +2,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/holo_purple"
+    android:background="@android:color/background_light"
     tools:context="uk.ac.kent.pceh3.gulbstudent.DealsFragment">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyle"
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:scrollbars="vertical" />
+
 </FrameLayout>

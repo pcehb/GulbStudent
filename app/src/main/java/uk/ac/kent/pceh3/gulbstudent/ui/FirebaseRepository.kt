@@ -29,9 +29,11 @@ class FirebaseRepository{
 
 
     // Retrieve list of feed articles
-    fun getDeals(): LiveData<Deal> {
-        val dealList = MutableLiveData<Deal>()
+    fun getDeals(): LiveData<List<Deal>> {
+
+        val dealList = MutableLiveData<List<Deal>>()
         val myRef = FirebaseDatabase.getInstance().getReference("deals")
+        networkStatus.setValue(NetworkStatus.LOADING)
         // Read from the database
         myRef.addValueEventListener(object : ValueEventListener {
 
@@ -41,14 +43,22 @@ class FirebaseRepository{
                 val map = dataSnapshot.value as Map<String, Any>
                 //val value = dataSnapshot.getValue(String::class.java)
                 Log.d(TAG, "Value is: $map")
+
+                //dealList.value(dataSnapshot.child("-LW76biueowe").value)
+                networkStatus.setValue(NetworkStatus.IDLE)
+
+
             }
 
             override fun onCancelled(error: DatabaseError) {
                 // Failed to read value
                 Log.w(TAG, "Failed to read value.", error.toException())
+                networkStatus.setValue(NetworkStatus.IDLE)
             }
         })
         return dealList
+
+
     }
 
 

@@ -16,7 +16,7 @@ class DealsViewModel : ViewModel() {
   //  var deals: MutableLiveData<List<Deal>> = MutableLiveData()
 
 
-    private var dealLiveData: LiveData<Deal>? = null
+    private var dealLiveData: LiveData<List<Deal>>? = null
 
     private val repository = FirebaseRepository()
 
@@ -28,12 +28,12 @@ class DealsViewModel : ViewModel() {
 //        return deals;
 //    }
 
-    fun getDeals(): LiveData<Deal> {
+    fun getDeals(): LiveData<List<Deal>> {
         if (dealLiveData == null) {
             // Load from server
             dealLiveData = repository.getDeals()
         }
-        return dealLiveData as LiveData<Deal>
+        return dealLiveData as LiveData<List<Deal>>
     }
 
 

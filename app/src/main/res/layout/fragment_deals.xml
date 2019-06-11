@@ -5,13 +5,8 @@
     android:background="@android:color/holo_purple"
     tools:context="uk.ac.kent.pceh3.gulbstudent.DealsFragment">
 
-    <TextView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="Deals"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textStyle="bold" />
-
+        android:layout_height="match_parent" />
 </FrameLayout>

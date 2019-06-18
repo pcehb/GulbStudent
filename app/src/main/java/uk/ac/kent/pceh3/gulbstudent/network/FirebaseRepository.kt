@@ -1,4 +1,4 @@
-package uk.ac.kent.pceh3.gulbstudent.ui
+package uk.ac.kent.pceh3.gulbstudent.network
 
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.LiveData
@@ -9,7 +9,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import uk.ac.kent.pceh3.gulbstudent.model.Deal
-import com.google.firebase.database.DatabaseReference;
 
 
 /**
@@ -32,6 +31,8 @@ class FirebaseRepository{
     fun getDeals(): LiveData<List<Deal>> {
 
         val dealList = MutableLiveData<List<Deal>>()
+        val fireList = ArrayList<Deal>()
+
         val myRef = FirebaseDatabase.getInstance().getReference("deals")
         networkStatus.setValue(NetworkStatus.LOADING)
         // Read from the database
@@ -40,13 +41,21 @@ class FirebaseRepository{
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                val map = dataSnapshot.value as Map<String, Any>
-                //val value = dataSnapshot.getValue(String::class.java)
-                Log.d(TAG, "Value is: $map")
-
-                //dealList.value(dataSnapshot.child("-LW76biueowe").value)
                 networkStatus.setValue(NetworkStatus.IDLE)
 
+                fireList.clear()
+                for (dataSnapshot1 in dataSnapshot.children) {
+                    val firevalue = dataSnapshot1.getValue<Deal>(Deal::class.java)
+                    val fire = Deal()
+
+                    val code1 = firevalue!!.code
+                    val description1 = firevalue.description
+
+                    fire.code = code1 //set
+                    fire.description = description1 //set
+                    fireList.add(fire)
+                    dealList.value = fireList
+                }
 
             }
 

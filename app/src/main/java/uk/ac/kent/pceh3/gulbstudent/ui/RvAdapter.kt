@@ -11,17 +11,17 @@ import uk.ac.kent.pceh3.gulbstudent.model.Deal
 /**
  * Created by pceh3 on 11/06/2019.
  */
-class RvAdapter(val dealList: ArrayList<Deal>) : RecyclerView.Adapter<RvAdapter.ViewHolder>() {
+class RvAdapter(val dealList: List<Deal>?) : RecyclerView.Adapter<RvAdapter.ViewHolder>() {
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewHolder {
-        val v = LayoutInflater.from(p0?.context).inflate(R.layout.adapter_item_layout, p0, false)
+        val v = LayoutInflater.from(p0.context).inflate(R.layout.adapter_item_layout, p0, false)
         return ViewHolder(v)
     }
     override fun getItemCount(): Int {
-        return dealList.size
+        return dealList!!.size
     }
     override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
 
-        p0.code?.text = dealList[p1].code
+        p0.code?.text = dealList!![p1].code
         p0.description?.text = dealList[p1].description
     }
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

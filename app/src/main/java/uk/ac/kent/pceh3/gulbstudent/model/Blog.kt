@@ -7,17 +7,15 @@ class Blog {
     var article: String?
     var date : String?
     var title : String?
-    var id : String?
 
 
-    constructor():this("","", "", "") {
+    constructor():this("","", "") {
 
     }
 
-    constructor(article: String?, date: String?, title: String?, id: String?) {
+    constructor(article: String?, date: String?, title: String?) {
         this.article = article
         this.date = date
         this.title = title
-        this.id = id
     }
 }

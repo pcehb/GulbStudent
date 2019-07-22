@@ -9,7 +9,6 @@ import uk.ac.kent.pceh3.gulbstudent.network.FirebaseRepository
  * Created by pceh3 on 14/07/2019.
  */
 class BlogViewModel : ViewModel() {
-    //  var deals: MutableLiveData<List<Deal>> = MutableLiveData()
 
 
     private var blogLiveData: LiveData<List<Blog>>? = null

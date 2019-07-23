@@ -11,7 +11,6 @@ import android.widget.TextView
 import kotlinx.android.synthetic.main.activity_main.*
 import uk.ac.kent.pceh3.gulbstudent.R
 import uk.ac.kent.pceh3.gulbstudent.model.WhatsOn
-import uk.ac.kent.pceh3.gulbstudent.ui.BlogArticleFragment
 import com.squareup.picasso.Picasso
 
 
@@ -39,10 +38,10 @@ class RvWhatsOnAdapter(var WhatsOnList: List<WhatsOn>?) : RecyclerView.Adapter<R
         p0.article?.text = WhatsOnList!![p1].excerpt
         p0.date?.text = WhatsOnList!![p1].date
         p0.title?.text = WhatsOnList!![p1].title
-        //p0.image?.src = WhatsOnList!![p1].imageUrl
 
         Picasso.get()
                 .load(WhatsOnList!![p1].imageUrl)
+                .placeholder(R.drawable.logo)
                 .into(p0.image)
 
     }
@@ -65,11 +64,12 @@ class RvWhatsOnAdapter(var WhatsOnList: List<WhatsOn>?) : RecyclerView.Adapter<R
         activity.tab_layout.visibility = View.GONE
         activity.content.visibility = View.VISIBLE
 
-        val newFragment = BlogArticleFragment()
+        val newFragment = EventFragment()
         val args = Bundle()
         args.putCharSequence("title", title.text)
         args.putCharSequence("date", date.text)
-        args.putCharSequence("article", article.text)
+        args.putCharSequence("excerpt", article.text)
+
         newFragment.arguments = args
 
         activity.supportFragmentManager

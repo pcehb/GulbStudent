@@ -2,8 +2,10 @@ package uk.ac.kent.pceh3.gulbstudent.network
 
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
+import com.google.android.gms.tasks.Tasks.await
 import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.doAsyncResult
+import org.jetbrains.anko.uiThread
 import org.jsoup.Jsoup
 import uk.ac.kent.pceh3.gulbstudent.model.WhatsOn
 
@@ -18,9 +20,9 @@ class WhatsOnAjax {
         val eventList = ArrayList<WhatsOn>()
         doAsyncResult {
             //1. Fetching the HTML from a given URL
-            Jsoup.connect("https://thegulbenkian.co.uk/wp-admin/admin-ajax.php?numPosts=15&pageNumber=&event_type=&event_category=&searchEvents=&start_date=&end_date=&action=whatson_loop_handler").get().run {
+            Jsoup.connect("https://thegulbenkian.co.uk/wp-admin/admin-ajax.php?numPosts=200&pageNumber=&event_type=&event_category=&searchEvents=&start_date=&end_date=&action=whatson_loop_handler").get().run {
                 //2. Parses and scrapes the HTML response
-                select("div.item-wrapper").forEachIndexed { index, element ->
+                select("div.item-wrapper").forEachIndexed { _, element ->
                     val labelAnchor = element.select("div.image-container a div.labels")
                     val label = labelAnchor.text()
                     val bookLinkAnchor = element.select("div.text-container div.event-bottom a")
@@ -38,13 +40,17 @@ class WhatsOnAjax {
 
                     val event = WhatsOn(url, image, label, title, excerpt, date, bookLink)
                     eventList.add(event)
-                    println("value set")
                 }
+            }
+
+            uiThread {
+                whatsOnList.value = eventList
             }
         }
 
-        whatsOnList.value = eventList
+
         return whatsOnList
+
     }
 
 }

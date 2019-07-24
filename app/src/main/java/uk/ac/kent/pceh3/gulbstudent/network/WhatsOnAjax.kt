@@ -22,7 +22,7 @@ class WhatsOnAjax {
             //1. Fetching the HTML from a given URL
             Jsoup.connect("https://thegulbenkian.co.uk/wp-admin/admin-ajax.php?numPosts=200&pageNumber=&event_type=&event_category=&searchEvents=&start_date=&end_date=&action=whatson_loop_handler").get().run {
                 //2. Parses and scrapes the HTML response
-                select("div.item-wrapper").forEachIndexed { _, element ->
+                select("div.item-wrapper").forEachIndexed { index, element ->
                     val labelAnchor = element.select("div.image-container a div.labels")
                     val label = labelAnchor.text()
                     val bookLinkAnchor = element.select("div.text-container div.event-bottom a")
@@ -38,7 +38,7 @@ class WhatsOnAjax {
                     val dateAnchor = element.select("div.text-container div.event-bottom div.date")
                     val date = dateAnchor.text()
 
-                    val event = WhatsOn(url, image, label, title, excerpt, date, bookLink)
+                    val event = WhatsOn(url, image, label, title, excerpt, date, bookLink, index)
                     eventList.add(event)
                 }
             }

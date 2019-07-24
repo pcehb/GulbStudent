@@ -12,6 +12,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import uk.ac.kent.pceh3.gulbstudent.R
 import uk.ac.kent.pceh3.gulbstudent.model.WhatsOn
 import com.squareup.picasso.Picasso
+import java.text.FieldPosition
 
 
 /**
@@ -39,6 +40,8 @@ class RvWhatsOnAdapter(var WhatsOnList: List<WhatsOn>?) : RecyclerView.Adapter<R
         p0.date?.text = WhatsOnList!![p1].date
         p0.title?.text = WhatsOnList!![p1].title
 
+        p0.title?.tag = WhatsOnList!![p1].index
+
         Picasso.get()
                 .load(WhatsOnList!![p1].imageUrl)
                 .placeholder(R.drawable.logo)
@@ -51,12 +54,14 @@ class RvWhatsOnAdapter(var WhatsOnList: List<WhatsOn>?) : RecyclerView.Adapter<R
         val date = itemView.findViewById<TextView>(R.id.date)
         val title = itemView.findViewById<TextView>(R.id.title)
         val image = itemView.findViewById<ImageView>(R.id.myImageView)
+
+
     }
 
     override fun onClick(itemView: View) {
-        val article = itemView.findViewById<TextView>(R.id.article)
-        val date = itemView.findViewById<TextView>(R.id.date)
-        val title = itemView.findViewById<TextView>(R.id.title)
+
+        val pos = itemView.findViewById<TextView>(R.id.title).tag.toString().toInt()
+
 
         val activity = itemView.getContext() as AppCompatActivity
 
@@ -66,9 +71,9 @@ class RvWhatsOnAdapter(var WhatsOnList: List<WhatsOn>?) : RecyclerView.Adapter<R
 
         val newFragment = EventFragment()
         val args = Bundle()
-        args.putCharSequence("title", title.text)
-        args.putCharSequence("date", date.text)
-        args.putCharSequence("excerpt", article.text)
+        args.putCharSequence("title", WhatsOnList!![pos].title)
+        args.putParcelable("event", WhatsOnList!![pos])
+        //args.putCharSequence("excerpt", article.text)
 
         newFragment.arguments = args
 
@@ -78,4 +83,5 @@ class RvWhatsOnAdapter(var WhatsOnList: List<WhatsOn>?) : RecyclerView.Adapter<R
                 .addToBackStack(null)
                 .commit()
     }
+
 }

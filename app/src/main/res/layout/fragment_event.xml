@@ -28,7 +28,7 @@
                 <ImageView
                     android:id="@+id/image"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="250dp"
                     android:scaleType="centerCrop"
                     android:src="@drawable/logo" />
 
@@ -46,6 +46,51 @@
                     android:text="On Stage"
                     android:textAppearance="@style/TextAppearance.AppCompat"
                     android:textColor="@android:color/background_light" />
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/fabWeb"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/image"
+                    android:layout_alignParentEnd="true"
+                    android:layout_margin="24dp"
+                    android:clickable="true"
+                    app:fabSize="mini"
+                    app:srcCompat="@drawable/icons8_website_24" />
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/fabBuy"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/image"
+                    android:layout_alignParentEnd="true"
+                    android:layout_margin="24dp"
+                    android:clickable="true"
+                    app:fabSize="mini"
+                    app:srcCompat="@drawable/icons8_buy_24" />
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/fabShare"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/image"
+                    android:layout_alignParentEnd="true"
+                    android:layout_margin="24dp"
+                    android:clickable="true"
+                    app:fabSize="mini"
+                    app:srcCompat="@drawable/ic_menu_share" />
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/fabPlus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/image"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:clickable="true"
+                    app:fabSize="normal"
+                    app:srcCompat="@drawable/plus" />
 
             </RelativeLayout>
 

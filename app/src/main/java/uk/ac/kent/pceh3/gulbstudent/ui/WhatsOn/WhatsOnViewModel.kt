@@ -14,11 +14,9 @@ class WhatsOnViewModel : ViewModel() {
 
     private val repository = WhatsOnAjax()
 
-    fun getWhatsOn(): LiveData<List<WhatsOn>> {
-        if (whatsOnLiveData == null) {
+    fun getWhatsOn(search: String, eventType : String, date : String): LiveData<List<WhatsOn>> {
             // Load from server
-            whatsOnLiveData = repository.getWhatsOn()
-        }
+            whatsOnLiveData = repository.getWhatsOn(search, eventType, date)
         return whatsOnLiveData as LiveData<List<WhatsOn>>
     }
 }

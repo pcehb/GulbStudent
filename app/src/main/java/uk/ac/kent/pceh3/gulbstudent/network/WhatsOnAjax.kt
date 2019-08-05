@@ -15,12 +15,13 @@ import uk.ac.kent.pceh3.gulbstudent.model.WhatsOn
 class WhatsOnAjax {
     val whatsOnList = MutableLiveData<List<WhatsOn>>()
 
-    fun getWhatsOn(): LiveData<List<WhatsOn>> {
+    fun getWhatsOn(search: String, eventType : String, date : String): LiveData<List<WhatsOn>> {
 
         val eventList = ArrayList<WhatsOn>()
         doAsyncResult {
             //1. Fetching the HTML from a given URL
-            Jsoup.connect("https://thegulbenkian.co.uk/wp-admin/admin-ajax.php?numPosts=200&pageNumber=&event_type=&event_category=&searchEvents=&start_date=&end_date=&action=whatson_loop_handler").get().run {
+
+            Jsoup.connect("https://thegulbenkian.co.uk/wp-admin/admin-ajax.php?numPosts=200&pageNumber="+eventType+"&event_category=&searchEvents="+search+"&start_date="+date+"&end_date=&action=whatson_loop_handler").get().run {
                 //2. Parses and scrapes the HTML response
                 select("div.item-wrapper").forEachIndexed { index, element ->
                     val labelAnchor = element.select("div.image-container a div.labels")

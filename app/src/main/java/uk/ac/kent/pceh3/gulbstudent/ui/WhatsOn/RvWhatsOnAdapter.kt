@@ -12,7 +12,6 @@ import kotlinx.android.synthetic.main.activity_main.*
 import uk.ac.kent.pceh3.gulbstudent.R
 import uk.ac.kent.pceh3.gulbstudent.model.WhatsOn
 import com.squareup.picasso.Picasso
-import java.text.FieldPosition
 
 
 /**

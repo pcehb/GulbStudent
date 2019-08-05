@@ -53,8 +53,6 @@ class RvWhatsOnAdapter(var WhatsOnList: List<WhatsOn>?) : RecyclerView.Adapter<R
         val date = itemView.findViewById<TextView>(R.id.date)
         val title = itemView.findViewById<TextView>(R.id.title)
         val image = itemView.findViewById<ImageView>(R.id.myImageView)
-
-
     }
 
     override fun onClick(itemView: View) {
@@ -72,7 +70,6 @@ class RvWhatsOnAdapter(var WhatsOnList: List<WhatsOn>?) : RecyclerView.Adapter<R
         val args = Bundle()
         args.putCharSequence("title", WhatsOnList!![pos].title)
         args.putParcelable("event", WhatsOnList!![pos])
-        //args.putCharSequence("excerpt", article.text)
 
         newFragment.arguments = args
 

@@ -5,11 +5,11 @@ import android.os.Parcelable
 
 class WhatsOn : Parcelable {
     override fun writeToParcel(dest: Parcel?, flags: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        throw NotImplementedError()
     }
 
     override fun describeContents(): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        throw NotImplementedError()
     }
 
     var url: String?
@@ -20,8 +20,9 @@ class WhatsOn : Parcelable {
     var date : String?
     var bookLink : String?
     var index : Int?
+    var bookmarked : Boolean?
 
-    constructor(url: String?, imageUrl: String?, label: String?, title: String?, excerpt: String?, date: String?, bookLink: String?, index: Int?) {
+    constructor(url: String?, imageUrl: String?, label: String?, title: String?, excerpt: String?, date: String?, bookLink: String?, index: Int?, bookmarked: Boolean?) {
         this.url = url
         this.imageUrl = imageUrl
         this.label = label
@@ -30,6 +31,7 @@ class WhatsOn : Parcelable {
         this.date = date
         this.bookLink = bookLink
         this.index = index
+        this.bookmarked = bookmarked
     }
 
 }

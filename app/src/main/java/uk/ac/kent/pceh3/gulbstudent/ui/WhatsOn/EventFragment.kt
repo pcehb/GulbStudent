@@ -1,20 +1,13 @@
 package uk.ac.kent.pceh3.gulbstudent.ui.WhatsOn
 
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Context.NOTIFICATION_SERVICE
+import android.app.*
+import android.content.ComponentName
+import android.content.Context.ALARM_SERVICE
 import android.content.Intent
-import android.graphics.Color
-import android.net.Uri
-import android.os.Build
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationManagerCompat
-import android.support.v4.content.ContextCompat.getSystemService
+import android.support.v4.content.ContextCompat.getColorStateList
 import android.support.v4.view.ViewCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
@@ -22,26 +15,23 @@ import android.view.View
 import android.view.ViewGroup
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_event.*
-import uk.ac.kent.pceh3.gulbstudent.MainActivity
 
 import uk.ac.kent.pceh3.gulbstudent.R
 import uk.ac.kent.pceh3.gulbstudent.model.WhatsOn
+import uk.ac.kent.pceh3.gulbstudent.network.AlarmBroadcastReceiver
+import java.lang.Double.parseDouble
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.Calendar.*
 
 class EventFragment : Fragment() {
     private var isFABOpen: Boolean? = false
-    private var notificationManager: NotificationManager? = null
+    private var day = 1
+    private var month = 1
+    private var year = 2019
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_event, container, false)
-
-
-        notificationManager =
-                activity!!.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-
-        createNotificationChannel(
-                "uk.ac.kent.pceh3.gulbstudent",
-                "GulbStudent",
-                "Show notifications")
 
         return view
     }
@@ -59,6 +49,13 @@ class EventFragment : Fragment() {
                 .load(event.imageUrl)
                 .placeholder(R.drawable.logo)
                 .into(image)
+
+        if (event.bookmarked == true) {
+            bookmark.backgroundTintList = getColorStateList(context!!, R.color.colorPrimaryDark)
+            bookmark.text = "Event Bookmarked"
+            bookmark.setTextColor(resources.getColor(R.color.colorAccent))
+        }
+
 
         fabPlus.setOnClickListener {
             if (!isFABOpen!!) {
@@ -118,50 +115,99 @@ class EventFragment : Fragment() {
 //            startActivity(openURL)
         }
 
-        bookmark.setOnClickListener{
-            val notificationID = event.index.toString().toInt()
-            val channelID = "uk.ac.kent.pceh3.gulbstudent"
+        bookmark.setOnClickListener {
+            val alarmManager = activity!!.getSystemService(ALARM_SERVICE) as AlarmManager
 
-            val resultIntent = Intent(activity, MainActivity::class.java)
-
-            val pendingIntent = PendingIntent.getActivity(
-                    this.context,
+            val bookmarkIntent = PendingIntent.getBroadcast(
+                    context,
                     0,
-                    resultIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    Intent(activity, AlarmBroadcastReceiver::class.java).apply {
+                        putExtra("notificationId", event.index)
+                        putExtra("title", event.title)
+                    },
+                    PendingIntent.FLAG_CANCEL_CURRENT
             )
+            if (event.bookmarked == false) {
 
-            val notification = Notification.Builder(context,
-                    channelID)
-                    .setContentTitle("GulbStudent")
-                    .setContentText("'"+ event.title + "' is happening tonight.")
-                    .setSmallIcon(android.R.drawable.ic_dialog_info)
-                    .setContentIntent(pendingIntent)
-                    .setChannelId(channelID)
-                    .build()
+                val receiver = ComponentName(context, AlarmBroadcastReceiver::class.java)
 
-            notificationManager?.notify(notificationID, notification)
+                context!!.packageManager.setComponentEnabledSetting(
+                        receiver,
+                        PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                        PackageManager.DONT_KILL_APP
+                )
 
+                val dateFormatted = event.date
+                val re = Regex("[^A-Za-z0-9 ]")
+                var splitDate = re.replace(dateFormatted.toString(), "")
+                var splitDate2 = splitDate.split("\\s".toRegex())
 
-            // OPEN SHOW EVENT PAGE ON CLICK
-            // NOTIFY 9AM ON SHOW DAY
+                for (w in splitDate2) {
+                    var numeric = true
+                    try {
+                        val num = parseDouble(w)
+                    } catch (e: NumberFormatException) {
+                        numeric = false
+                    }
+                    if (numeric) {
+                        if (w.toInt() < 32) {
+                            day = w.toInt()
+                        }
 
+                        if (w.length == 4) {
+                            year = w.toInt()
+                        }
+                    } else {
+                        if (w == "January" || w == "February" || w == "March" || w == "April" || w == "May" || w == "June" || w == "July" || w == "August"
+                                || w == "September" || w == "October" || w == "November" || w == "December" || w == "Jan" || w == "Feb" || w == "Mar"
+                                || w == "Apr" || w == "May" || w == "Jun" || w == "Jul" || w == "Aug" || w == "Sep" || w == "Oct" || w == "Nov" || w == "Dec") {
+
+                            val newDate = SimpleDateFormat("MMM", Locale.ENGLISH).parse(w)
+                            val cal = getInstance()
+                            cal.time = newDate
+                            val newMonth = cal.get(MONTH)
+
+                            month = newMonth
+                        }
+                    }
+                }
+
+                alarmManager.set(
+                        AlarmManager.RTC_WAKEUP,
+                        Calendar.getInstance().apply {
+                            set(HOUR_OF_DAY, 17)
+                            set(MINUTE, 12)
+                            set(SECOND, 0)
+                            set(YEAR, year)
+                            set(MONTH, month)
+                            set(DATE, day)
+                        }.timeInMillis,
+                        bookmarkIntent
+                )
+
+                bookmark.backgroundTintList = getColorStateList(context!!, R.color.colorPrimaryDark)
+                bookmark.text = "Event Bookmarked"
+                bookmark.setTextColor(resources.getColor(R.color.colorAccent))
+
+                event.bookmarked = true
+            }
+            else{
+                val receiver = ComponentName(context, AlarmBroadcastReceiver::class.java)
+
+                context!!.packageManager.setComponentEnabledSetting(
+                        receiver,
+                        PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                        PackageManager.DONT_KILL_APP
+                )
+
+                bookmark.backgroundTintList = getColorStateList(context!!, R.color.colorAccent)
+                bookmark.text = "Bookmark"
+                bookmark.setTextColor(resources.getColor(R.color.colorPrimaryDark))
+
+                alarmManager.cancel(bookmarkIntent)
+                event.bookmarked = false
+            }
         }
-    }
-
-    private fun createNotificationChannel(id: String, name: String,
-                                          description: String) {
-
-        val importance = NotificationManager.IMPORTANCE_LOW
-        val channel = NotificationChannel(id, name, importance)
-
-        channel.description = description
-        channel.enableLights(true)
-        channel.lightColor = Color.RED
-        channel.enableVibration(true)
-        channel.vibrationPattern =
-                longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
-        notificationManager?.createNotificationChannel(channel)
     }
 
 

@@ -39,7 +39,7 @@ class WhatsOnAjax {
                     val dateAnchor = element.select("div.text-container div.event-bottom div.date")
                     val date = dateAnchor.text()
 
-                    val event = WhatsOn(url, image, label, title, excerpt, date, bookLink, index)
+                    val event = WhatsOn(url, image, label, title, excerpt, date, bookLink, index, false)
                     eventList.add(event)
                 }
             }

@@ -1,4 +1,4 @@
-package uk.ac.kent.pceh3.gulbstudent.ui.whatson
+package uk.ac.kent.pceh3.gulbstudent.ui.WhatsOn
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity

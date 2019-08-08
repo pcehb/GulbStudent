@@ -1,6 +1,8 @@
 package uk.ac.kent.pceh3.gulbstudent.ui.whatson
 
 import android.app.*
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.ComponentName
 import android.content.Context.ALARM_SERVICE
 import android.content.Intent
@@ -10,17 +12,24 @@ import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat.getColorStateList
 import android.support.v4.view.ViewCompat
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_event.*
+import kotlinx.android.synthetic.main.fragment_profile.*
 import uk.ac.kent.pceh3.gulbstudent.R
+import uk.ac.kent.pceh3.gulbstudent.model.Bookmarks
 import uk.ac.kent.pceh3.gulbstudent.model.WhatsOn
 import uk.ac.kent.pceh3.gulbstudent.network.AlarmBroadcastReceiver
+import uk.ac.kent.pceh3.gulbstudent.ui.WhatsOnViewModel
+import uk.ac.kent.pceh3.gulbstudent.ui.profile.ProfileAdapter
+import uk.ac.kent.pceh3.gulbstudent.ui.profile.ProfileViewModel
 import java.lang.Double.parseDouble
 import java.text.SimpleDateFormat
 import java.util.*
@@ -33,6 +42,8 @@ class EventFragment : Fragment() {
     private var year = 2019
     private lateinit var database: DatabaseReference
     private lateinit var auth: FirebaseAuth
+    private lateinit var indexUrl : String
+    private var bookmarked = false
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -63,11 +74,13 @@ class EventFragment : Fragment() {
                 .placeholder(R.drawable.logo)
                 .into(image)
 
-        if (event.bookmarked == true) {
-            bookmark.backgroundTintList = getColorStateList(context!!, R.color.colorPrimaryDark)
-            bookmark.text = "Event Bookmarked"
-            bookmark.setTextColor(resources.getColor(R.color.colorAccent))
-        }
+
+        val urlRe = Regex("[^A-Za-z0-9 ]")
+        indexUrl = urlRe.replace(event.url.toString(), "")
+
+        isBookmarked()
+
+
 
 
         fabPlus.setOnClickListener {
@@ -125,8 +138,6 @@ class EventFragment : Fragment() {
             val alarmManager = activity!!.getSystemService(ALARM_SERVICE) as AlarmManager
 
             var user = auth.currentUser
-            val urlRe = Regex("[^A-Za-z0-9 ]")
-            val indexUrl = urlRe.replace(event.url.toString(), "")
 
             val bookmarkIntent = PendingIntent.getBroadcast(
                     context,
@@ -138,7 +149,7 @@ class EventFragment : Fragment() {
                     },
                     PendingIntent.FLAG_CANCEL_CURRENT
             )
-            if (event.bookmarked == false) {
+            if (bookmarked == false) {
 
                 val receiver = ComponentName(context!!, AlarmBroadcastReceiver::class.java)
 
@@ -206,8 +217,9 @@ class EventFragment : Fragment() {
                 database.child("year").setValue(year)
                 database.child("month").setValue(month)
                 database.child("date").setValue(day)
+                database.child("index").setValue(indexUrl)
 
-                event.bookmarked = true
+                bookmarked = true
             }
             else{
                 val receiver = ComponentName(context!!, AlarmBroadcastReceiver::class.java)
@@ -225,7 +237,8 @@ class EventFragment : Fragment() {
                 FirebaseDatabase.getInstance().reference.child("users").child(user!!.uid).child("bookmarked").child(indexUrl).removeValue()
 
                 alarmManager.cancel(bookmarkIntent)
-                event.bookmarked = false
+
+                bookmarked = false
             }
         }
     }
@@ -256,5 +269,31 @@ class EventFragment : Fragment() {
 
     }
 
+    private fun isBookmarked(){
+
+        var user = auth.currentUser
+
+            val viewModel = ViewModelProviders.of(this).get(WhatsOnViewModel::class.java)
+            viewModel.getShowBookmarked(user!!, indexUrl).observe(this, object : Observer<Boolean> {
+                override fun onChanged(t: Boolean?) {
+                   if (t == true){
+                       bookmark.backgroundTintList = getColorStateList(context!!, R.color.colorPrimaryDark)
+                       bookmark.text = "Event Bookmarked"
+                       bookmark.setTextColor(resources.getColor(R.color.colorAccent))
+
+                       bookmarked = true
+                   }
+                    else {
+
+                       bookmark.backgroundTintList = getColorStateList(context!!, R.color.colorAccent)
+                       bookmark.text = "Bookmark"
+                       bookmark.setTextColor(resources.getColor(R.color.colorPrimaryDark))
+
+                       bookmarked = false
+                   }
+
+                }
+            })
+    }
 
 }

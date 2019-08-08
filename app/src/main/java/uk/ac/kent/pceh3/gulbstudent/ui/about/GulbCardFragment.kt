@@ -1,6 +1,5 @@
 package uk.ac.kent.pceh3.gulbstudent
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -23,7 +22,7 @@ class GulbCardFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        gulbCardImage.setOnClickListener {
+        userImage.setOnClickListener {
             val openURL = Intent(Intent.ACTION_VIEW)
             openURL.data = Uri.parse("https://uk.patronbase.com/_Gulbenkian/Memberships")
             startActivity(openURL)

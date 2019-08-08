@@ -1,17 +1,209 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
-    tools:context="uk.ac.kent.pceh3.gulbstudent.ProfileFragment">
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="10px">
 
-    <TextView
-        android:layout_width="match_parent"
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="@+id/saveBtn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/categoryText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="Favourited Categories:"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/textView10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="TextView" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <CheckBox
+                        android:id="@+id/archive"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Archive"
+                        android:textAllCaps="true"/>
+
+                    <CheckBox
+                        android:id="@+id/audioDescribed"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Audio Described"
+                        android:textAllCaps="true" />
+
+                    <CheckBox
+                        android:id="@+id/boing"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="bOing! Festival"
+                        android:textAllCaps="true" />
+
+                    <CheckBox
+                        android:id="@+id/cafe"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Cafe"
+                        android:textAllCaps="true" />
+
+                    <CheckBox
+                        android:id="@+id/captionedSubtitles"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Captioned Subtitles"
+                        android:textAllCaps="true" />
+
+                    <CheckBox
+                        android:id="@+id/comedy"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Comedy"
+                        android:textAllCaps="true" />
+
+                    <CheckBox
+                        android:id="@+id/family"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Family"
+                        android:textAllCaps="true" />
+
+                    <CheckBox
+                        android:id="@+id/festival"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Festival"
+                        android:textAllCaps="true" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <CheckBox
+                        android:id="@+id/foreign"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Foreign language subtitles"
+                        android:textAllCaps="true" />
+
+                    <CheckBox
+                        android:id="@+id/music"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Music"
+                        android:textAllCaps="true" />
+
+                    <CheckBox
+                        android:id="@+id/live"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Recorded &amp; Live Screening"
+                        android:textAllCaps="true" />
+
+                    <CheckBox
+                        android:id="@+id/relaxed"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Relaxed"
+                        android:textAllCaps="true" />
+
+                    <CheckBox
+                        android:id="@+id/talks"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Talks"
+                        android:textAllCaps="true" />
+
+                    <CheckBox
+                        android:id="@+id/theatreDance"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Theatre &amp; Dance"
+                        android:textAllCaps="true" />
+
+                    <CheckBox
+                        android:id="@+id/workshops"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Workshops"
+                        android:textAllCaps="true" />
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/dateText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:text="Bookmarked Shows:"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                android:textSize="28sp"
+                android:textStyle="bold" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/showsRV"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+
+
+    </android.support.v4.widget.NestedScrollView>
+
+    <Button
+        android:id="@+id/saveBtn"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="Profile"
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:textStyle="bold" />
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:backgroundTint="@color/colorAccent"
+        android:text="Save"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-</FrameLayout>
+</android.support.constraint.ConstraintLayout>

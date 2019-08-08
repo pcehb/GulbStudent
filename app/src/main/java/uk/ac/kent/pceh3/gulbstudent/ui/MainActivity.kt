@@ -11,6 +11,7 @@ import android.util.Log
 import android.view.*
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.nav_header_main.*
 import uk.ac.kent.pceh3.gulbstudent.ui.profile.LoginFragment
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
@@ -56,9 +57,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     .beginTransaction()
                     .replace(R.id.content, LoginFragment())
                     .commit()
-        }
-        else{
-
         }
     }
 

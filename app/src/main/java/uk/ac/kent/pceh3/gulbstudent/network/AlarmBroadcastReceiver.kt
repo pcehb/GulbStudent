@@ -54,7 +54,7 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
         val notification = Notification.Builder(context,
                 channelID)
                 .setContentTitle("GulbStudent")
-                .setContentText("'"+ intent!!.getCharSequenceExtra("title") + "' is happening tonight.")
+                .setContentText("'"+ intent.getCharSequenceExtra("title") + "' is happening tonight.")
                 .setSmallIcon(android.R.drawable.ic_dialog_info)
                 .setContentIntent(pendingIntent)
                 .setChannelId(channelID)

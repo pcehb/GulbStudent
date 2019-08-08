@@ -1,4 +1,4 @@
-package uk.ac.kent.pceh3.gulbstudent.ui.WhatsOn
+package uk.ac.kent.pceh3.gulbstudent.ui.whatson
 
 import android.app.*
 import android.content.ComponentName
@@ -11,6 +11,7 @@ import android.support.v4.content.ContextCompat.getColorStateList
 import android.support.v4.view.ViewCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import com.squareup.picasso.Picasso
@@ -32,8 +33,14 @@ class EventFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_event, container, false)
-
+        setHasOptionsMenu(true)
         return view
+    }
+
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        menu.clear()
+        super.onPrepareOptionsMenu(menu)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -81,9 +88,6 @@ class EventFragment : Fragment() {
                     .addToBackStack(null)
                     .commit()
 
-//            val openURL = Intent(Intent.ACTION_VIEW)
-//            openURL.data = Uri.parse(event.bookLink)
-//            startActivity(openURL)
         }
 
         fabShare.setOnClickListener{
@@ -109,10 +113,6 @@ class EventFragment : Fragment() {
                     .addToBackStack(null)
                     .commit()
 
-//
-//            val openURL = Intent(Intent.ACTION_VIEW)
-//            openURL.data = Uri.parse(event.url)
-//            startActivity(openURL)
         }
 
         bookmark.setOnClickListener {
@@ -131,7 +131,7 @@ class EventFragment : Fragment() {
 
                 val receiver = ComponentName(context, AlarmBroadcastReceiver::class.java)
 
-                context!!.packageManager.setComponentEnabledSetting(
+                this.context!!.packageManager.setComponentEnabledSetting(
                         receiver,
                         PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
                         PackageManager.DONT_KILL_APP
@@ -194,7 +194,7 @@ class EventFragment : Fragment() {
             else{
                 val receiver = ComponentName(context, AlarmBroadcastReceiver::class.java)
 
-                context!!.packageManager.setComponentEnabledSetting(
+                this.context!!.packageManager.setComponentEnabledSetting(
                         receiver,
                         PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                         PackageManager.DONT_KILL_APP

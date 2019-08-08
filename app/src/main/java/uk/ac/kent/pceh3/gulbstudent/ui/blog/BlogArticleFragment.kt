@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.content.res.ResourcesCompat.getColor
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toolbar
@@ -25,11 +26,8 @@ class BlogArticleFragment : Fragment() {
 
         val view = inflater.inflate(R.layout.fragment_blog_article, container, false)
 
-
         return view
     }
-
-
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

@@ -4,7 +4,7 @@
     package="uk.ac.kent.pceh3.gulbstudent">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:allowBackup="true"
@@ -14,9 +14,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
-
-        <receiver android:name=".network.AlarmBroadcastReceiver"
+        <receiver
+            android:name=".network.AlarmBroadcastReceiver"
             android:enabled="false"
+            android:exported="true"/>
+        <receiver
+            android:name=".network.BootReceiver"
+            android:enabled="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

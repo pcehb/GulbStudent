@@ -14,9 +14,10 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_event.*
-
 import uk.ac.kent.pceh3.gulbstudent.R
 import uk.ac.kent.pceh3.gulbstudent.model.WhatsOn
 import uk.ac.kent.pceh3.gulbstudent.network.AlarmBroadcastReceiver
@@ -30,10 +31,15 @@ class EventFragment : Fragment() {
     private var day = 1
     private var month = 1
     private var year = 2019
+    private lateinit var database: DatabaseReference
+    private lateinit var auth: FirebaseAuth
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_event, container, false)
         setHasOptionsMenu(true)
+
+        auth = FirebaseAuth.getInstance()
         return view
     }
 
@@ -118,18 +124,23 @@ class EventFragment : Fragment() {
         bookmark.setOnClickListener {
             val alarmManager = activity!!.getSystemService(ALARM_SERVICE) as AlarmManager
 
+            var user = auth.currentUser
+            val urlRe = Regex("[^A-Za-z0-9 ]")
+            val indexUrl = urlRe.replace(event.url.toString(), "")
+
             val bookmarkIntent = PendingIntent.getBroadcast(
                     context,
                     0,
                     Intent(activity, AlarmBroadcastReceiver::class.java).apply {
-                        putExtra("notificationId", event.index)
+                        putExtra("notificationId", indexUrl)
                         putExtra("title", event.title)
+                        putExtra("url", indexUrl)
                     },
                     PendingIntent.FLAG_CANCEL_CURRENT
             )
             if (event.bookmarked == false) {
 
-                val receiver = ComponentName(context, AlarmBroadcastReceiver::class.java)
+                val receiver = ComponentName(context!!, AlarmBroadcastReceiver::class.java)
 
                 this.context!!.packageManager.setComponentEnabledSetting(
                         receiver,
@@ -139,8 +150,8 @@ class EventFragment : Fragment() {
 
                 val dateFormatted = event.date
                 val re = Regex("[^A-Za-z0-9 ]")
-                var splitDate = re.replace(dateFormatted.toString(), "")
-                var splitDate2 = splitDate.split("\\s".toRegex())
+                val splitDate = re.replace(dateFormatted.toString(), "")
+                val splitDate2 = splitDate.split("\\s".toRegex())
 
                 for (w in splitDate2) {
                     var numeric = true
@@ -175,8 +186,8 @@ class EventFragment : Fragment() {
                 alarmManager.set(
                         AlarmManager.RTC_WAKEUP,
                         Calendar.getInstance().apply {
-                            set(HOUR_OF_DAY, 17)
-                            set(MINUTE, 12)
+                            set(HOUR_OF_DAY, 9)
+                            set(MINUTE, 0)
                             set(SECOND, 0)
                             set(YEAR, year)
                             set(MONTH, month)
@@ -189,10 +200,17 @@ class EventFragment : Fragment() {
                 bookmark.text = "Event Bookmarked"
                 bookmark.setTextColor(resources.getColor(R.color.colorAccent))
 
+                database = FirebaseDatabase.getInstance().reference.child("users").child(user!!.uid).child("bookmarked").child(indexUrl)
+
+                database.child("title").setValue(event.title)
+                database.child("year").setValue(year)
+                database.child("month").setValue(month)
+                database.child("date").setValue(day)
+
                 event.bookmarked = true
             }
             else{
-                val receiver = ComponentName(context, AlarmBroadcastReceiver::class.java)
+                val receiver = ComponentName(context!!, AlarmBroadcastReceiver::class.java)
 
                 this.context!!.packageManager.setComponentEnabledSetting(
                         receiver,
@@ -203,6 +221,8 @@ class EventFragment : Fragment() {
                 bookmark.backgroundTintList = getColorStateList(context!!, R.color.colorAccent)
                 bookmark.text = "Bookmark"
                 bookmark.setTextColor(resources.getColor(R.color.colorPrimaryDark))
+
+                FirebaseDatabase.getInstance().reference.child("users").child(user!!.uid).child("bookmarked").child(indexUrl).removeValue()
 
                 alarmManager.cancel(bookmarkIntent)
                 event.bookmarked = false

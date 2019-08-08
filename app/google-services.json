@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "215668487318",
+    "firebase_url": "https://gulbstudent.firebaseio.com",
+    "project_id": "gulbstudent",
+    "storage_bucket": "gulbstudent.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:215668487318:android:6bbe0aaec0508558",
+        "android_client_info": {
+          "package_name": "uk.ac.kent.pceh3.gulbstudent"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "215668487318-qa4u07t13c0d2rb78ubn05ov2nlsj13r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnZ9mIw4KqEXKXhGkmynJdx5qHb3_b7R4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "215668487318-qa4u07t13c0d2rb78ubn05ov2nlsj13r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

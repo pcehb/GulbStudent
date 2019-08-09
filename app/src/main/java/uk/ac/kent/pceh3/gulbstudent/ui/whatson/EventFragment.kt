@@ -150,7 +150,7 @@ class EventFragment : Fragment() {
                     },
                     PendingIntent.FLAG_CANCEL_CURRENT
             )
-            if (bookmarked == false) {
+            if (!bookmarked) {
 
                 val receiver = ComponentName(context!!, AlarmBroadcastReceiver::class.java)
 
@@ -203,7 +203,7 @@ class EventFragment : Fragment() {
                             set(SECOND, 0)
                             set(YEAR, year)
                             set(MONTH, month)
-                            set(DATE, day)
+                            set(DATE, 9)
                         }.timeInMillis,
                         bookmarkIntent
                 )

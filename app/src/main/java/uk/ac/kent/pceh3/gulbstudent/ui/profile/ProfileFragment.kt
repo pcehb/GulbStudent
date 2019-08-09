@@ -22,12 +22,11 @@ import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.fragment_profile.*
 import uk.ac.kent.pceh3.gulbstudent.model.Bookmarks
 import uk.ac.kent.pceh3.gulbstudent.model.Categories
-import uk.ac.kent.pceh3.gulbstudent.model.WhatsOn
 import uk.ac.kent.pceh3.gulbstudent.network.AlarmBroadcastReceiver
-import uk.ac.kent.pceh3.gulbstudent.ui.WhatsOnViewModel
 import uk.ac.kent.pceh3.gulbstudent.ui.profile.ProfileAdapter
 import uk.ac.kent.pceh3.gulbstudent.ui.profile.ProfileViewModel
 import java.util.*
+import java.util.Calendar.MONDAY
 
 
 class ProfileFragment : Fragment() {
@@ -43,7 +42,7 @@ class ProfileFragment : Fragment() {
         database = FirebaseDatabase.getInstance().reference
         user = auth.currentUser!!
 
-        database = FirebaseDatabase.getInstance().reference.child("users").child(user!!.uid).child("categories")
+        database = FirebaseDatabase.getInstance().reference.child("users").child(user.uid).child("categories")
 
         setHasOptionsMenu(true)
 
@@ -53,81 +52,98 @@ class ProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         saveBtn.setOnClickListener {
+            var categorySearch = ""
             if (archive.isChecked) {
                 database.child("archive").setValue(true)
+                categorySearch += "&event_type%5B%5D=archive"
             } else {
                 database.child("archive").setValue(false)
             }
             if (audioDescribed.isChecked) {
                 database.child("audioDescribed").setValue(true)
+                categorySearch += "&event_type%5B%5D=audio-description"
             } else {
                 database.child("audioDescribed").setValue(false)
             }
             if (boing.isChecked) {
                 database.child("boing").setValue(true)
+                categorySearch += "&event_type%5B%5D=boing-festival"
             } else {
                 database.child("boing").setValue(false)
             }
             if (cafe.isChecked) {
                 database.child("cafe").setValue(true)
+                categorySearch += "&event_type%5B%5D=cafe"
             } else {
                 database.child("cafe").setValue(false)
             }
             if (captionedSubtitles.isChecked) {
                 database.child("captionedSubtitles").setValue(true)
+                categorySearch += "&event_type%5B%5D=captioned-subtitles"
             } else {
                 database.child("captionedSubtitles").setValue(false)
             }
             if (comedy.isChecked) {
                 database.child("comedy").setValue(true)
+                categorySearch += "event_type%5B%5D=comedy"
             } else {
                 database.child("comedy").setValue(false)
             }
             if (family.isChecked) {
                 database.child("family").setValue(true)
+                categorySearch += "&event_type%5B%5D=family"
             } else {
                 database.child("family").setValue(false)
             }
             if (festival.isChecked) {
                 database.child("festival").setValue(true)
+                categorySearch += "&event_type%5B%5D=festival"
             } else {
                 database.child("festival").setValue(false)
             }
             if (foreign.isChecked) {
                 database.child("foreign").setValue(true)
+                categorySearch += "&event_type%5B%5D=foreign-language-subtitles"
             } else {
                 database.child("foreign").setValue(false)
             }
             if (music.isChecked) {
                 database.child("music").setValue(true)
+                categorySearch += "&event_type%5B%5D=music"
             } else {
                 database.child("music").setValue(false)
             }
             if (live.isChecked) {
                 database.child("live").setValue(true)
+                categorySearch += "&event_type%5B%5D=recorded-live-screening"
             } else {
                 database.child("live").setValue(false)
             }
             if (relaxed.isChecked) {
                 database.child("relaxed").setValue(true)
+                categorySearch += "&event_type%5B%5D=relaxed"
             } else {
                 database.child("relaxed").setValue(false)
             }
             if (talks.isChecked) {
                 database.child("talks").setValue(true)
+                categorySearch += "&event_type%5B%5D=talks"
             } else {
                 database.child("talks").setValue(false)
             }
             if (theatreDance.isChecked) {
                 database.child("theatreDance").setValue(true)
+                categorySearch += "&event_type%5B%5D=theathre-dance"
             } else {
                 database.child("theatreDance").setValue(false)
             }
             if (workshops.isChecked) {
                 database.child("workshops").setValue(true)
+                categorySearch += "&event_type%5B%5D=workshops"
             } else {
                 database.child("workshops").setValue(false)
             }
+            setNotification(categorySearch)
         }
 
 
@@ -135,168 +151,137 @@ class ProfileFragment : Fragment() {
         loadCats(user)
     }
 
-    fun loadBookmarks(user: FirebaseUser) {
+    private fun loadBookmarks(user: FirebaseUser) {
         val viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
-        viewModel.getBookmarks(user).observe(this, object : Observer<List<Bookmarks>> {
-            override fun onChanged(t: List<Bookmarks>?) {
-                val data = t
-                if (data != null) {
-                    linearLayoutManager = LinearLayoutManager(context)
-                    showsRV.layoutManager = linearLayoutManager
-                    val ProfileAdapter = ProfileAdapter(data)
-                    showsRV.adapter = ProfileAdapter
-                    ProfileAdapter.updateData(data)
-                }
+        viewModel.getBookmarks(user).observe(this, Observer<List<Bookmarks>> { t ->
+            if (t != null) {
+                linearLayoutManager = LinearLayoutManager(context)
+                showsRV.layoutManager = linearLayoutManager
+                val profileAdapter = ProfileAdapter(t)
+                showsRV.adapter = profileAdapter
+                profileAdapter.updateData(t)
             }
         })
     }
 
-    fun loadCats(user: FirebaseUser) {
+    private fun loadCats(user: FirebaseUser) {
         val viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
-        viewModel.getCats(user).observe(this, object : Observer<List<Categories>> {
-            override fun onChanged(t: List<Categories>?) {
-                val data = t
-                if (data != null) {
-                    var categorySearch = ""
-                    if (data[0].archive == true) {
-                        archive.isChecked = true
-                        categorySearch += "&event_type%5B%5D=archive"
-                    } else {
-                        archive.isChecked = false
-                    }
-                    if (data[0].audioDescribed == true) {
-                        audioDescribed.isChecked = true
-                        categorySearch += "&event_type%5B%5D=audio-description"
-                    } else {
-                        audioDescribed.isChecked = false
-                    }
-                    if (data[0].boing == true) {
-                        boing.isChecked = true
-                        categorySearch += "&event_type%5B%5D=boing-festival"
-                    } else {
-                        boing.isChecked = false
-                    }
-                    if (data[0].cafe == true) {
-                        cafe.isChecked = true
-                        categorySearch += "&event_type%5B%5D=cafe"
-                    } else {
-                        cafe.isChecked = false
-                    }
-                    if (data[0].captionedSubtitles == true) {
-                        captionedSubtitles.isChecked = true
-                        categorySearch += "&event_type%5B%5D=captioned-subtitles"
-                    } else {
-                        captionedSubtitles.isChecked = false
-                    }
-                    if (data[0].comedy == true) {
-                        comedy.isChecked = true
-                        categorySearch += "event_type%5B%5D=comedy"
-                    } else {
-                        comedy.isChecked = false
-                    }
-                    if (data[0].family == true) {
-                        family.isChecked = true
-                        categorySearch += "&event_type%5B%5D=family"
-                    } else {
-                        family.isChecked = false
-                    }
-                    if (data[0].festival == true) {
-                        festival.isChecked = true
-                        categorySearch += "&event_type%5B%5D=festival"
-                    } else {
-                        festival.isChecked = false
-                    }
-                    if (data[0].foreign == true) {
-                        foreign.isChecked = true
-                        categorySearch += "&event_type%5B%5D=foreign-language-subtitles"
-                    } else {
-                        foreign.isChecked = false
-                    }
-                    if (data[0].music == true) {
-                        music.isChecked = true
-                        categorySearch += "&event_type%5B%5D=music"
-                    } else {
-                        music.isChecked = false
-                    }
-                    if (data[0].live == true) {
-                        live.isChecked = true
-                        categorySearch += "&event_type%5B%5D=recorded-live-screening"
-                    } else {
-                        live.isChecked = false
-                    }
-                    if (data[0].relaxed == true) {
-                        relaxed.isChecked = true
-                        categorySearch += "&event_type%5B%5D=relaxed"
-                    } else {
-                        relaxed.isChecked = false
-                    }
-                    if (data[0].talks == true) {
-                        talks.isChecked = true
-                        categorySearch += "&event_type%5B%5D=talks"
-                    } else {
-                        talks.isChecked = false
-                    }
-                    if (data[0].theatreDance == true) {
-                        theatreDance.isChecked = true
-                        categorySearch += "&event_type%5B%5D=theathre-dance"
-                    } else {
-                        theatreDance.isChecked = false
-                    }
-                    if (data[0].workshops == true) {
-                        workshops.isChecked = true
-                        categorySearch += "&event_type%5B%5D=workshops"
-                    } else {
-                        workshops.isChecked = false
-                    }
-                    setNotification(categorySearch)
+        viewModel.getCats(user).observe(this, Observer<List<Categories>> { t ->
+            if (t != null) {
+
+                if (t[0].archive) {
+                    archive.isChecked = true
+                }else {
+                    archive.isChecked = false
                 }
+                if (t[0].audioDescribed) {
+                    audioDescribed.isChecked = true
+                }else {
+                    audioDescribed.isChecked = false
+                }
+                if (t[0].boing) {
+                    boing.isChecked = true
+                }else {
+                    boing.isChecked = false
+                }
+                if (t[0].cafe) {
+                    cafe.isChecked = true
+                }else {
+                    cafe.isChecked = false
+                }
+                if (t[0].captionedSubtitles) {
+                    captionedSubtitles.isChecked = true
+                }else {
+                    captionedSubtitles.isChecked = false
+                }
+                if (t[0].comedy) {
+                    comedy.isChecked = true
+                }else {
+                    comedy.isChecked = false
+                }
+                if (t[0].family) {
+                    family.isChecked = true
+                }else {
+                    family.isChecked = false
+                }
+                if (t[0].festival) {
+                    festival.isChecked = true
+                }else {
+                    festival.isChecked = false
+                }
+                if (t[0].foreign) {
+                    foreign.isChecked = true
+                }else {
+                    foreign.isChecked = false
+                }
+                if (t[0].music) {
+                    music.isChecked = true
+                }else {
+                    music.isChecked = false
+                }
+                if (t[0].live) {
+                    live.isChecked = true
+                }else {
+                    live.isChecked = false
+                }
+                if (t[0].relaxed) {
+                    relaxed.isChecked = true
+                }else {
+                    relaxed.isChecked = false
+                }
+                if (t[0].talks) {
+                    talks.isChecked = true
+                }else {
+                    talks.isChecked = false
+                }
+                if (t[0].theatreDance) {
+                    theatreDance.isChecked = true
+                }else {
+                    theatreDance.isChecked = false
+                }
+                if (t[0].workshops) {
+                    workshops.isChecked = true
+                }else {
+                    workshops.isChecked = false
+                }
+
             }
         })
     }
 
-    fun setNotification(category: String) {
-        val viewModel = ViewModelProviders.of(this).get(WhatsOnViewModel::class.java)
-        viewModel.getWhatsOn("", category, "").observe(this, object : Observer<List<WhatsOn>> {
-            override fun onChanged(t: List<WhatsOn>?) {
-                val data = t
-                if (data != null) {
-                    val alarmManager = activity!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                    val idNum = System.currentTimeMillis().toInt()
-                    val categoryIntent = PendingIntent.getBroadcast(
-                            context,
-                            0,
-                            Intent(activity, AlarmBroadcastReceiver::class.java).apply {
-                                putExtra("notificationId", idNum)
-                                putExtra("categorySearch", category)
-                                putExtra("type", "category")
-                            },
-                            PendingIntent.FLAG_CANCEL_CURRENT
-                    )
+    private fun setNotification(category: String) {
 
-                    val receiver = ComponentName(context!!, AlarmBroadcastReceiver::class.java)
+        val alarmManager = activity!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-                    activity!!.packageManager.setComponentEnabledSetting(
-                            receiver,
-                            PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-                            PackageManager.DONT_KILL_APP
-                    )
+        val categoryIntent = PendingIntent.getBroadcast(
+                context,
+                0,
+                Intent(activity, AlarmBroadcastReceiver::class.java).apply {
+                    putExtra("notificationId", 1)
+                    putExtra("categorySearch", category)
+                    putExtra("type", "category")
+                },
+                PendingIntent.FLAG_UPDATE_CURRENT
+        )
 
-                    alarmManager.set(
-                            AlarmManager.RTC_WAKEUP,
-                            Calendar.getInstance().apply {
-                                set(Calendar.HOUR_OF_DAY, 9)
-                                set(Calendar.MINUTE, 0)
-                                set(Calendar.SECOND, 0)
-                                set(Calendar.YEAR, 2019)
-                                set(Calendar.MONTH, 7)
-                                set(Calendar.DATE, 9)
-                            }.timeInMillis,
-                            categoryIntent
-                    )
-                }
-            }
-        })
+        val receiver = ComponentName(context!!, AlarmBroadcastReceiver::class.java)
 
+        activity!!.packageManager.setComponentEnabledSetting(
+                receiver,
+                PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                PackageManager.DONT_KILL_APP
+        )
+
+
+        alarmManager.setInexactRepeating(
+                AlarmManager.RTC_WAKEUP,
+                Calendar.getInstance().apply {
+                    set(Calendar.HOUR_OF_DAY, 9)
+                    set(Calendar.DAY_OF_WEEK, MONDAY)
+                }.timeInMillis,
+                AlarmManager.INTERVAL_DAY * 7,
+                categoryIntent
+        )
 
     }
 

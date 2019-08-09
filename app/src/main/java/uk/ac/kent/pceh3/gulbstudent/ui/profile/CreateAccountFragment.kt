@@ -67,7 +67,22 @@ class CreateAccountFragment: Fragment() {
                                     .replace(R.id.content, WhatsOnFragment())
                                     .commit()
 
-                            database.child("users").child(user!!.uid).child("email").setValue(email)
+                            database = database.child("users").child(user!!.uid).child("categories")
+                            database.child("archive").setValue(false)
+                            database.child("audioDescribed").setValue(false)
+                            database.child("boing").setValue(false)
+                            database.child("cafe").setValue(false)
+                            database.child("captionedSubtitles").setValue(false)
+                            database.child("comedy").setValue(false)
+                            database.child("family").setValue(false)
+                            database.child("festival").setValue(false)
+                            database.child("foreign").setValue(false)
+                            database.child("music").setValue(false)
+                            database.child("live").setValue(false)
+                            database.child("relaxed").setValue(false)
+                            database.child("talks").setValue(false)
+                            database.child("theatreDance").setValue(false)
+                            database.child("workshops").setValue(false)
 
 
                         } else {

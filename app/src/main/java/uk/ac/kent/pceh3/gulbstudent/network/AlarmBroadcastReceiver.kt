@@ -15,9 +15,18 @@ import uk.ac.kent.pceh3.gulbstudent.model.Bookmarks
 import java.util.*
 import android.support.v4.content.ContextCompat.getSystemService
 import android.app.AlarmManager
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
+import android.content.ComponentName
+import android.content.pm.PackageManager
+import uk.ac.kent.pceh3.gulbstudent.ProfileFragment
+import uk.ac.kent.pceh3.gulbstudent.model.WhatsOn
+import uk.ac.kent.pceh3.gulbstudent.ui.WhatsOnViewModel
 import java.text.SimpleDateFormat
+import java.time.DayOfWeek
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.TemporalAdjusters
 
 
 class AlarmBroadcastReceiver : BroadcastReceiver() {
@@ -34,8 +43,9 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
                 "GulbStudent",
                 "Show notifications")
 
+        Log.d(TAG, "onReceive: a notification")
 
-        if (intent!!.getCharSequenceExtra("type").toString() == "bookmarked"){
+        if (intent!!.getCharSequenceExtra("type").toString() == "bookmark"){
             Log.d(TAG, "onReceive: bookmarkNotification")
             val channelID = "uk.ac.kent.pceh3.gulbstudent"
 
@@ -66,34 +76,49 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
 
             FirebaseDatabase.getInstance().reference.child("users").child(user!!.uid).child("bookmarked").child(indexUrl).removeValue()
         }
-        else if(intent!!.getCharSequenceExtra("type").toString() == "category"){
+        else if(intent!!.getCharSequenceExtra("type").toString() == "category") {
             Log.d(TAG, "onReceive: categoryNotification")
             val channelID = "uk.ac.kent.pceh3.gulbstudent"
 
-            val resultIntent = Intent(context, MainActivity::class.java)
+            val fieldISO = TemporalAdjusters.next(DayOfWeek.MONDAY)
+            val current = LocalDateTime.now()
+            val formatter = DateTimeFormatter.BASIC_ISO_DATE
+            val formattedStartDate = current.format(formatter)
+            val next = current.with(fieldISO).with(fieldISO)
+            val formattedEndDate = next.format(formatter)
 
-            val pendingIntent = PendingIntent.getActivity(
-                    context,
-                    0,
-                    resultIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
-            )
+            val data = WhatsOnAjax().getWhatsOn("", intent!!.getCharSequenceExtra("categorySearch").toString(), formattedStartDate, formattedEndDate)
+            if (data != null) {
+                val resultIntent = Intent(context, MainActivity::class.java)
+                resultIntent.putExtra("openingFragment", "suggested")
+                resultIntent.putExtra("categorySearch", intent!!.getCharSequenceExtra("categorySearch").toString())
+                resultIntent.putExtra("startDate", formattedStartDate)
+                resultIntent.putExtra("endDate", formattedEndDate)
 
-            val notification = Notification.Builder(context,
-                    channelID)
-                    .setContentTitle("GulbStudent")
-                    .setContentText("You have suggested shows happening this week.")
-                    .setSmallIcon(android.R.drawable.ic_dialog_info)
-                    .setContentIntent(pendingIntent)
-                    .setChannelId(channelID)
-                    .setAutoCancel(true)
-                    .build()
+                val pendingIntent = PendingIntent.getActivity(
+                        context,
+                        0,
+                        resultIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                )
 
+                val notification = Notification.Builder(context,
+                        channelID)
+                        .setContentTitle("GulbStudent")
+                        .setContentText("You have suggested shows happening this week.")
+                        .setSmallIcon(android.R.drawable.ic_dialog_info)
+                        .setContentIntent(pendingIntent)
+                        .setChannelId(channelID)
+                        .setAutoCancel(true)
+                        .build()
+                notificationManager?.notify(intent!!.getIntExtra("notificationId", 0), notification)
 
-            notificationManager?.notify(intent!!.getIntExtra("notificationId", 0), notification)
+            }
+            else{
+                println("No events happening")
+            }
+
         }
-
-
     }
 
 

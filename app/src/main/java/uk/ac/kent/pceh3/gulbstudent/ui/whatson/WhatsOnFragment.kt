@@ -37,7 +37,7 @@ class WhatsOnFragment : Fragment() {
     fun loadFeed(search:String, eventType: String, date: String){
         progressBar.visibility = VISIBLE
         val viewModel = ViewModelProviders.of(this).get(WhatsOnViewModel::class.java)
-        viewModel.getWhatsOn(search, eventType, date).observe(this, object : Observer<List<WhatsOn>> {
+        viewModel.getWhatsOn(search, eventType, date, "").observe(this, object : Observer<List<WhatsOn>> {
             override fun onChanged(t: List<WhatsOn>?) {
                 val data = t
                 if (data != null){

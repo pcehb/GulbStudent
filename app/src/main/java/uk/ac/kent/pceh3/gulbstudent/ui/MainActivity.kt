@@ -11,8 +11,10 @@ import android.util.Log
 import android.view.*
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.nav_header_main.*
 import uk.ac.kent.pceh3.gulbstudent.ui.profile.LoginFragment
+import android.content.Intent
+import uk.ac.kent.pceh3.gulbstudent.ui.whatson.SuggestedFragment
+
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -40,6 +42,26 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         this.viewPager.adapter=viewpageradapter  //Binding PagerAdapter with ViewPager
         this.tab_layout.setupWithViewPager(this.viewPager) //Binding ViewPager with TabLayout
+
+        val extras = intent.getStringExtra("openingFragment")
+        if (extras != null&&extras.equals("suggested")) {
+            this.viewPager.visibility = View.GONE
+            this.tab_layout.visibility = View.GONE
+            this.content.visibility = View.VISIBLE
+
+            var fragment = SuggestedFragment()
+            val bundle = Bundle()
+            bundle.putString("categorySearch", intent.getCharSequenceExtra("categorySearch").toString())
+            bundle.putString("startDate", intent.getCharSequenceExtra("startDate").toString())
+            bundle.putString("endDate", intent.getCharSequenceExtra("endDate").toString())
+            fragment.arguments = bundle
+
+            var fragmentManager = supportFragmentManager
+            fragmentManager
+                    .beginTransaction()
+                    .replace(R.id.content, fragment)
+                    .commit()
+        }
 
     }
 

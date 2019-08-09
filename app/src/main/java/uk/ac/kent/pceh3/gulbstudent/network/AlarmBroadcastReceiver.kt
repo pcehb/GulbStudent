@@ -84,7 +84,7 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
             val current = LocalDateTime.now()
             val formatter = DateTimeFormatter.BASIC_ISO_DATE
             val formattedStartDate = current.format(formatter)
-            val next = current.with(fieldISO).with(fieldISO)
+            val next = current.with(fieldISO)
             val formattedEndDate = next.format(formatter)
 
             val data = WhatsOnAjax().getWhatsOn("", intent!!.getCharSequenceExtra("categorySearch").toString(), formattedStartDate, formattedEndDate)

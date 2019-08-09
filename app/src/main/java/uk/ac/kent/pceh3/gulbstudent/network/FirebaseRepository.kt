@@ -144,12 +144,14 @@ class FirebaseRepository{
                     val month1 = firevalue!!.month
                     val year1 = firevalue!!.year
                     val index1 = firevalue!!.index
+                    val id1 = firevalue!!.id
 
                     fire.title = title1 //set
                     fire.date = date1 //set
                     fire.month = month1 //set
                     fire.year = year1 //set
                     fire.index = index1 //set
+                    fire.id = id1 //set
                     fireList.add(fire)
                     bookmarksList.value = fireList
                 }

@@ -1,6 +1,12 @@
 package uk.ac.kent.pceh3.gulbstudent.ui.profile
 
+import android.app.AlarmManager
 import android.app.AlertDialog
+import android.app.PendingIntent
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +18,7 @@ import kotlinx.android.synthetic.main.adapter_profile_layout.view.*
 import uk.ac.kent.pceh3.gulbstudent.MainActivity
 import uk.ac.kent.pceh3.gulbstudent.R
 import uk.ac.kent.pceh3.gulbstudent.model.Bookmarks
+import uk.ac.kent.pceh3.gulbstudent.network.AlarmBroadcastReceiver
 
 
 class ProfileAdapter (var BookmarkedList: List<Bookmarks>?) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>(), View.OnClickListener {
@@ -23,6 +30,7 @@ class ProfileAdapter (var BookmarkedList: List<Bookmarks>?) : RecyclerView.Adapt
         val user = auth.currentUser
         val title = v.title?.text.toString()
         val indexUrl = v.title?.tag.toString()
+        val id = v.idNum?.tag.toString().toInt()
 
         val builder = AlertDialog.Builder(activity)
 
@@ -33,6 +41,26 @@ class ProfileAdapter (var BookmarkedList: List<Bookmarks>?) : RecyclerView.Adapt
 
         // Set a positive button and its click listener on alert dialog
         builder.setPositiveButton("YES"){dialog, which ->
+            val alarmManager = activity!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val receiver = ComponentName(activity, AlarmBroadcastReceiver::class.java)
+
+            activity!!.packageManager.setComponentEnabledSetting(
+                    receiver,
+                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
+                    PackageManager.DONT_KILL_APP
+            )
+
+            val bookmarkIntent = PendingIntent.getBroadcast(
+                    activity,
+                    0,
+                    Intent(activity, AlarmBroadcastReceiver::class.java).apply {
+                        putExtra("notificationId", id)
+                        putExtra("title", title)
+                        putExtra("url", indexUrl)
+                    },
+                    PendingIntent.FLAG_CANCEL_CURRENT
+            )
+            alarmManager.cancel(bookmarkIntent)
             FirebaseDatabase.getInstance().reference.child("users").child(user!!.uid).child("bookmarked").child(indexUrl).removeValue()
         }
         // Display a neutral button on alert dialog
@@ -61,10 +89,12 @@ class ProfileAdapter (var BookmarkedList: List<Bookmarks>?) : RecyclerView.Adapt
     override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
         p0.title?.text = BookmarkedList!![p1].title
         p0.title?.tag = BookmarkedList!![p1].index
+        p0.idNum?.tag = BookmarkedList!![p1].id
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val title = itemView.findViewById<TextView>(R.id.title)
+        val idNum = itemView.findViewById<TextView>(R.id.idNum)
     }
 
 }

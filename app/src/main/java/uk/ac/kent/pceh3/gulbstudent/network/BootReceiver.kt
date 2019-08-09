@@ -37,8 +37,7 @@ class BootReceiver : BroadcastReceiver() {
                                 for(snapshot: DataSnapshot in dataSnapshot.getChildren())
                                 {
                                     val bookmarks = snapshot.getValue(Bookmarks::class.java)
-
-                                    println("Bookmarked: " + bookmarks!!.title)
+                                    val id = System.currentTimeMillis().toInt()
 
                                     val bookmarkIntent = PendingIntent.getBroadcast(
                                             context,
@@ -46,6 +45,8 @@ class BootReceiver : BroadcastReceiver() {
                                             Intent(context, AlarmBroadcastReceiver::class.java).apply {
                                                 putExtra("title", bookmarks!!.title!!)
                                                 putExtra("url", snapshot.key)
+                                                putExtra("notificationId", id)
+                                                putExtra("type", "bookmark")
                                             },
                                             PendingIntent.FLAG_CANCEL_CURRENT
                                     )

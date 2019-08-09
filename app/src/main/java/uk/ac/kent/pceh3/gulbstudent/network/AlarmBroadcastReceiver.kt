@@ -35,36 +35,64 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
                 "Show notifications")
 
 
-        Log.d(TAG, "onReceive: bookmarkNotification")
-        val channelID = "uk.ac.kent.pceh3.gulbstudent"
+        if (intent!!.getCharSequenceExtra("type").toString() == "bookmarked"){
+            Log.d(TAG, "onReceive: bookmarkNotification")
+            val channelID = "uk.ac.kent.pceh3.gulbstudent"
 
-        val resultIntent = Intent(context, MainActivity::class.java)
+            val resultIntent = Intent(context, MainActivity::class.java)
 
-        val pendingIntent = PendingIntent.getActivity(
-                context,
-                0,
-                resultIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT
-        )
+            val pendingIntent = PendingIntent.getActivity(
+                    context,
+                    0,
+                    resultIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
+            )
 
-        var user = auth.currentUser
-        val indexUrl = intent!!.getCharSequenceExtra("url").toString()
+            var user = auth.currentUser
+            val indexUrl = intent!!.getCharSequenceExtra("url").toString()
 
-        val notification = Notification.Builder(context,
-                channelID)
-                .setContentTitle("GulbStudent")
-                .setContentText("'"+ intent!!.getCharSequenceExtra("title") + "' is happening tonight.")
-                .setSmallIcon(android.R.drawable.ic_dialog_info)
-                .setContentIntent(pendingIntent)
-                .setChannelId(channelID)
-                .setAutoCancel(true)
-                .build()
+            val notification = Notification.Builder(context,
+                    channelID)
+                    .setContentTitle("GulbStudent")
+                    .setContentText("'"+ intent!!.getCharSequenceExtra("title") + "' is happening tonight.")
+                    .setSmallIcon(android.R.drawable.ic_dialog_info)
+                    .setContentIntent(pendingIntent)
+                    .setChannelId(channelID)
+                    .setAutoCancel(true)
+                    .build()
 
-        val id = System.currentTimeMillis().toInt()
 
-        notificationManager?.notify(id, notification)
+            notificationManager?.notify(intent!!.getIntExtra("notificationId", 0), notification)
 
-        FirebaseDatabase.getInstance().reference.child("users").child(user!!.uid).child("bookmarked").child(indexUrl).removeValue()
+            FirebaseDatabase.getInstance().reference.child("users").child(user!!.uid).child("bookmarked").child(indexUrl).removeValue()
+        }
+        else if(intent!!.getCharSequenceExtra("type").toString() == "category"){
+            Log.d(TAG, "onReceive: categoryNotification")
+            val channelID = "uk.ac.kent.pceh3.gulbstudent"
+
+            val resultIntent = Intent(context, MainActivity::class.java)
+
+            val pendingIntent = PendingIntent.getActivity(
+                    context,
+                    0,
+                    resultIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT
+            )
+
+            val notification = Notification.Builder(context,
+                    channelID)
+                    .setContentTitle("GulbStudent")
+                    .setContentText("You have suggested shows happening this week.")
+                    .setSmallIcon(android.R.drawable.ic_dialog_info)
+                    .setContentIntent(pendingIntent)
+                    .setChannelId(channelID)
+                    .setAutoCancel(true)
+                    .build()
+
+
+            notificationManager?.notify(intent!!.getIntExtra("notificationId", 0), notification)
+        }
+
 
     }
 

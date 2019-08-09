@@ -137,14 +137,16 @@ class EventFragment : Fragment() {
             val alarmManager = activity!!.getSystemService(ALARM_SERVICE) as AlarmManager
 
             var user = auth.currentUser
+            val id = System.currentTimeMillis().toInt()
 
             val bookmarkIntent = PendingIntent.getBroadcast(
                     context,
                     0,
                     Intent(activity, AlarmBroadcastReceiver::class.java).apply {
-                        putExtra("notificationId", indexUrl)
+                        putExtra("notificationId", id)
                         putExtra("title", event.title)
                         putExtra("url", indexUrl)
+                        putExtra("type", "bookmark")
                     },
                     PendingIntent.FLAG_CANCEL_CURRENT
             )
@@ -217,6 +219,7 @@ class EventFragment : Fragment() {
                 database.child("month").setValue(month)
                 database.child("date").setValue(day)
                 database.child("index").setValue(indexUrl)
+                database.child("id").setValue(id)
 
                 bookmarked = true
             }

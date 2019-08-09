@@ -134,7 +134,7 @@ class WhatsOnFragment : Fragment() {
 
 
                     if (archive.isChecked) {
-                    categorySearch += "&event_type%5B%5D=archive"
+                        categorySearch += "&event_type%5B%5D=archive"
                     }
                     if (audioDescribed.isChecked) {
                         categorySearch += "&event_type%5B%5D=audio-description"

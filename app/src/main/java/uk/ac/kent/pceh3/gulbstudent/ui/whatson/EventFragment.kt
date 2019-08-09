@@ -45,7 +45,6 @@ class EventFragment : Fragment() {
     private lateinit var indexUrl : String
     private var bookmarked = false
 
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_event, container, false)
         setHasOptionsMenu(true)

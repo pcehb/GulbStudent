@@ -1,9 +1,14 @@
 package uk.ac.kent.pceh3.gulbstudent.ui
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.support.v4.content.ContextCompat.getSystemService
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.TextView
 import uk.ac.kent.pceh3.gulbstudent.R
 import uk.ac.kent.pceh3.gulbstudent.model.Deal
@@ -20,13 +25,18 @@ class RvAdapter(val dealList: List<Deal>?) : RecyclerView.Adapter<RvAdapter.View
         return dealList!!.size
     }
     override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
-
         p0.code?.text = dealList!![p1].code
         p0.description?.text = dealList[p1].description
+
+        p0.copy.setOnClickListener { view ->
+            val clipboard = view.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip = ClipData.newPlainText("label", p0.code?.text)
+            clipboard.primaryClip = clip
+        }
     }
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val code = itemView.findViewById<TextView>(R.id.code)
         val description = itemView.findViewById<TextView>(R.id.description)
-
+        val copy = itemView.findViewById<ImageButton>(R.id.imageButton)
     }
 }

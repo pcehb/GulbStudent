@@ -27,6 +27,7 @@ import uk.ac.kent.pceh3.gulbstudent.ui.profile.ProfileAdapter
 import uk.ac.kent.pceh3.gulbstudent.ui.profile.ProfileViewModel
 import java.util.*
 import java.util.Calendar.MONDAY
+import java.util.Calendar.SATURDAY
 
 
 class ProfileFragment : Fragment() {
@@ -272,13 +273,27 @@ class ProfileFragment : Fragment() {
                 PackageManager.DONT_KILL_APP
         )
 
+        var calender = Calendar.getInstance().apply {
+            set(Calendar.HOUR_OF_DAY, 9)
+            set(Calendar.DAY_OF_WEEK, MONDAY)
+        }
+
+        val now = Calendar.getInstance()
+        now.set(Calendar.SECOND, 0)
+        now.set(Calendar.MILLISECOND, 0)
+
+        if (calender.before(now)) {
+            println("BEFORE")
+            //this condition is used for future reminder that means your reminder not fire for past time
+            calender.add(Calendar.DATE, 7)
+        }
+        else{
+            println("AFTER")
+        }
 
         alarmManager.setInexactRepeating(
                 AlarmManager.RTC_WAKEUP,
-                Calendar.getInstance().apply {
-                    set(Calendar.HOUR_OF_DAY, 9)
-                    set(Calendar.DAY_OF_WEEK, MONDAY)
-                }.timeInMillis,
+                calender.timeInMillis,
                 AlarmManager.INTERVAL_DAY * 7,
                 categoryIntent
         )

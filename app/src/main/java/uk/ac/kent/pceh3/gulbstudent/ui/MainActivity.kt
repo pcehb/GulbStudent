@@ -11,8 +11,7 @@ import android.util.Log
 import android.view.*
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
-import uk.ac.kent.pceh3.gulbstudent.ui.profile.LoginFragment
-import android.content.Intent
+import uk.ac.kent.pceh3.gulbstudent.ui.login.LoginFragment
 import uk.ac.kent.pceh3.gulbstudent.ui.whatson.SuggestedFragment
 
 
@@ -45,6 +44,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         val extras = intent.getStringExtra("openingFragment")
         if (extras != null&&extras.equals("suggested")) {
+            println("SUGGESTED")
             this.viewPager.visibility = View.GONE
             this.tab_layout.visibility = View.GONE
             this.content.visibility = View.VISIBLE

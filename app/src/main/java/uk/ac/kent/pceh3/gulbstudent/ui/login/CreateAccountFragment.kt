@@ -1,4 +1,4 @@
-package uk.ac.kent.pceh3.gulbstudent.ui.profile
+package uk.ac.kent.pceh3.gulbstudent.ui.login
 
 import android.content.ContentValues
 import android.content.ContentValues.TAG

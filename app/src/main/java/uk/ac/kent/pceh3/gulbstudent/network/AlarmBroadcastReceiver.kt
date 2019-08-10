@@ -111,7 +111,7 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
                         .setChannelId(channelID)
                         .setAutoCancel(true)
                         .build()
-                notificationManager?.notify(intent!!.getIntExtra("notificationId", 0), notification)
+                notificationManager?.notify(intent!!.getIntExtra("notificationId", 1), notification)
 
             }
             else{

@@ -1,5 +1,7 @@
 package uk.ac.kent.pceh3.gulbstudent
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
@@ -8,19 +10,22 @@ import android.view.ViewGroup
 import android.arch.lifecycle.Observer
 import uk.ac.kent.pceh3.gulbstudent.model.Deal
 import android.arch.lifecycle.ViewModelProviders
-import android.content.ContentValues
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
 import android.view.Menu
 import kotlinx.android.synthetic.main.fragment_deals.*
+import uk.ac.kent.pceh3.gulbstudent.network.AlarmBroadcastReceiver
 import uk.ac.kent.pceh3.gulbstudent.ui.DealsViewModel
 import uk.ac.kent.pceh3.gulbstudent.ui.RvAdapter
+import java.util.*
 
 
 class DealsFragment : Fragment() {
 
     private lateinit var linearLayoutManager: LinearLayoutManager
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_deals, container, false)
@@ -36,14 +41,10 @@ class DealsFragment : Fragment() {
 
         recyclerView.layoutManager = linearLayoutManager
 
-
         val viewModel = ViewModelProviders.of(this).get(DealsViewModel::class.java)
-        viewModel.getDeals().observe(this, object : Observer<List<Deal>> {
-            override fun onChanged(t: List<Deal>?) {
-                val data = t
-                val rvAdapter = RvAdapter(data)
-                recyclerView.adapter = rvAdapter
-            }
+        viewModel.getDeals().observe(this, Observer<List<Deal>> { t ->
+            val rvAdapter = RvAdapter(t)
+            recyclerView.adapter = rvAdapter
         })
     }
 

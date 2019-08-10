@@ -69,6 +69,7 @@ class RvWhatsOnAdapter(var WhatsOnList: List<WhatsOn>?) : RecyclerView.Adapter<R
         val newFragment = EventFragment()
         val args = Bundle()
         args.putCharSequence("title", WhatsOnList!![pos].title)
+        args.putCharSequence("page", "event")
         args.putParcelable("event", WhatsOnList!![pos])
 
         newFragment.arguments = args
@@ -78,6 +79,8 @@ class RvWhatsOnAdapter(var WhatsOnList: List<WhatsOn>?) : RecyclerView.Adapter<R
                 .replace(R.id.content, newFragment)
                 .addToBackStack(null)
                 .commit()
+
+
     }
 
 }

@@ -70,9 +70,8 @@ class FirebaseRepository{
             }
         })
         return dealList
-
-
     }
+
 
     // Retrieve list of blogs
     fun getBlog(): LiveData<List<Blog>> {
@@ -165,7 +164,6 @@ class FirebaseRepository{
             }
         })
         return bookmarksList
-
     }
 
     // Check if particular show is bookmarked
@@ -208,7 +206,7 @@ class FirebaseRepository{
 
     }
 
-    // Check if particular show is bookmarked
+    // Check what categories are selected
     fun getCats(user: FirebaseUser): LiveData<List<Categories>> {
 
         val categoriesList = MutableLiveData<List<Categories>>()

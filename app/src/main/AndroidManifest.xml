@@ -14,10 +14,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
+
+
         <receiver
             android:name=".network.AlarmBroadcastReceiver"
             android:enabled="false"
-            android:exported="true"/>
+            android:exported="true" />
         <receiver
             android:name=".network.BootReceiver"
             android:enabled="true"
@@ -34,6 +36,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

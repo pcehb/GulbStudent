@@ -28,14 +28,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         toolBar.setTitle(R.string.app_name)
         toolBar.setTitleTextColor(getColor(R.color.colorAccent))
 
+
         auth = FirebaseAuth.getInstance()
 
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
-
-        nav_view.setNavigationItemSelectedListener(this)
 
         viewpageradapter= ViewPagerAdapter(supportFragmentManager)
 
@@ -93,7 +92,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         toolBar.menu.clear()

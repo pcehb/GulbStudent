@@ -59,12 +59,12 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
             )
 
             var user = auth.currentUser
-            val indexUrl = intent!!.getCharSequenceExtra("url").toString()
+            val indexUrl = intent.getCharSequenceExtra("url").toString()
 
             val notification = Notification.Builder(context,
                     channelID)
                     .setContentTitle("GulbStudent")
-                    .setContentText("'"+ intent!!.getCharSequenceExtra("title") + "' is happening tonight.")
+                    .setContentText("'"+ intent.getCharSequenceExtra("title") + "' is happening tonight.")
                     .setSmallIcon(android.R.drawable.ic_dialog_info)
                     .setContentIntent(pendingIntent)
                     .setChannelId(channelID)
@@ -72,11 +72,11 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
                     .build()
 
 
-            notificationManager?.notify(intent!!.getIntExtra("notificationId", 0), notification)
+            notificationManager?.notify(intent.getIntExtra("notificationId", 0), notification)
 
             FirebaseDatabase.getInstance().reference.child("users").child(user!!.uid).child("bookmarked").child(indexUrl).removeValue()
         }
-        else if(intent!!.getCharSequenceExtra("type").toString() == "category") {
+        else if(intent.getCharSequenceExtra("type").toString() == "category") {
             Log.d(TAG, "onReceive: categoryNotification")
             val channelID = "uk.ac.kent.pceh3.gulbstudent"
 
@@ -87,11 +87,11 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
             val next = current.with(fieldISO)
             val formattedEndDate = next.format(formatter)
 
-            val data = WhatsOnAjax().getWhatsOn("", intent!!.getCharSequenceExtra("categorySearch").toString(), formattedStartDate, formattedEndDate)
+            val data = WhatsOnAjax().getWhatsOn("", intent.getCharSequenceExtra("categorySearch").toString(), formattedStartDate, formattedEndDate)
             if (data != null) {
                 val resultIntent = Intent(context, MainActivity::class.java)
                 resultIntent.putExtra("openingFragment", "suggested")
-                resultIntent.putExtra("categorySearch", intent!!.getCharSequenceExtra("categorySearch").toString())
+                resultIntent.putExtra("categorySearch", intent.getCharSequenceExtra("categorySearch").toString())
                 resultIntent.putExtra("startDate", formattedStartDate)
                 resultIntent.putExtra("endDate", formattedEndDate)
 
@@ -111,13 +111,12 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
                         .setChannelId(channelID)
                         .setAutoCancel(true)
                         .build()
-                notificationManager?.notify(intent!!.getIntExtra("notificationId", 1), notification)
+                notificationManager?.notify(intent.getIntExtra("notificationId", 1), notification)
 
             }
             else{
                 println("No events happening")
             }
-
         }
     }
 

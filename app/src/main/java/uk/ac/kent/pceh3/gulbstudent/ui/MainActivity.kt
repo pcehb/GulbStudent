@@ -1,24 +1,48 @@
 package uk.ac.kent.pceh3.gulbstudent
 
+import android.Manifest
+import android.app.PendingIntent
 import android.content.ContentValues
+import android.content.Context
+import android.content.Intent
+import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.support.design.widget.NavigationView
+import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.*
+import android.widget.Toast
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
+import uk.ac.kent.pceh3.gulbstudent.network.locationUpdatesBroadcastReceiver
 import uk.ac.kent.pceh3.gulbstudent.ui.login.LoginFragment
 import uk.ac.kent.pceh3.gulbstudent.ui.whatson.SuggestedFragment
 
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
-
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks,
+GoogleApiClient.OnConnectionFailedListener {
     private lateinit var viewpageradapter: ViewPagerAdapter //Declare PagerAdapter
     private lateinit var auth: FirebaseAuth
+    private val REQUEST_PERMISSION_LOCATION = 10
+    private val UPDATE_INTERVAL = 10 * 1000
+    private val FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2
+    private val MAX_WAIT_TIME = UPDATE_INTERVAL * 3
+    private lateinit var mLocationRequest : LocationRequest
+
+    private lateinit var mGoogleApiClient :GoogleApiClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,10 +55,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         auth = FirebaseAuth.getInstance()
 
+
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
+
+        nav_view.setNavigationItemSelectedListener(this)
 
         viewpageradapter= ViewPagerAdapter(supportFragmentManager)
 
@@ -62,6 +89,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     .commit()
         }
 
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            buildAlertMessageNoGps()
+        }
+
+        if (checkPermissionForLocation(this)) {
+            buildGoogleApiClient()
+        }
+
+
+
     }
 
     override fun onStart() {
@@ -79,6 +117,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     .replace(R.id.content, LoginFragment())
                     .commit()
         }
+
     }
 
     override fun onBackPressed() {
@@ -173,6 +212,108 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .commit()
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    private fun buildAlertMessageNoGps() {
+
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+                .setCancelable(false)
+                .setPositiveButton("Yes") { dialog, id ->
+                    startActivityForResult(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                            , 11)
+                }
+                .setNegativeButton("No") { dialog, id ->
+                    dialog.cancel()
+                    finish()
+                }
+        val alert: AlertDialog = builder.create()
+        alert.show()
+
+
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (requestCode == REQUEST_PERMISSION_LOCATION) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //val serviceIntent = Intent(this, GeofenceTransitionsIntentService::class.java)
+
+
+            } else {
+                Toast.makeText(this@MainActivity, "Permission Denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun checkPermissionForLocation(context: Context): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            if (context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) ==
+                    PackageManager.PERMISSION_GRANTED) {
+                true
+            } else {
+                // Show the permission request
+                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
+                        REQUEST_PERMISSION_LOCATION)
+                false
+            }
+        } else {
+            true
+        }
+    }
+
+    private fun buildGoogleApiClient() {
+        if (mGoogleApiClient != null) {
+            return;
+        }
+        mGoogleApiClient = GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .enableAutoManage(this, this)
+                .addApi(LocationServices.API)
+                .build()
+        createLocationRequest()
+    }
+
+    private fun createLocationRequest() {
+        mLocationRequest = LocationRequest()
+
+        mLocationRequest.setInterval(UPDATE_INTERVAL.toLong())
+
+        // Sets the fastest rate for active location updates. This interval is exact, and your
+        // application will never receive updates faster than this value.
+        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL.toLong())
+        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+
+        // Sets the maximum time when batched location updates are delivered. Updates may be
+        // delivered sooner than this interval.
+        mLocationRequest.setMaxWaitTime(MAX_WAIT_TIME.toLong())
+    }
+
+    override fun onConnectionSuspended(p0: Int) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onConnectionFailed(p0: ConnectionResult) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onConnected(p0: Bundle?) {
+        Log.i("LOCATION", "GoogleApiClient connected");
+    }
+
+    fun requestLocationUpdates(view: View) {
+        try {
+            Log.i("LOCATION", "Starting location updates")
+            intent = Intent(this, locationUpdatesBroadcastReceiver::class.java)
+            intent.action = locationUpdatesBroadcastReceiver.ACTION_PROCESS_UPDATES
+
+            LocationServices.FusedLocationApi.requestLocationUpdates(
+                    mGoogleApiClient, mLocationRequest, intent)
+        } catch (e: SecurityException) {
+
+            e.printStackTrace()
+        }
+
     }
 
 }

@@ -18,13 +18,7 @@
         <receiver
             android:name=".network.locationUpdatesBroadcastReceiver"
             android:enabled="true"
-            android:exported="true"></receiver>
-
-        <service
-            android:name=".network.GeofenceTransitionsIntentService"
-            android:enabled="true"
             android:exported="true" />
-
         <receiver
             android:name=".network.AlarmBroadcastReceiver"
             android:enabled="false"

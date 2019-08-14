@@ -15,7 +15,10 @@ class locationUpdatesBroadcastReceiver : BroadcastReceiver() {
     val ACTION_PROCESS_UPDATES = "com.google.android.gms.location.sample.backgroundlocationupdates.action" + ".PROCESS_UPDATES"
 
     override fun onReceive(context: Context, intent: Intent?) {
+        Log.i("LOCATION", "BROADCAST RECEIVER")
+
         if (intent != null) {
+            Log.i("LOCATION", "NOT NULL")
             val action = intent.action
             if (ACTION_PROCESS_UPDATES == action) {
                 val result = LocationResult.extractResult(intent)

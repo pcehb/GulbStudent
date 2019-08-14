@@ -5,7 +5,6 @@ import android.app.PendingIntent
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Build
@@ -42,7 +41,7 @@ GoogleApiClient.OnConnectionFailedListener {
     private val MAX_WAIT_TIME = UPDATE_INTERVAL * 3
     private lateinit var mLocationRequest : LocationRequest
 
-    private lateinit var mGoogleApiClient :GoogleApiClient
+    private var mGoogleApiClient: GoogleApiClient? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -236,8 +235,6 @@ GoogleApiClient.OnConnectionFailedListener {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (requestCode == REQUEST_PERMISSION_LOCATION) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                //val serviceIntent = Intent(this, GeofenceTransitionsIntentService::class.java)
-
 
             } else {
                 Toast.makeText(this@MainActivity, "Permission Denied", Toast.LENGTH_SHORT).show()
@@ -290,30 +287,30 @@ GoogleApiClient.OnConnectionFailedListener {
     }
 
     override fun onConnectionSuspended(p0: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val text = "Connection suspended"
+        Log.w("LOCATION", "$text: Error code: $p0")
     }
 
     override fun onConnectionFailed(p0: ConnectionResult) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val text = "Exception while connecting to Google Play services"
+        Log.w("LOCATION", text + ": " + p0.errorMessage)
     }
 
     override fun onConnected(p0: Bundle?) {
-        Log.i("LOCATION", "GoogleApiClient connected");
-    }
-
-    fun requestLocationUpdates(view: View) {
+        Log.i("LOCATION", "GoogleApiClient connected")
         try {
             Log.i("LOCATION", "Starting location updates")
-            intent = Intent(this, locationUpdatesBroadcastReceiver::class.java)
-            intent.action = locationUpdatesBroadcastReceiver.ACTION_PROCESS_UPDATES
+            var updatesIntent = Intent(this, locationUpdatesBroadcastReceiver::class.java)
+            updatesIntent.action = "com.google.android.gms.location.sample.backgroundlocationupdates.action.PROCESS_UPDATES"
+            var pendingUpdatesIntent = PendingIntent.getBroadcast(this, 0, updatesIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
             LocationServices.FusedLocationApi.requestLocationUpdates(
-                    mGoogleApiClient, mLocationRequest, intent)
+                    mGoogleApiClient, mLocationRequest, pendingUpdatesIntent)
         } catch (e: SecurityException) {
 
             e.printStackTrace()
         }
-
     }
+
 
 }

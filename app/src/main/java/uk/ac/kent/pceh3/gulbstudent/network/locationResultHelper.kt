@@ -1,6 +1,5 @@
 package uk.ac.kent.pceh3.gulbstudent.network
 
-import android.R
 import android.app.*
 import uk.ac.kent.pceh3.gulbstudent.MainActivity
 import android.content.Intent
@@ -9,6 +8,7 @@ import android.preference.PreferenceManager
 import android.content.Context
 import android.graphics.Color
 import android.location.Location
+import uk.ac.kent.pceh3.gulbstudent.R
 import java.text.DateFormat.*
 import java.util.*
 
@@ -24,26 +24,29 @@ class locationResultHelper (context: Context, locations: List<Location>){
     private var mNotificationManager: NotificationManager? = null
 
     init {
-        val channel = NotificationChannel(PRIMARY_CHANNEL,
-                context.getString(R.string.default_channel), NotificationManager.IMPORTANCE_DEFAULT)
+        val channel = NotificationChannel(PRIMARY_CHANNEL, mContext.resources.getString(R.string.default_channel), NotificationManager.IMPORTANCE_DEFAULT)
         channel.lightColor = Color.GREEN
         channel.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
         getNotificationManager().createNotificationChannel(channel)
     }
 
 
+
     /**
      * Returns the title for reporting about a list of [Location] objects.
      */
     private fun getLocationResultTitle(): String {
-        val numLocationsReported = mContext.getResources().getQuantityString(
+        val numLocationsReported = mContext.resources.getQuantityString(
                 R.plurals.num_locations_reported, mLocations.size, mLocations.size)
+
+
         return numLocationsReported + ": " + getDateTimeInstance().format(Date())
     }
 
     private fun getLocationResultText(): String {
         if (mLocations.isEmpty()) {
-            return mContext.getString(R.string.unknown_location)
+
+            return mContext.resources.getString(R.string.unknown_location)
         }
         val sb = StringBuilder()
         for (location in mLocations) {
@@ -113,7 +116,7 @@ class locationResultHelper (context: Context, locations: List<Location>){
                 PRIMARY_CHANNEL)
                 .setContentTitle(getLocationResultTitle())
                 .setContentText(getLocationResultText())
-                .setSmallIcon(R.mipmap.sym_def_app_icon)
+                .setSmallIcon(R.mipmap.ic_launcher)
                 .setAutoCancel(true)
                 .setContentIntent(notificationPendingIntent)
 

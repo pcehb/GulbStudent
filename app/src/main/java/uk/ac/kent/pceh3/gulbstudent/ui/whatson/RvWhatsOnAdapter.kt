@@ -43,7 +43,7 @@ class RvWhatsOnAdapter(var WhatsOnList: List<WhatsOn>?) : RecyclerView.Adapter<R
 
         Picasso.get()
                 .load(WhatsOnList!![p1].imageUrl)
-                .placeholder(R.drawable.logo)
+                .placeholder(R.drawable.logo_pic)
                 .into(p0.image)
 
     }

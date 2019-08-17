@@ -1,41 +1,28 @@
 package uk.ac.kent.pceh3.gulbstudent
 
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentStatePagerAdapter
 
-/**
- * Created by pceh3 on 25/05/2019.
- */
+class ViewPagerAdapter(supportFragmentManager: FragmentManager) : FragmentStatePagerAdapter(supportFragmentManager) {
 
-class ViewPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
-    private val COUNT = 3
+    private val mFragmentList = ArrayList<Fragment>()
+    private val mFragmentTitleList = ArrayList<String>()
 
-    override fun getItem(position: Int): Fragment? {
-        var fragment: Fragment? = null
-        when (position) {
-            0 -> fragment = WhatsOnFragment()
-            1 -> fragment = DealsFragment()
-            2 -> fragment = BlogFragment()
-        }
-
-        return fragment
+    override fun getItem(position: Int): Fragment {
+        return mFragmentList.get(position)
     }
 
     override fun getCount(): Int {
-        return COUNT
+        return mFragmentList.size
     }
 
-
     override fun getPageTitle(position: Int): CharSequence? {
-        var title: String? = null
-        if (position == 0) {
-            title = "What's On"
-        } else if (position == 1) {
-            title = "Deals"
-        } else if (position == 2) {
-            title = "Blog"
-        }
-        return title
+        return mFragmentTitleList[position]
+    }
+
+    fun addFragment(fragment: Fragment, title: String) {
+        mFragmentList.add(fragment)
+        mFragmentTitleList.add(title)
     }
 }

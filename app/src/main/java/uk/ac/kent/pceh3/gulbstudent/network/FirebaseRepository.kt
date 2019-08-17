@@ -1,7 +1,7 @@
 package uk.ac.kent.pceh3.gulbstudent.network
 
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.LiveData
 import android.content.ContentValues.TAG
 import android.util.Log
 import com.google.firebase.auth.FirebaseUser
@@ -73,6 +73,34 @@ class FirebaseRepository{
     }
 
 
+    // Retrieve list of deals
+    fun getDealSize(): LiveData<Int> {
+
+        var dealSize = MutableLiveData<Int>()
+
+        val myRef = FirebaseDatabase.getInstance().getReference("deals")
+        networkStatus.setValue(NetworkStatus.LOADING)
+        // Read from the database
+        myRef.addValueEventListener(object : ValueEventListener {
+
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                networkStatus.setValue(NetworkStatus.IDLE)
+
+                dealSize.value = dataSnapshot.childrenCount.toInt()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException())
+                networkStatus.setValue(NetworkStatus.IDLE)
+            }
+        })
+        return dealSize
+    }
+
+
     // Retrieve list of blogs
     fun getBlog(): LiveData<List<Blog>> {
 
@@ -114,7 +142,33 @@ class FirebaseRepository{
             }
         })
         return blogList
+    }
 
+    // Retrieve list of deals
+    fun getBlogSize(): LiveData<Int> {
+
+        var blogSize = MutableLiveData<Int>()
+
+        val myRef = FirebaseDatabase.getInstance().getReference("blog")
+        networkStatus.setValue(NetworkStatus.LOADING)
+        // Read from the database
+        myRef.addValueEventListener(object : ValueEventListener {
+
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                networkStatus.setValue(NetworkStatus.IDLE)
+
+                blogSize.value = dataSnapshot.childrenCount.toInt()
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException())
+                networkStatus.setValue(NetworkStatus.IDLE)
+            }
+        })
+        return blogSize
     }
 
     // Retrieve list of bookmarks
@@ -139,11 +193,11 @@ class FirebaseRepository{
                     val fire = Bookmarks()
 
                     val title1 = firevalue!!.title
-                    val date1 = firevalue!!.date
-                    val month1 = firevalue!!.month
-                    val year1 = firevalue!!.year
-                    val index1 = firevalue!!.index
-                    val id1 = firevalue!!.id
+                    val date1 = firevalue.date
+                    val month1 = firevalue.month
+                    val year1 = firevalue.year
+                    val index1 = firevalue.index
+                    val id1 = firevalue.id
 
                     fire.title = title1 //set
                     fire.date = date1 //set

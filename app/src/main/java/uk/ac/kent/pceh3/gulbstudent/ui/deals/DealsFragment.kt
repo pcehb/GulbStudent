@@ -1,26 +1,18 @@
 package uk.ac.kent.pceh3.gulbstudent
 
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.arch.lifecycle.Observer
+import androidx.lifecycle.Observer
 import uk.ac.kent.pceh3.gulbstudent.model.Deal
-import android.arch.lifecycle.ViewModelProviders
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.support.v7.widget.LinearLayoutManager
+import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.Menu
 import kotlinx.android.synthetic.main.fragment_deals.*
-import uk.ac.kent.pceh3.gulbstudent.network.AlarmBroadcastReceiver
 import uk.ac.kent.pceh3.gulbstudent.ui.DealsViewModel
 import uk.ac.kent.pceh3.gulbstudent.ui.RvAdapter
-import java.util.*
 
 
 class DealsFragment : Fragment() {

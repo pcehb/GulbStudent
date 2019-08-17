@@ -56,8 +56,8 @@ class BootReceiver : BroadcastReceiver() {
                                                 set(Calendar.MINUTE, 0)
                                                 set(Calendar.SECOND, 0)
                                                 set(Calendar.YEAR, bookmarks!!.year!!)
-                                                set(Calendar.MONTH,bookmarks!!.month!!)
-                                                set(Calendar.DATE, bookmarks!!.date!!)
+                                                set(Calendar.MONTH,bookmarks.month!!)
+                                                set(Calendar.DATE, bookmarks.date!!)
                                             }.timeInMillis,
                                             bookmarkIntent
                                     )
@@ -70,7 +70,7 @@ class BootReceiver : BroadcastReceiver() {
                         })
 
 
-                FirebaseDatabase.getInstance().reference.child("users").child(user!!.uid).child("categories")
+                FirebaseDatabase.getInstance().reference.child("users").child(user.uid).child("categories")
                         .addListenerForSingleValueEvent(object : ValueEventListener {
                             override fun onDataChange(dataSnapshot: DataSnapshot) {
                                 var categorySearch = ""

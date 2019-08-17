@@ -2,7 +2,7 @@ package uk.ac.kent.pceh3.gulbstudent.ui.login
 
 import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
@@ -44,9 +44,8 @@ class LoginFragment : Fragment() {
                         if (task.isSuccessful) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success")
-                            val user = auth.currentUser
 
-                            activity!!.viewPager.setCurrentItem(0)
+                            activity!!.viewPager.currentItem = 0
                             activity!!.content.visibility = View.GONE
                             activity!!.viewPager.visibility = View.VISIBLE
                             activity!!.tab_layout.visibility = View.VISIBLE

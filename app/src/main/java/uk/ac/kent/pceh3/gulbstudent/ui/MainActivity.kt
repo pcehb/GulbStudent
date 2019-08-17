@@ -2,6 +2,7 @@ package uk.ac.kent.pceh3.gulbstudent
 
 import android.Manifest
 import android.app.PendingIntent
+import androidx.lifecycle.ViewModelProviders
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
@@ -10,13 +11,13 @@ import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.support.design.widget.NavigationView
-import android.support.v4.app.ActivityCompat
-import android.support.v4.app.Fragment
-import android.support.v4.view.GravityCompat
-import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
+import com.google.android.material.navigation.NavigationView
+import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
+import androidx.core.view.GravityCompat
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.view.*
 import android.widget.Toast
@@ -27,10 +28,15 @@ import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
 import uk.ac.kent.pceh3.gulbstudent.network.locationUpdatesBroadcastReceiver
+import uk.ac.kent.pceh3.gulbstudent.ui.MainActivityViewModel
 import uk.ac.kent.pceh3.gulbstudent.ui.login.LoginFragment
 import uk.ac.kent.pceh3.gulbstudent.ui.whatson.SuggestedFragment
+import android.view.View
+import androidx.lifecycle.Observer
+import android.content.SharedPreferences
+import com.google.android.material.tabs.TabLayout
 
-
+@Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks,
 GoogleApiClient.OnConnectionFailedListener {
     private lateinit var viewpageradapter: ViewPagerAdapter //Declare PagerAdapter
@@ -62,10 +68,34 @@ GoogleApiClient.OnConnectionFailedListener {
 
         nav_view.setNavigationItemSelectedListener(this)
 
-        viewpageradapter= ViewPagerAdapter(supportFragmentManager)
+        val adapter = ViewPagerAdapter(supportFragmentManager)
+        adapter.addFragment(WhatsOnFragment(), "WHAT'S ON")
+        adapter.addFragment(DealsFragment(), "DEALS")
+        adapter.addFragment(BlogFragment(), "BLOG")
+        viewPager.adapter = adapter
 
-        this.viewPager.adapter=viewpageradapter  //Binding PagerAdapter with ViewPager
-        this.tab_layout.setupWithViewPager(this.viewPager) //Binding ViewPager with TabLayout
+        tab_layout.setupWithViewPager(viewPager)
+        tab_layout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+                //
+            }
+
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                //
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab) {
+                if (viewPager.currentItem == 1){
+                    tab_layout.getTabAt(1)!!.orCreateBadge.isVisible = false
+
+                }else if (viewPager.currentItem == 2){
+                    tab_layout.getTabAt(2)!!.orCreateBadge.isVisible = false
+
+                }
+            }
+        })
+
+
 
         val extras = intent.getStringExtra("openingFragment")
         if (extras != null&&extras.equals("suggested")) {
@@ -97,7 +127,61 @@ GoogleApiClient.OnConnectionFailedListener {
             buildGoogleApiClient()
         }
 
+        val sharedPref: SharedPreferences = getSharedPreferences("DEAL_SIZE", 0)
 
+        val viewModel = ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
+
+        viewModel.getDealSize().observe(this, Observer<Int> { t ->
+            when {
+                sharedPref.getInt("DEAL_SIZE", 0) == 0 -> {
+                    println("INITIAL DEAL SIZE = $t")
+                    val editor = sharedPref.edit()
+                    editor.putInt("DEAL_SIZE", t!!)
+                    editor.apply()
+                }
+                sharedPref.getInt("DEAL_SIZE", 0) < t!! -> {
+                    println("BIGGER DEAL SIZE = $t")
+                    tab_layout.getTabAt(2)!!.orCreateBadge.backgroundColor = getColor(R.color.colorAccent)
+                    tab_layout.getTabAt(1)!!.orCreateBadge.isVisible = true
+                    tab_layout.getTabAt(1)!!.badge!!.number = (t - sharedPref.getInt("DEAL_SIZE", 0))
+                    val editor = sharedPref.edit()
+                    editor.putInt("DEAL_SIZE", t)
+                    editor.apply()
+                }
+                else -> {
+                    println("SMALLER/SAME DEAL SIZE = $t")
+                    val editor = sharedPref.edit()
+                    editor.putInt("DEAL_SIZE", t)
+                    editor.apply()
+                }
+            }
+        })
+
+        viewModel.getBlogSize().observe(this, Observer<Int> { t ->
+            when {
+                sharedPref.getInt("BLOG_SIZE", 0) == 0 -> {
+                    println("INITIAL BLOG SIZE = $t")
+                    val editor = sharedPref.edit()
+                    editor.putInt("BLOG_SIZE", t!!)
+                    editor.apply()
+                }
+                sharedPref.getInt("BLOG_SIZE", 0) < t!! -> {
+                    println("BIGGER BLOG SIZE = $t")
+                    tab_layout.getTabAt(2)!!.orCreateBadge.backgroundColor = getColor(R.color.colorAccent)
+                    tab_layout.getTabAt(2)!!.orCreateBadge.isVisible = true
+                    tab_layout.getTabAt(2)!!.badge!!.number = (t - sharedPref.getInt("BLOG_SIZE", 0))
+                    val editor = sharedPref.edit()
+                    editor.putInt("BLOG_SIZE", t)
+                    editor.apply()
+                }
+                else -> {
+                    println("SMALLER/SAME BLOG SIZE = $t")
+                    val editor = sharedPref.edit()
+                    editor.putInt("BLOG_SIZE", t)
+                    editor.apply()
+                }
+            }
+        })
 
     }
 
@@ -135,6 +219,7 @@ GoogleApiClient.OnConnectionFailedListener {
         return true
     }
 
+
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         toolBar.menu.clear()
         // Handle navigation view item clicks here.
@@ -150,6 +235,7 @@ GoogleApiClient.OnConnectionFailedListener {
                 this.content.visibility = View.GONE
                 this.viewPager.visibility = View.VISIBLE
                 this.tab_layout.visibility = View.VISIBLE
+                this.tab_layout?.getTabAt(1)?.orCreateBadge?.isVisible = false
             }
             R.id.nav_blog -> {
                 this.viewPager.setCurrentItem(2)
@@ -218,11 +304,11 @@ GoogleApiClient.OnConnectionFailedListener {
         val builder = AlertDialog.Builder(this)
         builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
                 .setCancelable(false)
-                .setPositiveButton("Yes") { dialog, id ->
+                .setPositiveButton("Yes") { _, _ ->
                     startActivityForResult(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                             , 11)
                 }
-                .setNegativeButton("No") { dialog, id ->
+                .setNegativeButton("No") { dialog, _ ->
                     dialog.cancel()
                     finish()
                 }
@@ -242,7 +328,7 @@ GoogleApiClient.OnConnectionFailedListener {
         }
     }
 
-    fun checkPermissionForLocation(context: Context): Boolean {
+    private fun checkPermissionForLocation(context: Context): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
             if (context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) ==
@@ -311,6 +397,4 @@ GoogleApiClient.OnConnectionFailedListener {
             e.printStackTrace()
         }
     }
-
-
 }

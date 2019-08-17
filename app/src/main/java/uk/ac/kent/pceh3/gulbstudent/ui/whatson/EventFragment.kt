@@ -1,18 +1,18 @@
 package uk.ac.kent.pceh3.gulbstudent.ui.whatson
 
 import android.app.*
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProviders
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import android.content.ComponentName
 import android.content.Context.ALARM_SERVICE
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat.getColorStateList
-import android.support.v4.view.ViewCompat
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
+import androidx.fragment.app.Fragment
+import androidx.core.content.ContextCompat.getColorStateList
+import androidx.core.view.ViewCompat
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
@@ -39,6 +39,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.Calendar.*
 
+@Suppress("DEPRECATION")
 class EventFragment : Fragment() {
     private var isFABOpen: Boolean? = false
     private var day = 1
@@ -172,7 +173,7 @@ class EventFragment : Fragment() {
                 for (w in splitDate2) {
                     var numeric = true
                     try {
-                        val num = parseDouble(w)
+                        parseDouble(w)
                     } catch (e: NumberFormatException) {
                         numeric = false
                     }

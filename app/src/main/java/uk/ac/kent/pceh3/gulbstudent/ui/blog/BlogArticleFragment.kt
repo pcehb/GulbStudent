@@ -1,8 +1,8 @@
 package uk.ac.kent.pceh3.gulbstudent.ui
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.content.res.ResourcesCompat.getColor
+import androidx.fragment.app.Fragment
+import androidx.core.content.res.ResourcesCompat.getColor
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View

@@ -2,9 +2,9 @@ package uk.ac.kent.pceh3.gulbstudent.ui
 
 import android.app.Activity
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v7.widget.RecyclerView
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +14,7 @@ import uk.ac.kent.pceh3.gulbstudent.MainActivity
 import uk.ac.kent.pceh3.gulbstudent.R
 import uk.ac.kent.pceh3.gulbstudent.ViewPagerAdapter
 import uk.ac.kent.pceh3.gulbstudent.model.Blog
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 

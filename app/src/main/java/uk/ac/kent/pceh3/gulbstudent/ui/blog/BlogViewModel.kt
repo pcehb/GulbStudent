@@ -1,7 +1,7 @@
 package uk.ac.kent.pceh3.gulbstudent.ui
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
 import uk.ac.kent.pceh3.gulbstudent.model.Blog
 import uk.ac.kent.pceh3.gulbstudent.network.FirebaseRepository
 

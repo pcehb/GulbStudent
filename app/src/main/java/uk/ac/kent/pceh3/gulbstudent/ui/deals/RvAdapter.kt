@@ -3,8 +3,8 @@ package uk.ac.kent.pceh3.gulbstudent.ui
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.support.v4.content.ContextCompat.getSystemService
-import android.support.v7.widget.RecyclerView
+import androidx.core.content.ContextCompat.getSystemService
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup

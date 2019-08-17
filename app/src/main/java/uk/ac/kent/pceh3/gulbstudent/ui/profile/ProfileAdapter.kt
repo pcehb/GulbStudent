@@ -7,7 +7,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,11 +40,11 @@ class ProfileAdapter (var BookmarkedList: List<Bookmarks>?) : RecyclerView.Adapt
         builder.setMessage("Are you want to remove $title from your bookmarks?")
 
         // Set a positive button and its click listener on alert dialog
-        builder.setPositiveButton("YES"){dialog, which ->
+        builder.setPositiveButton("YES"){ _, _ ->
             val alarmManager = activity!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val receiver = ComponentName(activity, AlarmBroadcastReceiver::class.java)
 
-            activity!!.packageManager.setComponentEnabledSetting(
+            activity.packageManager.setComponentEnabledSetting(
                     receiver,
                     PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
                     PackageManager.DONT_KILL_APP

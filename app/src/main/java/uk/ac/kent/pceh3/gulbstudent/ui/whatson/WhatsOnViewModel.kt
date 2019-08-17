@@ -1,7 +1,7 @@
 package uk.ac.kent.pceh3.gulbstudent.ui
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.ViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseUser
 import uk.ac.kent.pceh3.gulbstudent.model.Bookmarks
 import uk.ac.kent.pceh3.gulbstudent.model.WhatsOn

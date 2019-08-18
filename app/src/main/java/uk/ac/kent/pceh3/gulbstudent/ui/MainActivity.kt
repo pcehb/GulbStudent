@@ -12,7 +12,6 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import com.google.android.material.navigation.NavigationView
-import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.core.view.GravityCompat
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -21,33 +20,32 @@ import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.view.*
 import android.widget.Toast
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.api.GoogleApiClient
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
-import uk.ac.kent.pceh3.gulbstudent.network.locationUpdatesBroadcastReceiver
 import uk.ac.kent.pceh3.gulbstudent.ui.MainActivityViewModel
 import uk.ac.kent.pceh3.gulbstudent.ui.login.LoginFragment
 import uk.ac.kent.pceh3.gulbstudent.ui.whatson.SuggestedFragment
 import android.view.View
 import androidx.lifecycle.Observer
 import android.content.SharedPreferences
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.*
 import com.google.android.material.tabs.TabLayout
-
+import uk.ac.kent.pceh3.gulbstudent.network.GeofenceBroadcastReceiver
+import uk.ac.kent.pceh3.gulbstudent.network.GeofenceErrorMessages
 @Suppress("DEPRECATION")
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks,
-GoogleApiClient.OnConnectionFailedListener {
-    private lateinit var viewpageradapter: ViewPagerAdapter //Declare PagerAdapter
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener{
+    lateinit var geofence : Geofence
     private lateinit var auth: FirebaseAuth
-    private val REQUEST_PERMISSION_LOCATION = 10
-    private val UPDATE_INTERVAL = 10 * 1000
-    private val FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2
-    private val MAX_WAIT_TIME = UPDATE_INTERVAL * 3
-    private lateinit var mLocationRequest : LocationRequest
 
-    private var mGoogleApiClient: GoogleApiClient? = null
+    val geofencePendingIntent: PendingIntent by lazy {
+        val intent = Intent(applicationContext, GeofenceBroadcastReceiver::class.java)
+        PendingIntent.getBroadcast(
+                applicationContext,
+                0,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +54,6 @@ GoogleApiClient.OnConnectionFailedListener {
 
         toolBar.setTitle(R.string.app_name)
         toolBar.setTitleTextColor(getColor(R.color.colorAccent))
-
 
         auth = FirebaseAuth.getInstance()
 
@@ -95,8 +92,6 @@ GoogleApiClient.OnConnectionFailedListener {
             }
         })
 
-
-
         val extras = intent.getStringExtra("openingFragment")
         if (extras != null&&extras.equals("suggested")) {
             println("SUGGESTED")
@@ -123,11 +118,8 @@ GoogleApiClient.OnConnectionFailedListener {
             buildAlertMessageNoGps()
         }
 
-        if (checkPermissionForLocation(this)) {
-            buildGoogleApiClient()
-        }
-
         val sharedPref: SharedPreferences = getSharedPreferences("DEAL_SIZE", 0)
+        val sharedPrefBlog: SharedPreferences = getSharedPreferences("BLOG_SIZE", 0)
 
         val viewModel = ViewModelProviders.of(this).get(MainActivityViewModel::class.java)
 
@@ -141,7 +133,7 @@ GoogleApiClient.OnConnectionFailedListener {
                 }
                 sharedPref.getInt("DEAL_SIZE", 0) < t!! -> {
                     println("BIGGER DEAL SIZE = $t")
-                    tab_layout.getTabAt(2)!!.orCreateBadge.backgroundColor = getColor(R.color.colorAccent)
+                    tab_layout.getTabAt(1)!!.orCreateBadge.backgroundColor = getColor(R.color.colorAccent)
                     tab_layout.getTabAt(1)!!.orCreateBadge.isVisible = true
                     tab_layout.getTabAt(1)!!.badge!!.number = (t - sharedPref.getInt("DEAL_SIZE", 0))
                     val editor = sharedPref.edit()
@@ -159,30 +151,91 @@ GoogleApiClient.OnConnectionFailedListener {
 
         viewModel.getBlogSize().observe(this, Observer<Int> { t ->
             when {
-                sharedPref.getInt("BLOG_SIZE", 0) == 0 -> {
+                sharedPrefBlog.getInt("BLOG_SIZE", 0) == 0 -> {
                     println("INITIAL BLOG SIZE = $t")
-                    val editor = sharedPref.edit()
+                    val editor = sharedPrefBlog.edit()
                     editor.putInt("BLOG_SIZE", t!!)
                     editor.apply()
                 }
-                sharedPref.getInt("BLOG_SIZE", 0) < t!! -> {
+                sharedPrefBlog.getInt("BLOG_SIZE", 0) < t!! -> {
                     println("BIGGER BLOG SIZE = $t")
                     tab_layout.getTabAt(2)!!.orCreateBadge.backgroundColor = getColor(R.color.colorAccent)
                     tab_layout.getTabAt(2)!!.orCreateBadge.isVisible = true
-                    tab_layout.getTabAt(2)!!.badge!!.number = (t - sharedPref.getInt("BLOG_SIZE", 0))
-                    val editor = sharedPref.edit()
+                    tab_layout.getTabAt(2)!!.badge!!.number = (t - sharedPrefBlog.getInt("BLOG_SIZE", 0))
+                    val editor = sharedPrefBlog.edit()
                     editor.putInt("BLOG_SIZE", t)
                     editor.apply()
                 }
                 else -> {
                     println("SMALLER/SAME BLOG SIZE = $t")
-                    val editor = sharedPref.edit()
+                    val editor = sharedPrefBlog.edit()
                     editor.putInt("BLOG_SIZE", t)
                     editor.apply()
                 }
             }
         })
+        val sharedPrefGeo: SharedPreferences = getSharedPreferences("GEOFENCE", 0)
 
+        if (!sharedPrefGeo.getBoolean("GEOFENCE", false)) {
+            add(success = {
+                println("GEOFENCE SUCCESS")
+                Toast.makeText(this, "SUCCESS", Toast.LENGTH_LONG).show()
+                val editor = sharedPrefGeo.edit()
+                editor.putBoolean("GEOFENCE", true)
+                editor.apply()
+            },
+                    failure = {
+                        println("GEOFENCE FAILURE")
+                        Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+                    })
+        }
+
+    }
+
+    private fun add(success: () -> Unit,
+                    failure: (error: String) -> Unit) {
+        // 1
+
+        var geofencingClient: GeofencingClient = LocationServices.getGeofencingClient(applicationContext)
+
+        geofence = Geofence.Builder()
+                // Set the request ID of the geofence. This is a string to identify this
+                // geofence.
+                .setRequestId("gulbenkian")
+                // Set the circular region of this geofence.
+                .setCircularRegion(
+                        51.298564,
+                        1.069307,
+                        400.toFloat()
+                )
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                .build()
+
+        if (geofence != null
+                && ContextCompat.checkSelfPermission(
+                        applicationContext,
+                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // 2
+            geofencingClient
+                    .addGeofences(buildGeofencingRequest(geofence), geofencePendingIntent)
+                    .addOnSuccessListener {
+                        success()
+                    }
+                    .addOnFailureListener {
+                        // 4
+                        failure(GeofenceErrorMessages.getErrorString(applicationContext, it))
+                    }
+        }
+    }
+
+
+    private fun buildGeofencingRequest(geofence: Geofence): GeofencingRequest {
+        println("GEOFENCE BUILD REQUEST")
+        return GeofencingRequest.Builder()
+                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+                .addGeofences(listOf(geofence))
+                .build()
     }
 
     override fun onStart() {
@@ -316,85 +369,5 @@ GoogleApiClient.OnConnectionFailedListener {
         alert.show()
 
 
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (requestCode == REQUEST_PERMISSION_LOCATION) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-            } else {
-                Toast.makeText(this@MainActivity, "Permission Denied", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    private fun checkPermissionForLocation(context: Context): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-
-            if (context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) ==
-                    PackageManager.PERMISSION_GRANTED) {
-                true
-            } else {
-                // Show the permission request
-                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                        REQUEST_PERMISSION_LOCATION)
-                false
-            }
-        } else {
-            true
-        }
-    }
-
-    private fun buildGoogleApiClient() {
-        if (mGoogleApiClient != null) {
-            return;
-        }
-        mGoogleApiClient = GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .enableAutoManage(this, this)
-                .addApi(LocationServices.API)
-                .build()
-        createLocationRequest()
-    }
-
-    private fun createLocationRequest() {
-        mLocationRequest = LocationRequest()
-
-        mLocationRequest.setInterval(UPDATE_INTERVAL.toLong())
-
-        // Sets the fastest rate for active location updates. This interval is exact, and your
-        // application will never receive updates faster than this value.
-        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL.toLong())
-        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-
-        // Sets the maximum time when batched location updates are delivered. Updates may be
-        // delivered sooner than this interval.
-        mLocationRequest.setMaxWaitTime(MAX_WAIT_TIME.toLong())
-    }
-
-    override fun onConnectionSuspended(p0: Int) {
-        val text = "Connection suspended"
-        Log.w("LOCATION", "$text: Error code: $p0")
-    }
-
-    override fun onConnectionFailed(p0: ConnectionResult) {
-        val text = "Exception while connecting to Google Play services"
-        Log.w("LOCATION", text + ": " + p0.errorMessage)
-    }
-
-    override fun onConnected(p0: Bundle?) {
-        Log.i("LOCATION", "GoogleApiClient connected")
-        try {
-            Log.i("LOCATION", "Starting location updates")
-            var updatesIntent = Intent(this, locationUpdatesBroadcastReceiver::class.java)
-            updatesIntent.action = "com.google.android.gms.location.sample.backgroundlocationupdates.action.PROCESS_UPDATES"
-            var pendingUpdatesIntent = PendingIntent.getBroadcast(this, 0, updatesIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-
-            LocationServices.FusedLocationApi.requestLocationUpdates(
-                    mGoogleApiClient, mLocationRequest, pendingUpdatesIntent)
-        } catch (e: SecurityException) {
-
-            e.printStackTrace()
-        }
     }
 }

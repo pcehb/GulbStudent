@@ -1,8 +1,16 @@
 package uk.ac.kent.pceh3.gulbstudent.network
 
+import android.Manifest
 import android.app.*
 import android.content.*
+import android.content.pm.PackageManager
 import android.util.Log
+import android.widget.Toast
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.Geofence
+import com.google.android.gms.location.GeofencingClient
+import com.google.android.gms.location.GeofencingRequest
+import com.google.android.gms.location.LocationServices
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -16,7 +24,10 @@ class BootReceiver : BroadcastReceiver() {
 
         private lateinit var auth: FirebaseAuth
 
-        override fun onReceive(context: Context?, intent: Intent?) {
+    lateinit var geofence : Geofence
+
+
+    override fun onReceive(context: Context?, intent: Intent?) {
 
 
             if (intent!!.action == "android.intent.action.BOOT_COMPLETED") {
@@ -150,8 +161,73 @@ class BootReceiver : BroadcastReceiver() {
                             }
                         })
 
+                addGeo(context!!, success = {
+                    println("GEOFENCE SUCCESS")
+                    Toast.makeText(context, "SUCCESS", Toast.LENGTH_LONG).show()
+                },
+                        failure = {
+                            println("GEOFENCE FAILURE")
+                            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+                        })
+
                 return
             }
 
         }
+
+    fun addGeo(context: Context, success: () -> Unit,
+               failure: (error: String) -> Unit) {
+
+        val geofencePendingIntent: PendingIntent by lazy {
+            val intent = Intent(context, GeofenceBroadcastReceiver::class.java)
+            PendingIntent.getBroadcast(
+                    context,
+                    0,
+                    intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT)
+        }
+
+
+        // 1
+
+        var geofencingClient: GeofencingClient = LocationServices.getGeofencingClient(context!!)
+
+        geofence = Geofence.Builder()
+                // Set the request ID of the geofence. This is a string to identify this
+                // geofence.
+                .setRequestId("gulbenkian")
+                // Set the circular region of this geofence.
+                .setCircularRegion(
+                        51.298564,
+                        1.069307,
+                        400.toFloat()
+                )
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                .build()
+
+        if (geofence != null
+                && ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // 2
+            geofencingClient
+                    .addGeofences(buildGeofencingRequest(geofence), geofencePendingIntent)
+                    .addOnSuccessListener {
+                        success()
+                    }
+                    .addOnFailureListener {
+                        // 4
+                        failure(GeofenceErrorMessages.getErrorString(context, it))
+                    }
+        }
+    }
+
+    fun buildGeofencingRequest(geofence: Geofence): GeofencingRequest {
+        println("GEOFENCE BUILD REQUEST")
+        return GeofencingRequest.Builder()
+                .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
+                .addGeofences(listOf(geofence))
+                .build()
+    }
     }

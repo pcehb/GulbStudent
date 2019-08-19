@@ -4,18 +4,15 @@ import android.Manifest
 import android.app.PendingIntent
 import androidx.lifecycle.ViewModelProviders
 import android.content.ContentValues
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.LocationManager
-import android.os.Build
+import com.google.android.gms.location.LocationServices
 import android.os.Bundle
 import android.provider.Settings
 import com.google.android.material.navigation.NavigationView
 import androidx.fragment.app.Fragment
 import androidx.core.view.GravityCompat
 import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.util.Log
 import android.view.*
@@ -44,16 +41,14 @@ import uk.ac.kent.pceh3.gulbstudent.network.GeofenceErrorMessages
 import uk.ac.kent.pceh3.gulbstudent.network.LocationResultHelper
 import uk.ac.kent.pceh3.gulbstudent.network.LocationUpdatesBroadcastReceiver
 
-@Suppress("DEPRECATION")
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, SharedPreferences.OnSharedPreferenceChangeListener {
 
-
     lateinit var geofence : Geofence
     private lateinit var auth: FirebaseAuth
-
     private var mLocationRequest: LocationRequest? = null
     private var mGoogleApiClient: GoogleApiClient? = null
+    private var locationProviderClient: FusedLocationProviderClient? = null
 
 
     companion object {
@@ -140,16 +135,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     .commit()
         }
 
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            buildAlertMessageNoGps()
-        }
-
         if (!checkPermissions()) {
             requestPermissions()
         }
 
+
         buildGoogleApiClient()
+
+        locationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         val sharedPref: SharedPreferences = getSharedPreferences("DEAL_SIZE", 0)
         val sharedPrefBlog: SharedPreferences = getSharedPreferences("BLOG_SIZE", 0)
@@ -212,7 +205,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         if (!sharedPrefGeo.getBoolean("GEOFENCE", false)) {
             add(success = {
                 println("GEOFENCE SUCCESS")
-                Toast.makeText(this, "SUCCESS", Toast.LENGTH_LONG).show()
                 val editor = sharedPrefGeo.edit()
                 editor.putBoolean("GEOFENCE", true)
                 editor.apply()
@@ -386,25 +378,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
-
-    private fun buildAlertMessageNoGps() {
-
-        val builder = AlertDialog.Builder(this)
-        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
-                .setCancelable(false)
-                .setPositiveButton("Yes") { _, _ ->
-                    startActivityForResult(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                            , 11)
-                }
-                .setNegativeButton("No") { dialog, _ ->
-                    dialog.cancel()
-                    finish()
-                }
-        val alert: AlertDialog = builder.create()
-        alert.show()
-
-
-    }
+//
+//    private fun buildAlertMessageNoGps() {
+//
+//        val builder = AlertDialog.Builder(this)
+//        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
+//                .setCancelable(false)
+//                .setPositiveButton("Yes") { _, _ ->
+//                    startActivityForResult(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+//                            , 11)
+//                }
+//                .setNegativeButton("No") { dialog, _ ->
+//                    dialog.cancel()
+//                    finish()
+//                }
+//        val alert: AlertDialog = builder.create()
+//        alert.show()
+//
+//
+//    }
 
     private fun createLocationRequest() {
         mLocationRequest = LocationRequest()
@@ -421,8 +413,10 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         mLocationRequest!!.maxWaitTime = MAX_WAIT_TIME
     }
 
-    private fun buildGoogleApiClient() {
+
+    fun buildGoogleApiClient() {
         if (mGoogleApiClient != null) {
+            createLocationRequest()
             return
         }
         mGoogleApiClient = GoogleApiClient.Builder(this)
@@ -447,6 +441,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         )
         return permissionState == PackageManager.PERMISSION_GRANTED
     }
+
 
     private fun requestPermissions() {
         val shouldProvideRationale = ActivityCompat.shouldShowRequestPermissionRationale(
@@ -533,6 +528,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+
     override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, s: String) {
         if (s == LocationResultHelper.KEY_LOCATION_UPDATES_RESULT) {
             println(LocationResultHelper.getSavedLocationResult(this))
@@ -554,9 +550,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         try {
             Log.i(TAG, "Starting location updates")
-            LocationServices.FusedLocationApi.requestLocationUpdates(
-                    mGoogleApiClient, mLocationRequest, getPendingIntent()
-            )
+
+            var updatesIntent = Intent(this, LocationUpdatesBroadcastReceiver::class.java)
+            updatesIntent.action = "uk.ac.kent.pceh3.gulbstudent.network.action.PROCESS_UPDATES"
+            var pendingUpdatesIntent = PendingIntent.getBroadcast(this, 0, updatesIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+//            LocationServices.FusedLocationApi.requestLocationUpdates(
+//                    mGoogleApiClient, mLocationRequest, pendingUpdatesIntent)
+
+
+//           var fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+            locationProviderClient?.requestLocationUpdates(mLocationRequest, getPendingIntent())
 
             if (LocationResultHelper.getSavedLocationResult(this) == null) {
                 println("Saved location result NULL")

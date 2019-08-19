@@ -3,6 +3,7 @@ package uk.ac.kent.pceh3.gulbstudent.network
 import android.app.*
 import android.content.Intent
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.util.Log
 import android.widget.Toast
@@ -47,43 +48,51 @@ class GeofenceTransitionsJobIntentService : JobIntentService() {
         println("GEOFENCE EVENT")
         if (event.geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
 
-            val channelID = "uk.ac.kent.pceh3.gulbstudent"
-
-            notificationManager =
-                    applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-            createNotificationChannel(
-                    "uk.ac.kent.pceh3.gulbstudent",
-                    "GulbStudent",
-                    "Show notifications")
 
             val current = LocalDateTime.now()
             val formatter = DateTimeFormatter.BASIC_ISO_DATE
             val formattedStartDate = current.format(formatter)
 
 
-            val resultIntent = Intent(applicationContext, MainActivity::class.java)
-            resultIntent.putExtra("openingFragment", "suggested")
-            resultIntent.putExtra("categorySearch", "")
-            resultIntent.putExtra("startDate", formattedStartDate)
-            resultIntent.putExtra("endDate", formattedStartDate)
-            val pendingIntent = PendingIntent.getActivity(
-                    applicationContext,
-                    0,
-                    resultIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT
-            )
+            val sharedPref: SharedPreferences = getSharedPreferences("GULB_VISIT", 0)
 
-            val notification = Notification.Builder(applicationContext,
-                    channelID)
-                    .setContentTitle("GulbStudent")
-                    .setContentText("You're near The Gulbenkian. See whats happening tonight!")
-                    .setSmallIcon(android.R.drawable.ic_dialog_info)
-                    .setContentIntent(pendingIntent)
-                    .setChannelId(channelID)
-                    .setAutoCancel(true)
-                    .build()
-            notificationManager?.notify(1, notification)
+            if (sharedPref.getString("GULB_VISIT", "") != formattedStartDate)
+            {
+                val editor = sharedPref.edit()
+                editor.putString("GULB_VISIT", formattedStartDate)
+                editor.apply()
+
+                val channelID = "uk.ac.kent.pceh3.gulbstudent"
+
+                notificationManager =
+                        applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+                createNotificationChannel(
+                        "uk.ac.kent.pceh3.gulbstudent",
+                        "GulbStudent",
+                        "Show notifications")
+
+
+                val resultIntent = Intent(applicationContext, MainActivity::class.java)
+
+                val pendingIntent = PendingIntent.getActivity(
+                        applicationContext,
+                        0,
+                        resultIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                )
+
+                val notification = Notification.Builder(applicationContext,
+                        channelID)
+                        .setContentTitle("GulbStudent")
+                        .setContentText("You're near The Gulbenkian. See whats happening tonight!")
+                        .setSmallIcon(android.R.drawable.ic_dialog_info)
+                        .setContentIntent(pendingIntent)
+                        .setChannelId(channelID)
+                        .setAutoCancel(true)
+                        .build()
+                notificationManager?.notify(1, notification)
+            }
 
             println("GEOFENCE ENTER GULB")
 

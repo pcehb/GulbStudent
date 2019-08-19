@@ -6,6 +6,7 @@ import android.content.Intent
 import android.util.Log
 import com.google.android.gms.location.LocationResult
 
+
 class LocationUpdatesBroadcastReceiver: BroadcastReceiver() {
     companion object{
         val TAG = "LUBroadcastReceiver"

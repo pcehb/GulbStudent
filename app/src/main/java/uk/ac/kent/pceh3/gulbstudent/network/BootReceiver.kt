@@ -230,4 +230,4 @@ class BootReceiver : BroadcastReceiver() {
                 .addGeofences(listOf(geofence))
                 .build()
     }
-    }
+}

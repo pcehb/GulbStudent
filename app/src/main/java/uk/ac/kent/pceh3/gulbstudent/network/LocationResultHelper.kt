@@ -1,15 +1,19 @@
 package uk.ac.kent.pceh3.gulbstudent.network
 
-import android.app.*
 import uk.ac.kent.pceh3.gulbstudent.MainActivity
-import android.content.Intent
-import android.preference.PreferenceManager
 import android.content.Context
-import android.graphics.Color
 import android.location.Location
-import uk.ac.kent.pceh3.gulbstudent.R
+import android.app.NotificationManager
+import android.app.Notification
+import android.app.NotificationChannel
 import java.text.DateFormat
 import java.util.*
+import android.preference.PreferenceManager
+import android.app.PendingIntent
+import android.app.TaskStackBuilder
+import android.content.Intent
+import android.graphics.Color
+import uk.ac.kent.pceh3.gulbstudent.R
 
 
 class LocationResultHelper (context: Context, locations: List<Location>) {
@@ -20,7 +24,7 @@ class LocationResultHelper (context: Context, locations: List<Location>) {
 
     companion object {
         val KEY_LOCATION_UPDATES_RESULT: String? = "location-update-result"
-        val PRIMARY_CHANNEL: String? = "default"
+        val PRIMARY_CHANNEL: String? = "uk.ac.kent.pceh3.gulbstudent"
 
         fun getSavedLocationResult(context: Context): String? {
             return PreferenceManager.getDefaultSharedPreferences(context)
@@ -29,10 +33,14 @@ class LocationResultHelper (context: Context, locations: List<Location>) {
     }
 
     init {
-        val channel = NotificationChannel(PRIMARY_CHANNEL, context.resources.getString(R.string.default_channel), NotificationManager.IMPORTANCE_DEFAULT)
+
+        val channel = NotificationChannel(
+                PRIMARY_CHANNEL,
+                context.getString(R.string.default_channel), NotificationManager.IMPORTANCE_DEFAULT
+        )
         channel.lightColor = Color.GREEN
         channel.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
-        getNotificationManager()?.createNotificationChannel(channel)
+        mNotificationManager?.createNotificationChannel(channel)
     }
 
     private fun getLocationResultTitle(): String {

@@ -190,7 +190,7 @@ class BootReceiver : BroadcastReceiver() {
 
         // 1
 
-        var geofencingClient: GeofencingClient = LocationServices.getGeofencingClient(context!!)
+        var geofencingClient: GeofencingClient = LocationServices.getGeofencingClient(context)
 
         geofence = Geofence.Builder()
                 // Set the request ID of the geofence. This is a string to identify this

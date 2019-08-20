@@ -60,8 +60,9 @@ class FirebaseRepository{
                     fire.description = description1 //set
                     fire.photoURL = photoURL1 //set
                     fireList.add(fire)
-                    dealList.value = fireList
                 }
+                fireList.reverse()
+                dealList.value = fireList
 
             }
 
@@ -134,6 +135,8 @@ class FirebaseRepository{
                     fireList.add(fire)
                     blogList.value = fireList
                 }
+                fireList.reverse()
+                blogList.value = fireList
 
             }
 

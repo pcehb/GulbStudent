@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModelProviders
 import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.GeofencingClient
 import android.os.Bundle
 import android.provider.Settings
 import com.google.android.material.navigation.NavigationView
@@ -75,6 +75,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolBar)
+
+        geofencingClient = LocationServices.getGeofencingClient(applicationContext)
 
         toolBar.setTitle(R.string.app_name)
         toolBar.setTitleTextColor(getColor(R.color.colorAccent))
@@ -222,7 +224,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun add(success: () -> Unit,
                     failure: (error: String) -> Unit) {
         // 1
-        geofencingClient = LocationServices.getGeofencingClient(this)
 
         geofence = Geofence.Builder()
                 // Set the request ID of the geofence. This is a string to identify this

@@ -108,6 +108,6 @@ class LocationResultHelper (context: Context, locations: List<Location>) {
                 .setAutoCancel(true)
                 .setContentIntent(notificationPendingIntent)
 
-        getNotificationManager()?.notify(0, notificationBuilder.build())
+//        getNotificationManager()?.notify(0, notificationBuilder.build())
     }
 }

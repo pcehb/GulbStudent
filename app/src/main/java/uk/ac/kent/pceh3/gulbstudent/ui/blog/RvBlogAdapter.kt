@@ -1,18 +1,12 @@
 package uk.ac.kent.pceh3.gulbstudent.ui
 
-import android.app.Activity
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import kotlinx.android.synthetic.main.fragment_blog_article.view.*
-import uk.ac.kent.pceh3.gulbstudent.MainActivity
 import uk.ac.kent.pceh3.gulbstudent.R
-import uk.ac.kent.pceh3.gulbstudent.ViewPagerAdapter
 import uk.ac.kent.pceh3.gulbstudent.model.Blog
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
@@ -40,13 +34,13 @@ class RvBlogAdapter(val blogList: List<Blog>?) : RecyclerView.Adapter<RvBlogAdap
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val article = itemView.findViewById<TextView>(R.id.article)
+        val article = itemView.findViewById<TextView>(R.id.description)
         val date = itemView.findViewById<TextView>(R.id.date)
         val title = itemView.findViewById<TextView>(R.id.title)
     }
 
     override fun onClick(itemView: View) {
-        val article = itemView.findViewById<TextView>(R.id.article)
+        val article = itemView.findViewById<TextView>(R.id.description)
         val date = itemView.findViewById<TextView>(R.id.date)
         val title = itemView.findViewById<TextView>(R.id.title)
 

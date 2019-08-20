@@ -11,10 +11,18 @@
         android:orientation="vertical"
         android:padding="10dp">
 
+        <ImageView
+            android:id="@+id/myImageView"
+            android:layout_width="match_parent"
+            android:layout_height="140dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/about_card" />
+
         <TextView
             android:id="@+id/description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingTop="8dp"
             android:text="Deal description" />
 
         <LinearLayout
@@ -39,8 +47,9 @@
                 android:layout_width="100dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:backgroundTint="@color/colorAccent"
+                android:backgroundTint="@android:color/transparent"
                 android:scaleType="fitCenter"
+                android:tint="@color/colorAccent"
                 app:srcCompat="@drawable/icons8_price_tag_48" />
         </LinearLayout>
 

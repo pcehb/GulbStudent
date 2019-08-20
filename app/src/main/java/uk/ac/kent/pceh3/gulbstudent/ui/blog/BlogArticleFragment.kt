@@ -2,12 +2,9 @@ package uk.ac.kent.pceh3.gulbstudent.ui
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import androidx.core.content.res.ResourcesCompat.getColor
 import android.view.LayoutInflater
-import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toolbar
 import kotlinx.android.synthetic.main.fragment_blog_article.*
 import uk.ac.kent.pceh3.gulbstudent.R
 
@@ -33,7 +30,7 @@ class BlogArticleFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        article?.text = this.arguments?.getString("article")
+        description?.text = this.arguments?.getString("article")
         date?.text = this.arguments?.getString("date")
         title?.text = this.arguments?.getString("title")
 

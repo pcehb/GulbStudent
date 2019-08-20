@@ -6,14 +6,16 @@ package uk.ac.kent.pceh3.gulbstudent.model
 class Deal{
     var code: String?
     var description : String?
+    var photoURL : String?
 
 
-    constructor():this("","") {
+    constructor():this("","", "") {
 
     }
 
-    constructor(code: String?, description: String?) {
+    constructor(code: String?, description: String?, photoURL: String?) {
         this.code = code
         this.description = description
+        this.photoURL = photoURL
     }
 }

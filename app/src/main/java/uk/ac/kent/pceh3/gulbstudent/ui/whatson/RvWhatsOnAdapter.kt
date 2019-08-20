@@ -49,7 +49,7 @@ class RvWhatsOnAdapter(var WhatsOnList: List<WhatsOn>?) : RecyclerView.Adapter<R
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val article = itemView.findViewById<TextView>(R.id.article)
+        val article = itemView.findViewById<TextView>(R.id.description)
         val date = itemView.findViewById<TextView>(R.id.date)
         val title = itemView.findViewById<TextView>(R.id.title)
         val image = itemView.findViewById<ImageView>(R.id.myImageView)

@@ -3,13 +3,14 @@ package uk.ac.kent.pceh3.gulbstudent.ui
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
+import com.squareup.picasso.Picasso
 import uk.ac.kent.pceh3.gulbstudent.R
 import uk.ac.kent.pceh3.gulbstudent.model.Deal
 
@@ -27,6 +28,10 @@ class RvAdapter(val dealList: List<Deal>?) : RecyclerView.Adapter<RvAdapter.View
     override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
         p0.code?.text = dealList!![p1].code
         p0.description?.text = dealList[p1].description
+        Picasso.get()
+                .load(dealList[p1].photoURL)
+                .placeholder(R.drawable.logo)
+                .into(p0.photo)
 
         p0.copy.setOnClickListener { view ->
             val clipboard = view.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -38,5 +43,6 @@ class RvAdapter(val dealList: List<Deal>?) : RecyclerView.Adapter<RvAdapter.View
         val code = itemView.findViewById<TextView>(R.id.code)
         val description = itemView.findViewById<TextView>(R.id.description)
         val copy = itemView.findViewById<ImageButton>(R.id.imageButton)
+        val photo = itemView.findViewById<ImageView>(R.id.myImageView)
     }
 }

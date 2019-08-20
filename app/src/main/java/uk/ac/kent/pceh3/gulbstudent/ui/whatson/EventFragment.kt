@@ -208,7 +208,7 @@ class EventFragment : Fragment() {
                             set(SECOND, 0)
                             set(YEAR, year)
                             set(MONTH, month)
-                            set(DATE, 9)
+                            set(DATE, day)
                         }.timeInMillis,
                         bookmarkIntent
                 )
@@ -225,6 +225,8 @@ class EventFragment : Fragment() {
                 database.child("date").setValue(day)
                 database.child("index").setValue(indexUrl)
                 database.child("id").setValue(id)
+                database.child("photoURL").setValue(event.imageUrl)
+                database.child("description").setValue(event.excerpt)
 
                 bookmarked = true
             }

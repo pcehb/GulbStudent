@@ -54,9 +54,11 @@ class FirebaseRepository{
 
                     val code1 = firevalue!!.code
                     val description1 = firevalue.description
+                    val photoURL1 = firevalue.photoURL
 
                     fire.code = code1 //set
                     fire.description = description1 //set
+                    fire.photoURL = photoURL1 //set
                     fireList.add(fire)
                     dealList.value = fireList
                 }
@@ -198,6 +200,9 @@ class FirebaseRepository{
                     val year1 = firevalue.year
                     val index1 = firevalue.index
                     val id1 = firevalue.id
+                    val photoURL = firevalue.photoURL
+                    val description = firevalue.description
+
 
                     fire.title = title1 //set
                     fire.date = date1 //set
@@ -205,6 +210,8 @@ class FirebaseRepository{
                     fire.year = year1 //set
                     fire.index = index1 //set
                     fire.id = id1 //set
+                    fire.photoURL = photoURL
+                    fire.description = description
                     fireList.add(fire)
                     bookmarksList.value = fireList
                 }

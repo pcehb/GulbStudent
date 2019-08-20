@@ -41,33 +41,35 @@ import uk.ac.kent.pceh3.gulbstudent.network.GeofenceErrorMessages
 import uk.ac.kent.pceh3.gulbstudent.network.LocationResultHelper
 import uk.ac.kent.pceh3.gulbstudent.network.LocationUpdatesBroadcastReceiver
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, SharedPreferences.OnSharedPreferenceChangeListener {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener
 
+//        , GoogleApiClient.ConnectionCallbacks,
+//        GoogleApiClient.OnConnectionFailedListener, SharedPreferences.OnSharedPreferenceChangeListener
+
+{
+    lateinit var geofencingClient: GeofencingClient
     lateinit var geofence : Geofence
     private lateinit var auth: FirebaseAuth
-    private var mLocationRequest: LocationRequest? = null
-    private var mGoogleApiClient: GoogleApiClient? = null
-    private var locationProviderClient: FusedLocationProviderClient? = null
+//    private var mLocationRequest: LocationRequest? = null
+//    private var mGoogleApiClient: GoogleApiClient? = null
+//    private var locationProviderClient: FusedLocationProviderClient? = null
 
 
-    companion object {
-        private val TAG = MainActivity::class.java.simpleName
-        private val REQUEST_PERMISSIONS_REQUEST_CODE = 34
-        private val UPDATE_INTERVAL = (10 * 1000).toLong()
-        private val FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2
-        private val MAX_WAIT_TIME = UPDATE_INTERVAL * 3
+//    companion object {
+//        private val TAG = MainActivity::class.java.simpleName
+//        private val REQUEST_PERMISSIONS_REQUEST_CODE = 34
+//        private val UPDATE_INTERVAL = (10 * 1000).toLong()
+//        private val FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2
+//        private val MAX_WAIT_TIME = UPDATE_INTERVAL * 3
+//    }
+
+    private val geofencePendingIntent: PendingIntent by lazy {
+        val intent = Intent(this, GeofenceBroadcastReceiver::class.java)
+        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
+        // addGeofences() and removeGeofences().
+        PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
-
-    val geofencePendingIntent: PendingIntent by lazy {
-        val intent = Intent(applicationContext, GeofenceBroadcastReceiver::class.java)
-        PendingIntent.getBroadcast(
-                applicationContext,
-                0,
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -135,14 +137,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     .commit()
         }
 
-        if (!checkPermissions()) {
-            requestPermissions()
-        }
+//        if (!checkPermissions()) {
+//            requestPermissions()
+//        }
+//
+//
+//        buildGoogleApiClient()
 
-
-        buildGoogleApiClient()
-
-        locationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+//        locationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         val sharedPref: SharedPreferences = getSharedPreferences("DEAL_SIZE", 0)
         val sharedPrefBlog: SharedPreferences = getSharedPreferences("BLOG_SIZE", 0)
@@ -220,8 +222,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private fun add(success: () -> Unit,
                     failure: (error: String) -> Unit) {
         // 1
-
-        var geofencingClient: GeofencingClient = LocationServices.getGeofencingClient(applicationContext)
+        geofencingClient = LocationServices.getGeofencingClient(this)
 
         geofence = Geofence.Builder()
                 // Set the request ID of the geofence. This is a string to identify this
@@ -233,7 +234,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         1.069307,
                         400.toFloat()
                 )
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT)
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .build()
 
@@ -279,7 +280,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     .commit()
         }
 
-        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this)
+        //PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this)
 
     }
 
@@ -398,178 +399,178 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //
 //    }
 
-    private fun createLocationRequest() {
-        mLocationRequest = LocationRequest()
-
-        mLocationRequest!!.interval = UPDATE_INTERVAL
-
-        // Sets the fastest rate for active location updates. This interval is exact, and your
-        // application will never receive updates faster than this value.
-        mLocationRequest!!.fastestInterval = FASTEST_UPDATE_INTERVAL
-        mLocationRequest!!.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-
-        // Sets the maximum time when batched location updates are delivered. Updates may be
-        // delivered sooner than this interval.
-        mLocationRequest!!.maxWaitTime = MAX_WAIT_TIME
-    }
-
-
-    fun buildGoogleApiClient() {
-        if (mGoogleApiClient != null) {
-            createLocationRequest()
-            return
-        }
-        mGoogleApiClient = GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .enableAutoManage(this, this)
-                .addApi(LocationServices.API)
-                .build()
-        createLocationRequest()
-    }
+//    private fun createLocationRequest() {
+//        mLocationRequest = LocationRequest()
+//
+//        mLocationRequest!!.interval = UPDATE_INTERVAL
+//
+//        // Sets the fastest rate for active location updates. This interval is exact, and your
+//        // application will never receive updates faster than this value.
+//        mLocationRequest!!.fastestInterval = FASTEST_UPDATE_INTERVAL
+//        mLocationRequest!!.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+//
+//        // Sets the maximum time when batched location updates are delivered. Updates may be
+//        // delivered sooner than this interval.
+//        mLocationRequest!!.maxWaitTime = MAX_WAIT_TIME
+//    }
 
 
-    fun getPendingIntent(): PendingIntent {
-        val intent = Intent(this, LocationUpdatesBroadcastReceiver::class.java)
-        intent.action = LocationUpdatesBroadcastReceiver.ACTION_PROCESS_UPDATES
-        return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-    }
+//    fun buildGoogleApiClient() {
+//        if (mGoogleApiClient != null) {
+//            createLocationRequest()
+//            return
+//        }
+//        mGoogleApiClient = GoogleApiClient.Builder(this)
+//                .addConnectionCallbacks(this)
+//                .enableAutoManage(this, this)
+//                .addApi(LocationServices.API)
+//                .build()
+//        createLocationRequest()
+//    }
 
-    fun checkPermissions(): Boolean {
-        val permissionState: Int = ActivityCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-        )
-        return permissionState == PackageManager.PERMISSION_GRANTED
-    }
-
-
-    private fun requestPermissions() {
-        val shouldProvideRationale = ActivityCompat.shouldShowRequestPermissionRationale(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-        )
-
-        // Provide an additional rationale to the user. This would happen if the user denied the
-        // request previously, but didn't check the "Don't ask again" checkbox.
-        if (shouldProvideRationale) {
-            Log.i(TAG, "Displaying permission rationale to provide additional context.")
-            Snackbar.make(
-                    findViewById(R.id.container),
-                    R.string.permission_rationale,
-                    Snackbar.LENGTH_INDEFINITE
-            )
-                    .setAction("OK", View.OnClickListener {
-                        // Request permission
-                        ActivityCompat.requestPermissions(
-                                this@MainActivity,
-                                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                                REQUEST_PERMISSIONS_REQUEST_CODE
-                        )
-                    })
-                    .show()
-        } else {
-            Log.i(TAG, "Requesting permission")
-            // Request permission. It's possible this can be auto answered if device policy
-            // sets the permission in a given state or the user denied the permission
-            // previously and checked "Never ask again".
-            ActivityCompat.requestPermissions(
-                    this@MainActivity,
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    REQUEST_PERMISSIONS_REQUEST_CODE
-            )
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-            requestCode: Int, @NonNull permissions: Array<String>,
-            @NonNull grantResults: IntArray
-    ) {
-        Log.i(TAG, "onRequestPermissionResult")
-        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
-            if (grantResults.isEmpty()) {
-                // If user interaction was interrupted, the permission request is cancelled and you
-                // receive empty arrays.
-                Log.i(TAG, "User interaction was cancelled.")
-            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission was granted. Kick off the process of building and connecting
-                // GoogleApiClient.
-                buildGoogleApiClient()
-            } else {
-                // Permission denied.
-
-                // Notify the user via a SnackBar that they have rejected a core permission for the
-                // app, which makes the Activity useless. In a real app, core permissions would
-                // typically be best requested during a welcome-screen flow.
-
-                // Additionally, it is important to remember that a permission might have been
-                // rejected without asking the user for permission (device policy or "Never ask
-                // again" prompts). Therefore, a user interface affordance is typically implemented
-                // when permissions are denied. Otherwise, your app could appear unresponsive to
-                // touches or interactions which have required permissions.
-                Snackbar.make(
-                        findViewById(R.id.container),
-                        R.string.permission_denied_explanation,
-                        Snackbar.LENGTH_INDEFINITE
-                )
-                        .setAction(R.string.settings) {
-                            // Build intent that displays the App settings screen.
-                            val intent = Intent()
-                            intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-                            val uri = Uri.fromParts(
-                                    "package",
-                                    BuildConfig.APPLICATION_ID, null
-                            )
-                            intent.data = uri
-                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                            startActivity(intent)
-                        }
-                        .show()
-            }
-        }
-    }
+//
+//    fun getPendingIntent(): PendingIntent {
+//        val intent = Intent(this, LocationUpdatesBroadcastReceiver::class.java)
+//        intent.action = LocationUpdatesBroadcastReceiver.ACTION_PROCESS_UPDATES
+//        return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+//    }
+//
+//    fun checkPermissions(): Boolean {
+//        val permissionState: Int = ActivityCompat.checkSelfPermission(
+//                this,
+//                Manifest.permission.ACCESS_FINE_LOCATION
+//        )
+//        return permissionState == PackageManager.PERMISSION_GRANTED
+//    }
 
 
-    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, s: String) {
-        if (s == LocationResultHelper.KEY_LOCATION_UPDATES_RESULT) {
-            println(LocationResultHelper.getSavedLocationResult(this))
-        }
-    }
+//    private fun requestPermissions() {
+//        val shouldProvideRationale = ActivityCompat.shouldShowRequestPermissionRationale(
+//                this,
+//                Manifest.permission.ACCESS_FINE_LOCATION
+//        )
+//
+//        // Provide an additional rationale to the user. This would happen if the user denied the
+//        // request previously, but didn't check the "Don't ask again" checkbox.
+//        if (shouldProvideRationale) {
+//            Log.i(TAG, "Displaying permission rationale to provide additional context.")
+//            Snackbar.make(
+//                    findViewById(R.id.container),
+//                    R.string.permission_rationale,
+//                    Snackbar.LENGTH_INDEFINITE
+//            )
+//                    .setAction("OK", View.OnClickListener {
+//                        // Request permission
+//                        ActivityCompat.requestPermissions(
+//                                this@MainActivity,
+//                                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+//                                REQUEST_PERMISSIONS_REQUEST_CODE
+//                        )
+//                    })
+//                    .show()
+//        } else {
+//            Log.i(TAG, "Requesting permission")
+//            // Request permission. It's possible this can be auto answered if device policy
+//            // sets the permission in a given state or the user denied the permission
+//            // previously and checked "Never ask again".
+//            ActivityCompat.requestPermissions(
+//                    this@MainActivity,
+//                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+//                    REQUEST_PERMISSIONS_REQUEST_CODE
+//            )
+//        }
+//    }
 
-    override fun onConnectionSuspended(p0: Int) {
-        val text = "Connection suspended"
-        Log.w("LOCATION", "$text: Error code: $p0")
-    }
+//    override fun onRequestPermissionsResult(
+//            requestCode: Int, @NonNull permissions: Array<String>,
+//            @NonNull grantResults: IntArray
+//    ) {
+//        Log.i(TAG, "onRequestPermissionResult")
+//        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
+//            if (grantResults.isEmpty()) {
+//                // If user interaction was interrupted, the permission request is cancelled and you
+//                // receive empty arrays.
+//                Log.i(TAG, "User interaction was cancelled.")
+//            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                // Permission was granted. Kick off the process of building and connecting
+//                // GoogleApiClient.
+//                buildGoogleApiClient()
+//            } else {
+//                // Permission denied.
+//
+//                // Notify the user via a SnackBar that they have rejected a core permission for the
+//                // app, which makes the Activity useless. In a real app, core permissions would
+//                // typically be best requested during a welcome-screen flow.
+//
+//                // Additionally, it is important to remember that a permission might have been
+//                // rejected without asking the user for permission (device policy or "Never ask
+//                // again" prompts). Therefore, a user interface affordance is typically implemented
+//                // when permissions are denied. Otherwise, your app could appear unresponsive to
+//                // touches or interactions which have required permissions.
+//                Snackbar.make(
+//                        findViewById(R.id.container),
+//                        R.string.permission_denied_explanation,
+//                        Snackbar.LENGTH_INDEFINITE
+//                )
+//                        .setAction(R.string.settings) {
+//                            // Build intent that displays the App settings screen.
+//                            val intent = Intent()
+//                            intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+//                            val uri = Uri.fromParts(
+//                                    "package",
+//                                    BuildConfig.APPLICATION_ID, null
+//                            )
+//                            intent.data = uri
+//                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+//                            startActivity(intent)
+//                        }
+//                        .show()
+//            }
+//        }
+//    }
 
-    override fun onConnectionFailed(p0: ConnectionResult) {
-        val text = "Exception while connecting to Google Play services"
-        Log.w("LOCATION", text + ": " + p0.errorMessage)
-    }
-
-    override fun onConnected(@Nullable bundle: Bundle?) {
-        Log.i(TAG, "GoogleApiClient connected")
-
-        try {
-            Log.i(TAG, "Starting location updates")
-
-            var updatesIntent = Intent(this, LocationUpdatesBroadcastReceiver::class.java)
-            updatesIntent.action = "uk.ac.kent.pceh3.gulbstudent.network.action.PROCESS_UPDATES"
-            var pendingUpdatesIntent = PendingIntent.getBroadcast(this, 0, updatesIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-
-//            LocationServices.FusedLocationApi.requestLocationUpdates(
-//                    mGoogleApiClient, mLocationRequest, pendingUpdatesIntent)
-
-
-//           var fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-            locationProviderClient?.requestLocationUpdates(mLocationRequest, getPendingIntent())
-
-            if (LocationResultHelper.getSavedLocationResult(this) == null) {
-                println("Saved location result NULL")
-            } else {
-
-            }
-
-        } catch (e: SecurityException) {
-            e.printStackTrace()
-        }
-    }
+//
+//    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, s: String) {
+//        if (s == LocationResultHelper.KEY_LOCATION_UPDATES_RESULT) {
+//            println(LocationResultHelper.getSavedLocationResult(this))
+//        }
+//    }
+//
+//    override fun onConnectionSuspended(p0: Int) {
+//        val text = "Connection suspended"
+//        Log.w("LOCATION", "$text: Error code: $p0")
+//    }
+//
+//    override fun onConnectionFailed(p0: ConnectionResult) {
+//        val text = "Exception while connecting to Google Play services"
+//        Log.w("LOCATION", text + ": " + p0.errorMessage)
+//    }
+//
+//    override fun onConnected(@Nullable bundle: Bundle?) {
+//        Log.i(TAG, "GoogleApiClient connected")
+//
+//        try {
+//            Log.i(TAG, "Starting location updates")
+//
+//            var updatesIntent = Intent(this, LocationUpdatesBroadcastReceiver::class.java)
+//            updatesIntent.action = "uk.ac.kent.pceh3.gulbstudent.network.action.PROCESS_UPDATES"
+//            var pendingUpdatesIntent = PendingIntent.getBroadcast(this, 0, updatesIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+//
+////            LocationServices.FusedLocationApi.requestLocationUpdates(
+////                    mGoogleApiClient, mLocationRequest, pendingUpdatesIntent)
+//
+//
+////           var fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+//            locationProviderClient?.requestLocationUpdates(mLocationRequest, getPendingIntent())
+//
+//            if (LocationResultHelper.getSavedLocationResult(this) == null) {
+//                println("Saved location result NULL")
+//            } else {
+//
+//            }
+//
+//        } catch (e: SecurityException) {
+//            e.printStackTrace()
+//        }
+//    }
 }

@@ -10,5 +10,4 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         println("GEOFENCE RECEIVED")
         GeofenceTransitionsJobIntentService.enqueueWork(context, intent)
     }
-
 }

@@ -3,14 +3,18 @@ package uk.ac.kent.pceh3.gulbstudent.ui
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.SharedPreferences
+import android.view.Gravity
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.TextView
+import android.widget.*
+import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.fragment_deals.*
+import kotlinx.android.synthetic.main.fragment_deals.view.*
+import uk.ac.kent.pceh3.gulbstudent.DealsFragment
 import uk.ac.kent.pceh3.gulbstudent.R
 import uk.ac.kent.pceh3.gulbstudent.model.Deal
 
@@ -34,9 +38,43 @@ class RvAdapter(val dealList: List<Deal>?) : RecyclerView.Adapter<RvAdapter.View
                 .into(p0.photo)
 
         p0.copy.setOnClickListener { view ->
+            val sharedPref: SharedPreferences = view.context.getSharedPreferences("CLIPBOARD", 0)
+
+            if(sharedPref.getBoolean("CLIPBOARD", true))
+            {
+
+                val layoutInflater = view.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+                val customView = layoutInflater.inflate(R.layout.deal_popup, null)
+
+                val stopPopupBtn = customView.findViewById(R.id.stop) as Button
+                val okayPopupBtn = customView.findViewById(R.id.okay) as Button
+
+                //instantiate popup window
+                val popupWindow = PopupWindow(customView, LinearLayout.LayoutParams.WRAP_CONTENT,  LinearLayout.LayoutParams.WRAP_CONTENT)
+
+                //display the popup window
+                popupWindow.showAtLocation(view.rootView, Gravity.CENTER, 0, 0)
+                popupWindow.isFocusable = true
+                popupWindow.update()
+
+                stopPopupBtn.setOnClickListener{
+                    val editor = sharedPref.edit()
+                    editor.putBoolean("CLIPBOARD", false)
+                    editor.apply()
+                    popupWindow.dismiss()
+                }
+
+                okayPopupBtn.setOnClickListener{
+                    popupWindow.dismiss()
+                }
+            }
+
+
             val clipboard = view.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip = ClipData.newPlainText("label", p0.code?.text)
             clipboard.primaryClip = clip
+
+            Snackbar.make(p0.copy, R.string.clipboard, Snackbar.LENGTH_SHORT).show()
         }
     }
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

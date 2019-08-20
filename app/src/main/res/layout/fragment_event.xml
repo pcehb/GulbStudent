@@ -29,6 +29,7 @@
                     android:id="@+id/image"
                     android:layout_width="match_parent"
                     android:layout_height="250dp"
+                    android:contentDescription="@string/event_logo"
                     android:scaleType="centerCrop"
                     android:src="@drawable/logo" />
 
@@ -36,14 +37,13 @@
                     android:id="@+id/label"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignLeft="@id/image"
+                    android:layout_alignStart="@id/image"
                     android:layout_alignTop="@id/image"
-                    android:layout_alignRight="@id/image"
+                    android:layout_alignEnd="@id/image"
                     android:layout_alignBottom="@id/image"
-                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
                     android:layout_marginBottom="8dp"
                     android:gravity="bottom"
-                    android:text="On Stage"
                     android:textAppearance="@style/TextAppearance.AppCompat"
                     android:textColor="@android:color/background_light" />
 
@@ -53,7 +53,11 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBottom="@+id/image"
                     android:layout_alignParentEnd="true"
-                    android:layout_margin="24dp"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginBottom="24dp"
+                    android:backgroundTint="@color/colorAccent"
                     android:clickable="true"
                     app:fabSize="mini"
                     app:srcCompat="@drawable/icons8_website_24" />
@@ -64,7 +68,11 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBottom="@+id/image"
                     android:layout_alignParentEnd="true"
-                    android:layout_margin="24dp"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginBottom="24dp"
+                    android:backgroundTint="@color/colorAccent"
                     android:clickable="true"
                     app:fabSize="mini"
                     app:srcCompat="@drawable/icons8_buy_24" />
@@ -75,7 +83,11 @@
                     android:layout_height="wrap_content"
                     android:layout_alignBottom="@+id/image"
                     android:layout_alignParentEnd="true"
-                    android:layout_margin="24dp"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:layout_marginBottom="24dp"
+                    android:backgroundTint="@color/colorAccent"
                     android:clickable="true"
                     app:fabSize="mini"
                     app:srcCompat="@drawable/ic_menu_share" />
@@ -88,6 +100,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
+                    android:backgroundTint="@color/colorAccent"
                     android:clickable="true"
                     app:fabSize="normal"
                     app:srcCompat="@drawable/plus" />
@@ -101,7 +114,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:text="01/01/2000"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -113,7 +125,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                android:text="Title"
                 android:textAllCaps="true"
                 android:textAppearance="@style/TextAppearance.AppCompat.Display1"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -128,7 +139,6 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
-                android:text="Article"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -138,8 +148,10 @@
                 android:id="@+id/bookmark"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
                 android:backgroundTint="@color/colorAccent"
-                android:text="Bookmark"
+                android:text="BOOKMARK"
                 android:textAllCaps="true" />
 
         </LinearLayout>

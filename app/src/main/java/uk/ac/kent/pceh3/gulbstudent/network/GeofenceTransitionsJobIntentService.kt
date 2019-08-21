@@ -40,7 +40,6 @@ class GeofenceTransitionsJobIntentService : JobIntentService() {
             Log.e(LOG_TAG, errorMessage)
             return
         }
-
         handleEvent(geofencingEvent)
     }
 

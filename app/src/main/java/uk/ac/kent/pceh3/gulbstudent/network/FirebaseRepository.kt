@@ -128,10 +128,12 @@ class FirebaseRepository{
                     val article1 = firevalue!!.article
                     val date1 = firevalue.date
                     val title1 = firevalue.title
+                    val photoURL1 = firevalue.photoURL
 
                     fire.article = article1 //set
                     fire.date = date1 //set
                     fire.title = title1 //set
+                    fire.photoURL = photoURL1 //set
                     fireList.add(fire)
                     blogList.value = fireList
                 }

@@ -78,6 +78,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         geofencingClient = LocationServices.getGeofencingClient(applicationContext)
 
+
         toolBar.setTitle(R.string.app_name)
         toolBar.setTitleTextColor(getColor(R.color.colorAccent))
 
@@ -204,6 +205,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             }
         })
+
         val sharedPrefGeo: SharedPreferences = getSharedPreferences("GEOFENCE", 0)
 
         if (!sharedPrefGeo.getBoolean("GEOFENCE", false)) {
@@ -231,8 +233,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .setRequestId("gulbenkian")
                 // Set the circular region of this geofence.
                 .setCircularRegion(
-                        51.298564,
-                        1.069307,
+                        51.298278,
+                        1.064099,
                         400.toFloat()
                 )
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT)
@@ -415,7 +417,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        mLocationRequest!!.maxWaitTime = MAX_WAIT_TIME
 //    }
 
-
 //    fun buildGoogleApiClient() {
 //        if (mGoogleApiClient != null) {
 //            createLocationRequest()
@@ -429,7 +430,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        createLocationRequest()
 //    }
 
-//
 //    fun getPendingIntent(): PendingIntent {
 //        val intent = Intent(this, LocationUpdatesBroadcastReceiver::class.java)
 //        intent.action = LocationUpdatesBroadcastReceiver.ACTION_PROCESS_UPDATES

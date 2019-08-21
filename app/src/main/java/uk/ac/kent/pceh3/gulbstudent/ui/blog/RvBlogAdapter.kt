@@ -5,10 +5,12 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import uk.ac.kent.pceh3.gulbstudent.R
 import uk.ac.kent.pceh3.gulbstudent.model.Blog
 import androidx.appcompat.app.AppCompatActivity
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -30,6 +32,11 @@ class RvBlogAdapter(val blogList: List<Blog>?) : RecyclerView.Adapter<RvBlogAdap
         p0.article?.text = blogList!![p1].article
         p0.date?.text = blogList[p1].date
         p0.title?.text = blogList[p1].title
+        Picasso.get()
+                .load(blogList[p1].photoURL)
+                .placeholder(R.drawable.logo)
+                .into(p0.photo)
+        p0.photo.tag = blogList[p1].photoURL
 
     }
 
@@ -37,12 +44,14 @@ class RvBlogAdapter(val blogList: List<Blog>?) : RecyclerView.Adapter<RvBlogAdap
         val article = itemView.findViewById<TextView>(R.id.description)
         val date = itemView.findViewById<TextView>(R.id.date)
         val title = itemView.findViewById<TextView>(R.id.title)
+        val photo = itemView.findViewById<ImageView>(R.id.myImageView)
     }
 
     override fun onClick(itemView: View) {
         val article = itemView.findViewById<TextView>(R.id.description)
         val date = itemView.findViewById<TextView>(R.id.date)
         val title = itemView.findViewById<TextView>(R.id.title)
+        val photo = itemView.findViewById<ImageView>(R.id.myImageView)
 
 
         val activity = itemView.getContext() as AppCompatActivity
@@ -56,6 +65,7 @@ class RvBlogAdapter(val blogList: List<Blog>?) : RecyclerView.Adapter<RvBlogAdap
         args.putCharSequence("title", title.text)
         args.putCharSequence("date", date.text)
         args.putCharSequence("article", article.text)
+        args.putCharSequence("photoURL", photo.tag.toString())
         newFragment.arguments = args
 
         activity.supportFragmentManager

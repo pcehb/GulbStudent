@@ -44,14 +44,14 @@ class RvBlogAdapter(val blogList: List<Blog>?) : RecyclerView.Adapter<RvBlogAdap
         val article = itemView.findViewById<TextView>(R.id.description)
         val date = itemView.findViewById<TextView>(R.id.date)
         val title = itemView.findViewById<TextView>(R.id.title)
-        val photo = itemView.findViewById<ImageView>(R.id.myImageView)
+        val photo = itemView.findViewById<ImageView>(R.id.articleImage)
     }
 
     override fun onClick(itemView: View) {
         val article = itemView.findViewById<TextView>(R.id.description)
         val date = itemView.findViewById<TextView>(R.id.date)
         val title = itemView.findViewById<TextView>(R.id.title)
-        val photo = itemView.findViewById<ImageView>(R.id.myImageView)
+        val photo = itemView.findViewById<ImageView>(R.id.articleImage)
 
 
         val activity = itemView.getContext() as AppCompatActivity

@@ -12,9 +12,6 @@ import android.view.ViewGroup
 import android.widget.*
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.fragment_deals.*
-import kotlinx.android.synthetic.main.fragment_deals.view.*
-import uk.ac.kent.pceh3.gulbstudent.DealsFragment
 import uk.ac.kent.pceh3.gulbstudent.R
 import uk.ac.kent.pceh3.gulbstudent.model.Deal
 
@@ -81,6 +78,6 @@ class RvAdapter(val dealList: List<Deal>?) : RecyclerView.Adapter<RvAdapter.View
         val code = itemView.findViewById<TextView>(R.id.code)
         val description = itemView.findViewById<TextView>(R.id.description)
         val copy = itemView.findViewById<ImageButton>(R.id.imageButton)
-        val photo = itemView.findViewById<ImageView>(R.id.myImageView)
+        val photo = itemView.findViewById<ImageView>(R.id.articleImage)
     }
 }

@@ -21,8 +21,6 @@ import uk.ac.kent.pceh3.gulbstudent.MainActivity
 import uk.ac.kent.pceh3.gulbstudent.R
 import uk.ac.kent.pceh3.gulbstudent.model.Bookmarks
 import uk.ac.kent.pceh3.gulbstudent.network.AlarmBroadcastReceiver
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 
 class ProfileAdapter (var BookmarkedList: List<Bookmarks>?) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>(), View.OnClickListener {
@@ -111,7 +109,7 @@ class ProfileAdapter (var BookmarkedList: List<Bookmarks>?) : RecyclerView.Adapt
         val title = itemView.findViewById<TextView>(R.id.title)
         val date = itemView.findViewById<TextView>(R.id.date)
         val description = itemView.findViewById<TextView>(R.id.description)
-        val photo = itemView.findViewById<ImageView>(R.id.myImageView)
+        val photo = itemView.findViewById<ImageView>(R.id.articleImage)
     }
 
 }

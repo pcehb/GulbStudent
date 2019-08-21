@@ -52,7 +52,7 @@ class RvWhatsOnAdapter(var WhatsOnList: List<WhatsOn>?) : RecyclerView.Adapter<R
         val article = itemView.findViewById<TextView>(R.id.description)
         val date = itemView.findViewById<TextView>(R.id.date)
         val title = itemView.findViewById<TextView>(R.id.title)
-        val image = itemView.findViewById<ImageView>(R.id.myImageView)
+        val image = itemView.findViewById<ImageView>(R.id.articleImage)
     }
 
     override fun onClick(itemView: View) {

@@ -48,6 +48,8 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val activity = context as AppCompatActivity
+
         loginButton.setOnClickListener {
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
@@ -61,17 +63,18 @@ class LoginFragment : Fragment() {
 
                             val user = auth.currentUser
 
+                            println("USER: " + user?.uid)
+
                             FirebaseDatabase.getInstance().reference.child("users").child(user!!.uid).child("bookmarked")
                                     .addListenerForSingleValueEvent(object : ValueEventListener {
-
                                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                                             for (snapshot: DataSnapshot in dataSnapshot.getChildren()) {
                                                 val bookmarks = snapshot.getValue(Bookmarks::class.java)
 
                                                 val bookmarkIntent = PendingIntent.getBroadcast(
-                                                        context,
+                                                        activity,
                                                         bookmarks!!.id!!,
-                                                        Intent(context, AlarmBroadcastReceiver::class.java).apply {
+                                                        Intent(activity, AlarmBroadcastReceiver::class.java).apply {
                                                             putExtra("title", bookmarks.title!!)
                                                             putExtra("url", snapshot.key)
                                                             putExtra("notificationId", bookmarks.id!!)
@@ -80,7 +83,7 @@ class LoginFragment : Fragment() {
                                                         PendingIntent.FLAG_CANCEL_CURRENT
                                                 )
 
-                                                val alarmManager = context!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                                                val alarmManager = activity.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
                                                 alarmManager.set(
                                                         AlarmManager.RTC_WAKEUP,
@@ -155,9 +158,9 @@ class LoginFragment : Fragment() {
                                             }
 
                                             val categoryIntent = PendingIntent.getBroadcast(
-                                                    context,
+                                                    activity,
                                                     0,
-                                                    Intent(context, AlarmBroadcastReceiver::class.java).apply {
+                                                    Intent(activity, AlarmBroadcastReceiver::class.java).apply {
                                                         putExtra("notificationId", 1)
                                                         putExtra("categorySearch", categorySearch)
                                                         putExtra("type", "category")
@@ -166,14 +169,29 @@ class LoginFragment : Fragment() {
                                             )
 
 
-                                            val alarmManager = context!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                                            val alarmManager = activity.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+                                            var calender = Calendar.getInstance().apply {
+                                                set(Calendar.HOUR_OF_DAY, 9)
+                                                set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+                                            }
+
+                                            val now = Calendar.getInstance()
+                                            now.set(Calendar.SECOND, 0)
+                                            now.set(Calendar.MILLISECOND, 0)
+
+                                            if (calender.before(now)) {
+                                                println("BEFORE")
+                                                //this condition is used for future reminder that means your reminder not fire for past time
+                                                calender.add(Calendar.DATE, 7)
+                                            }
+                                            else{
+                                                println("AFTER")
+                                            }
 
                                             alarmManager.setInexactRepeating(
                                                     AlarmManager.RTC_WAKEUP,
-                                                    Calendar.getInstance().apply {
-                                                        set(Calendar.HOUR_OF_DAY, 9)
-                                                        set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
-                                                    }.timeInMillis,
+                                                    calender.timeInMillis,
                                                     AlarmManager.INTERVAL_DAY * 7,
                                                     categoryIntent
                                             )
@@ -201,7 +219,7 @@ class LoginFragment : Fragment() {
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithEmail:failure", task.exception)
-                            Toast.makeText(context, task.exception!!.message, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(activity, task.exception!!.message, Toast.LENGTH_SHORT).show()
                         }
 
                     }

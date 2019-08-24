@@ -145,12 +145,27 @@ class BootReceiver : BroadcastReceiver() {
 
                                     val alarmManager = context!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
+                                    var calender = Calendar.getInstance().apply {
+                                        set(Calendar.HOUR_OF_DAY, 9)
+                                        set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+                                    }
+
+                                    val now = Calendar.getInstance()
+                                    now.set(Calendar.SECOND, 0)
+                                    now.set(Calendar.MILLISECOND, 0)
+
+                                    if (calender.before(now)) {
+                                        println("BEFORE")
+                                        //this condition is used for future reminder that means your reminder not fire for past time
+                                        calender.add(Calendar.DATE, 7)
+                                    }
+                                    else{
+                                        println("AFTER")
+                                    }
+
                                     alarmManager.setInexactRepeating(
                                             AlarmManager.RTC_WAKEUP,
-                                            Calendar.getInstance().apply {
-                                                set(Calendar.HOUR_OF_DAY, 9)
-                                                set(Calendar.DAY_OF_WEEK, MONDAY)
-                                            }.timeInMillis,
+                                            calender.timeInMillis,
                                             AlarmManager.INTERVAL_DAY * 7,
                                             categoryIntent
                                     )

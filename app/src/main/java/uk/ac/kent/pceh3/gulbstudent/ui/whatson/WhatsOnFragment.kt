@@ -110,7 +110,7 @@ class WhatsOnFragment : Fragment() {
 
                 calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
 
-                    var monthReceived = (month + 1)
+                    val monthReceived = (month + 1)
                     var monthFormatted = monthReceived.toString()
 
                     if (monthReceived < 10){

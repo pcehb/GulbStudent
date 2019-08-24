@@ -338,30 +338,5 @@ class FirebaseRepository{
 
     }
 
-    // Get geofence proximity message
-    fun getGeofenceMessage(): LiveData<String> {
-
-        var message = MutableLiveData<String>()
-
-        val myRef = FirebaseDatabase.getInstance().getReference("message")
-        // Read from the database
-        myRef.addValueEventListener(object : ValueEventListener {
-
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                networkStatus.setValue(NetworkStatus.IDLE)
-
-                message.value = dataSnapshot.value.toString()
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // Failed to read value
-                Log.w(TAG, "Failed to read value.", error.toException())
-            }
-        })
-        return message
-    }
-
 
 }

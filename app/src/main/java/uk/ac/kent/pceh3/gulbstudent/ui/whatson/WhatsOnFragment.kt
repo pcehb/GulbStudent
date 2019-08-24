@@ -34,20 +34,19 @@ class WhatsOnFragment : Fragment() {
         loadFeed("", "&event_type=", "")
     }
 
-    fun loadFeed(search:String, eventType: String, date: String){
+    private fun loadFeed(search:String, eventType: String, date: String){
         progressBar.visibility = VISIBLE
         val viewModel = ViewModelProviders.of(this).get(WhatsOnViewModel::class.java)
-        viewModel.getWhatsOn(search, eventType, date, "").observe(this, object : Observer<List<WhatsOn>> {
-            override fun onChanged(t: List<WhatsOn>?) {
-                val data = t
-                if (data != null){
-                    recyclerViewWO.layoutManager = layoutManager
-                    val rvWhatsOnAdapter = RvWhatsOnAdapter(data)
-                    recyclerViewWO.adapter = rvWhatsOnAdapter
-                    rvWhatsOnAdapter.updateData(data)
-                    progressBar.visibility = GONE
-                }
-            }
+        viewModel.getWhatsOn(search, eventType, date, "").observe(this, Observer<List<WhatsOn>> { data ->
+                recyclerViewWO.layoutManager = layoutManager
+                val rvWhatsOnAdapter = RvWhatsOnAdapter(data)
+                recyclerViewWO.adapter = rvWhatsOnAdapter
+                rvWhatsOnAdapter.updateData(data)
+                progressBar.visibility = GONE
+                noSearchResults.visibility = GONE
+           if(data.isEmpty()){
+                noSearchResults.visibility = VISIBLE}
+
         })
     }
 

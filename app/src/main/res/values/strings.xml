@@ -54,5 +54,7 @@
     <string name="_1_copy_code_to_clipboard">1: Copy code to clipboard</string>
     <string name="_2_click_book_link_to_add_show_to_basket">2: Click book link to add show to basket</string>
     <string name="_3_paste_code_in_at_checkout">3: Paste code in at checkout</string>
+    <string name="no_events_for_current_search_term">No events for current search term.</string>
+    <string name="no_internet">No internet</string>
 
 </resources>

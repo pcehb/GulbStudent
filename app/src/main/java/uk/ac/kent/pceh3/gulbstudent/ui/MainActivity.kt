@@ -8,6 +8,8 @@ import android.app.PendingIntent
 import android.content.*
 import androidx.lifecycle.ViewModelProviders
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import com.google.android.gms.location.GeofencingClient
 import android.os.Bundle
 import android.provider.Settings
@@ -30,6 +32,8 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.os.IBinder
 import android.preference.PreferenceManager
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
 import androidx.core.app.ActivityCompat
@@ -88,6 +92,25 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         toolBar.setTitle(R.string.app_name)
         toolBar.setTitleTextColor(getColor(R.color.colorAccent))
+
+        val connectivityManager = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
+        val isConnected: Boolean = activeNetwork?.isConnectedOrConnecting == true
+
+
+        if (!isConnected){
+            val builder = AlertDialog.Builder(this)
+        builder.setMessage("No internet connection. Please connect to the internet to use GulbStudent.")
+                .setCancelable(false)
+                .setPositiveButton("Okay") { _, _ ->
+                    finish()
+                }
+
+        val alert: AlertDialog = builder.create()
+        alert.show()
+        }
+
+
 
         auth = FirebaseAuth.getInstance()
 

@@ -145,8 +145,8 @@ class EventFragment : Fragment() {
 
             val bookmarkIntent = PendingIntent.getBroadcast(
                     context,
-                    0,
-                    Intent(activity, AlarmBroadcastReceiver::class.java).apply {
+                    id,
+                    Intent(context, AlarmBroadcastReceiver::class.java).apply {
                         putExtra("notificationId", id)
                         putExtra("title",  this@EventFragment.arguments?.getString("title"))
                         putExtra("url", indexUrl)

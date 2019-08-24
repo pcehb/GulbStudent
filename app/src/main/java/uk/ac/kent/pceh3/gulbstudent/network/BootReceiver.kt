@@ -44,15 +44,14 @@ class BootReceiver : BroadcastReceiver() {
                                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                                     for (snapshot: DataSnapshot in dataSnapshot.getChildren()) {
                                         val bookmarks = snapshot.getValue(Bookmarks::class.java)
-                                        val id = System.currentTimeMillis().toInt()
 
                                         val bookmarkIntent = PendingIntent.getBroadcast(
                                                 context,
-                                                0,
+                                                bookmarks!!.id!!,
                                                 Intent(context, AlarmBroadcastReceiver::class.java).apply {
-                                                    putExtra("title", bookmarks!!.title!!)
+                                                    putExtra("title", bookmarks.title!!)
                                                     putExtra("url", snapshot.key)
-                                                    putExtra("notificationId", id)
+                                                    putExtra("notificationId", bookmarks.id!!)
                                                     putExtra("type", "bookmark")
                                                 },
                                                 PendingIntent.FLAG_CANCEL_CURRENT

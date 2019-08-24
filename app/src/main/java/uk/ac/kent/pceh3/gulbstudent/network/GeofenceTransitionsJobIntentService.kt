@@ -9,9 +9,16 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.app.JobIntentService
 import androidx.core.app.NotificationCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingEvent
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import uk.ac.kent.pceh3.gulbstudent.MainActivity
+import uk.ac.kent.pceh3.gulbstudent.ui.MainActivityViewModel
 import java.time.DayOfWeek
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -19,6 +26,7 @@ import java.time.temporal.TemporalAdjusters
 
 class GeofenceTransitionsJobIntentService : JobIntentService() {
     private var notificationManager: NotificationManager? = null
+
     companion object {
         private const val LOG_TAG = "GeoTrIntentService"
 
@@ -45,57 +53,70 @@ class GeofenceTransitionsJobIntentService : JobIntentService() {
 
     private fun handleEvent(event: GeofencingEvent) {
         println("GEOFENCE EVENT")
-        if (event.geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
+        var message = "You are near The Gulbenkian. Click to see whats going on!"
+
+        val myRef = FirebaseDatabase.getInstance().getReference("message")
+
+        myRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // This method is called once with the initial value
+
+                message = dataSnapshot.value.toString()
+                if (event.geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
+
+                    val current = LocalDateTime.now()
+                    val formatter = DateTimeFormatter.BASIC_ISO_DATE
+                    val formattedStartDate = current.format(formatter)
 
 
-            val current = LocalDateTime.now()
-            val formatter = DateTimeFormatter.BASIC_ISO_DATE
-            val formattedStartDate = current.format(formatter)
+                    val sharedPref: SharedPreferences = getSharedPreferences("GULB_VISIT", 0)
+
+                    if (sharedPref.getString("GULB_VISIT", "") != formattedStartDate) {
+                        val editor = sharedPref.edit()
+                        editor.putString("GULB_VISIT", formattedStartDate)
+                        editor.apply()
+
+                        val channelID = "uk.ac.kent.pceh3.gulbstudent"
+
+                        notificationManager =
+                                applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+                        createNotificationChannel(
+                                "uk.ac.kent.pceh3.gulbstudent",
+                                "GulbStudent",
+                                "Show notifications")
 
 
-            val sharedPref: SharedPreferences = getSharedPreferences("GULB_VISIT", 0)
+                        val resultIntent = Intent(applicationContext, MainActivity::class.java)
 
-            if (sharedPref.getString("GULB_VISIT", "") != formattedStartDate)
-            {
-                val editor = sharedPref.edit()
-                editor.putString("GULB_VISIT", formattedStartDate)
-                editor.apply()
+                        val pendingIntent = PendingIntent.getActivity(
+                                applicationContext,
+                                0,
+                                resultIntent,
+                                PendingIntent.FLAG_UPDATE_CURRENT
+                        )
 
-                val channelID = "uk.ac.kent.pceh3.gulbstudent"
-
-                notificationManager =
-                        applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-                createNotificationChannel(
-                        "uk.ac.kent.pceh3.gulbstudent",
-                        "GulbStudent",
-                        "Show notifications")
-
-
-                val resultIntent = Intent(applicationContext, MainActivity::class.java)
-
-                val pendingIntent = PendingIntent.getActivity(
-                        applicationContext,
-                        0,
-                        resultIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                )
-
-                val notification = Notification.Builder(applicationContext,
-                        channelID)
-                        .setContentTitle("GulbStudent")
-                        .setContentText("You're near The Gulbenkian. See whats happening tonight!")
-                        .setSmallIcon(android.R.drawable.ic_dialog_info)
-                        .setContentIntent(pendingIntent)
-                        .setChannelId(channelID)
-                        .setAutoCancel(true)
-                        .build()
-                notificationManager?.notify(1, notification)
+                        val notification = Notification.Builder(applicationContext,
+                                channelID)
+                                .setContentTitle("GulbStudent")
+                                .setContentText(message)
+                                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                                .setContentIntent(pendingIntent)
+                                .setChannelId(channelID)
+                                .setAutoCancel(true)
+                                .build()
+                        notificationManager?.notify(1, notification)
+                    }
+                }
             }
 
-            println("GEOFENCE ENTER GULB")
+            override fun onCancelled(error: DatabaseError) {
+                // Failed to read value
+                Log.w("Geofence", "Failed to read value.", error.toException())
+            }
+        })
 
-        }
+        println("GEOFENCE ENTER GULB")
     }
 
     private fun createNotificationChannel(id: String, name: String,

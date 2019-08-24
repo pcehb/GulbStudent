@@ -25,5 +25,4 @@ class MainActivityViewModel: ViewModel() {
         return blogSize
     }
 
-
 }

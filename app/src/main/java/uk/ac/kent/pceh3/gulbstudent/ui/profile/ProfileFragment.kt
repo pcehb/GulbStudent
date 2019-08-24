@@ -27,7 +27,6 @@ import uk.ac.kent.pceh3.gulbstudent.ui.profile.ProfileAdapter
 import uk.ac.kent.pceh3.gulbstudent.ui.profile.ProfileViewModel
 import java.util.*
 import java.util.Calendar.MONDAY
-import java.util.Calendar.SATURDAY
 
 
 class ProfileFragment : Fragment() {

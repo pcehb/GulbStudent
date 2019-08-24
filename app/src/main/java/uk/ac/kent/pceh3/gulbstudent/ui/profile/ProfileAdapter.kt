@@ -54,7 +54,7 @@ class ProfileAdapter (var BookmarkedList: List<Bookmarks>?) : RecyclerView.Adapt
 
             val bookmarkIntent = PendingIntent.getBroadcast(
                     activity,
-                    0,
+                    id,
                     Intent(activity, AlarmBroadcastReceiver::class.java).apply {
                         putExtra("notificationId", id)
                         putExtra("title", title)

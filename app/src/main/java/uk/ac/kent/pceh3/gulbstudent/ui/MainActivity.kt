@@ -2,6 +2,7 @@ package uk.ac.kent.pceh3.gulbstudent
 
 import android.Manifest
 import android.app.ActivityManager
+import android.app.AlarmManager
 import android.app.AlertDialog
 import android.app.PendingIntent
 import android.content.*
@@ -39,8 +40,10 @@ import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import org.jetbrains.anko.toast
+import uk.ac.kent.pceh3.gulbstudent.model.Bookmarks
 import uk.ac.kent.pceh3.gulbstudent.network.*
 import uk.ac.kent.pceh3.gulbstudent.ui.DetailActivity
+import uk.ac.kent.pceh3.gulbstudent.ui.profile.ProfileViewModel
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener
 
@@ -51,7 +54,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var geofencingClient: GeofencingClient
     lateinit var geofence : Geofence
     private lateinit var auth: FirebaseAuth
-
 
 //    private var mLocationRequest: LocationRequest? = null
 //    private var mGoogleApiClient: GoogleApiClient? = null
@@ -294,30 +296,59 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_whatson -> {
-                this.viewPager.setCurrentItem(0)
+                this.viewPager.currentItem = 0
                 this.content.visibility = View.GONE
                 this.viewPager.visibility = View.VISIBLE
                 this.tab_layout.visibility = View.VISIBLE
             }
             R.id.nav_deals -> {
-                this.viewPager.setCurrentItem(1)
+                this.viewPager.currentItem = 1
                 this.content.visibility = View.GONE
                 this.viewPager.visibility = View.VISIBLE
                 this.tab_layout.visibility = View.VISIBLE
                 this.tab_layout?.getTabAt(1)?.orCreateBadge?.isVisible = false
             }
             R.id.nav_blog -> {
-                this.viewPager.setCurrentItem(2)
+                this.viewPager.currentItem = 2
                 this.content.visibility = View.GONE
                 this.viewPager.visibility = View.VISIBLE
                 this.tab_layout.visibility = View.VISIBLE
             }
             R.id.nav_signout ->{
                 Log.w(ContentValues.TAG, "Signed Out")
-                FirebaseAuth.getInstance().signOut()
+
                 this.viewPager.visibility = View.GONE
                 this.tab_layout.visibility = View.GONE
                 this.content.visibility = View.VISIBLE
+                val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+                val viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
+                viewModel.getBookmarks(auth.currentUser!!).observe(this, Observer<List<Bookmarks>> { t ->
+                            for (bookmark in t){
+                                val bookmarkIntent = PendingIntent.getBroadcast(
+                                        applicationContext,
+                                        bookmark.id!!,
+                                        Intent(applicationContext, AlarmBroadcastReceiver::class.java).apply {
+                                        },
+                                        PendingIntent.FLAG_CANCEL_CURRENT
+                                )
+                                alarmManager.cancel(bookmarkIntent)
+                            }
+                        })
+
+
+
+                val categoryIntent = PendingIntent.getBroadcast(
+                        applicationContext,
+                        0,
+                        Intent(applicationContext, AlarmBroadcastReceiver::class.java).apply {},
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                )
+
+                alarmManager.cancel(categoryIntent)
+
+
+                FirebaseAuth.getInstance().signOut()
             }
             else -> {
                 this.viewPager.visibility = View.GONE

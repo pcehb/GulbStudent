@@ -1,5 +1,8 @@
 package uk.ac.kent.pceh3.gulbstudent.ui
 
+import android.app.ActivityOptions
+import android.app.PendingIntent.getActivity
+import android.content.Intent
 import android.os.Bundle
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
@@ -10,6 +13,7 @@ import android.widget.TextView
 import uk.ac.kent.pceh3.gulbstudent.R
 import uk.ac.kent.pceh3.gulbstudent.model.Blog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat.startActivity
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -53,25 +57,17 @@ class RvBlogAdapter(val blogList: List<Blog>?) : RecyclerView.Adapter<RvBlogAdap
         val title = itemView.findViewById<TextView>(R.id.title)
         val photo = itemView.findViewById<ImageView>(R.id.articleImage)
 
-
         val activity = itemView.getContext() as AppCompatActivity
 
-        activity.viewPager.visibility = View.GONE
-        activity.tab_layout.visibility = View.GONE
-        activity.content.visibility = View.VISIBLE
-
-        val newFragment = BlogArticleFragment()
-        val args = Bundle()
-        args.putCharSequence("title", title.text)
-        args.putCharSequence("date", date.text)
-        args.putCharSequence("article", article.text)
-        args.putCharSequence("photoURL", photo.tag.toString())
-        newFragment.arguments = args
-
-        activity.supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.content, newFragment)
-                .addToBackStack(null)
-                .commit()
+        activity?.let{
+            val intent = Intent (it, DetailActivity::class.java)
+            intent.putExtra("openingFragment", "article")
+            intent.putExtra("title", title.text)
+            intent.putExtra("date", date.text)
+            intent.putExtra("article", article.text)
+            intent.putExtra("photoURL", photo.tag.toString())
+            val options = ActivityOptions.makeSceneTransitionAnimation(activity)
+            it.startActivity(intent, options.toBundle())
+        }
     }
 }

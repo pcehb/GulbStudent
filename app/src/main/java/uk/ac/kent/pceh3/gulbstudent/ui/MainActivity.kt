@@ -1,10 +1,11 @@
 package uk.ac.kent.pceh3.gulbstudent
 
 import android.Manifest
+import android.app.ActivityManager
+import android.app.AlertDialog
 import android.app.PendingIntent
+import android.content.*
 import androidx.lifecycle.ViewModelProviders
-import android.content.ContentValues
-import android.content.Intent
 import android.content.pm.PackageManager
 import com.google.android.gms.location.GeofencingClient
 import android.os.Bundle
@@ -24,8 +25,9 @@ import uk.ac.kent.pceh3.gulbstudent.ui.login.LoginFragment
 import uk.ac.kent.pceh3.gulbstudent.ui.whatson.SuggestedFragment
 import android.view.View
 import androidx.lifecycle.Observer
-import android.content.SharedPreferences
 import android.net.Uri
+import android.os.AsyncTask
+import android.os.IBinder
 import android.preference.PreferenceManager
 import androidx.annotation.NonNull
 import androidx.annotation.Nullable
@@ -36,10 +38,9 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
-import uk.ac.kent.pceh3.gulbstudent.network.GeofenceBroadcastReceiver
-import uk.ac.kent.pceh3.gulbstudent.network.GeofenceErrorMessages
-import uk.ac.kent.pceh3.gulbstudent.network.LocationResultHelper
-import uk.ac.kent.pceh3.gulbstudent.network.LocationUpdatesBroadcastReceiver
+import org.jetbrains.anko.toast
+import uk.ac.kent.pceh3.gulbstudent.network.*
+import uk.ac.kent.pceh3.gulbstudent.ui.DetailActivity
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener
 
@@ -50,11 +51,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var geofencingClient: GeofencingClient
     lateinit var geofence : Geofence
     private lateinit var auth: FirebaseAuth
+
+
 //    private var mLocationRequest: LocationRequest? = null
 //    private var mGoogleApiClient: GoogleApiClient? = null
 //    private var locationProviderClient: FusedLocationProviderClient? = null
-
-
+//
+//
 //    companion object {
 //        private val TAG = MainActivity::class.java.simpleName
 //        private val REQUEST_PERMISSIONS_REQUEST_CODE = 34
@@ -62,6 +65,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        private val FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2
 //        private val MAX_WAIT_TIME = UPDATE_INTERVAL * 3
 //    }
+
+
 
     private val geofencePendingIntent: PendingIntent by lazy {
         val intent = Intent(this, GeofenceBroadcastReceiver::class.java)
@@ -119,35 +124,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         })
 
-        val extras = intent.getStringExtra("openingFragment")
-        if (extras != null&&extras.equals("suggested")) {
-            println("SUGGESTED")
-            this.viewPager.visibility = View.GONE
-            this.tab_layout.visibility = View.GONE
-            this.content.visibility = View.VISIBLE
-
-            var fragment = SuggestedFragment()
-            val bundle = Bundle()
-            bundle.putString("categorySearch", intent.getCharSequenceExtra("categorySearch").toString())
-            bundle.putString("startDate", intent.getCharSequenceExtra("startDate").toString())
-            bundle.putString("endDate", intent.getCharSequenceExtra("endDate").toString())
-            fragment.arguments = bundle
-
-            var fragmentManager = supportFragmentManager
-            fragmentManager
-                    .beginTransaction()
-                    .replace(R.id.content, fragment)
-                    .commit()
-        }
 
 //        if (!checkPermissions()) {
 //            requestPermissions()
 //        }
-//
-//
-//        buildGoogleApiClient()
 
-//        locationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+
+        //buildGoogleApiClient()
+
+       // locationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         val sharedPref: SharedPreferences = getSharedPreferences("DEAL_SIZE", 0)
         val sharedPrefBlog: SharedPreferences = getSharedPreferences("BLOG_SIZE", 0)
@@ -233,8 +218,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .setRequestId("gulbenkian")
                 // Set the circular region of this geofence.
                 .setCircularRegion(
-                        51.298278,
-                        1.064099,
+                        51.298564,
+                        1.069307,
                         400.toFloat()
                 )
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT)
@@ -401,7 +386,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //
 //
 //    }
-
+//
 //    private fun createLocationRequest() {
 //        mLocationRequest = LocationRequest()
 //
@@ -416,7 +401,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        // delivered sooner than this interval.
 //        mLocationRequest!!.maxWaitTime = MAX_WAIT_TIME
 //    }
-
+//
 //    fun buildGoogleApiClient() {
 //        if (mGoogleApiClient != null) {
 //            createLocationRequest()
@@ -429,7 +414,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //                .build()
 //        createLocationRequest()
 //    }
-
+//
 //    fun getPendingIntent(): PendingIntent {
 //        val intent = Intent(this, LocationUpdatesBroadcastReceiver::class.java)
 //        intent.action = LocationUpdatesBroadcastReceiver.ACTION_PROCESS_UPDATES
@@ -443,8 +428,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //        )
 //        return permissionState == PackageManager.PERMISSION_GRANTED
 //    }
-
-
+//
+//
 //    private fun requestPermissions() {
 //        val shouldProvideRationale = ActivityCompat.shouldShowRequestPermissionRationale(
 //                this,
@@ -481,7 +466,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //            )
 //        }
 //    }
-
+//
 //    override fun onRequestPermissionsResult(
 //            requestCode: Int, @NonNull permissions: Array<String>,
 //            @NonNull grantResults: IntArray
@@ -529,7 +514,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //            }
 //        }
 //    }
-
+//
 //
 //    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, s: String) {
 //        if (s == LocationResultHelper.KEY_LOCATION_UPDATES_RESULT) {
@@ -557,11 +542,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //            updatesIntent.action = "uk.ac.kent.pceh3.gulbstudent.network.action.PROCESS_UPDATES"
 //            var pendingUpdatesIntent = PendingIntent.getBroadcast(this, 0, updatesIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 //
-////            LocationServices.FusedLocationApi.requestLocationUpdates(
-////                    mGoogleApiClient, mLocationRequest, pendingUpdatesIntent)
+//            LocationServices.FusedLocationApi.requestLocationUpdates(
+//                    mGoogleApiClient, mLocationRequest, pendingUpdatesIntent)
 //
 //
-////           var fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+//           var fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 //            locationProviderClient?.requestLocationUpdates(mLocationRequest, getPendingIntent())
 //
 //            if (LocationResultHelper.getSavedLocationResult(this) == null) {
@@ -574,4 +559,24 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 //            e.printStackTrace()
 //        }
 //    }
+
+    // Custom method to determine whether a service is running
+    private fun isServiceRunning(serviceClass: Class<*>): Boolean {
+        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+
+        // Loop through the running services
+        for (service in activityManager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.name == service.service.className) {
+                // If the service is running then return true
+                return true
+            }
+        }
+        return false
+    }
+
+
+// Extension function to show toast message
+    fun Context.toast(message:String){
+        Toast.makeText(applicationContext,message,Toast.LENGTH_SHORT).show()
+    }
 }

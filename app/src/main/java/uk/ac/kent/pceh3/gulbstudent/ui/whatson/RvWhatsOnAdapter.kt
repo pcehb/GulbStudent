@@ -1,5 +1,7 @@
 package uk.ac.kent.pceh3.gulbstudent.ui.whatson
 
+import android.app.ActivityOptions
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -12,6 +14,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import uk.ac.kent.pceh3.gulbstudent.R
 import uk.ac.kent.pceh3.gulbstudent.model.WhatsOn
 import com.squareup.picasso.Picasso
+import uk.ac.kent.pceh3.gulbstudent.ui.DetailActivity
 
 
 /**
@@ -62,23 +65,20 @@ class RvWhatsOnAdapter(var WhatsOnList: List<WhatsOn>?) : RecyclerView.Adapter<R
 
         val activity = itemView.getContext() as AppCompatActivity
 
-        activity.viewPager.visibility = View.GONE
-        activity.tab_layout.visibility = View.GONE
-        activity.content.visibility = View.VISIBLE
-
-        val newFragment = EventFragment()
-        val args = Bundle()
-        args.putCharSequence("title", WhatsOnList!![pos].title)
-        args.putCharSequence("page", "event")
-        args.putParcelable("event", WhatsOnList!![pos])
-
-        newFragment.arguments = args
-
-        activity.supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.content, newFragment)
-                .addToBackStack(null)
-                .commit()
+        activity.let{
+            val intent = Intent (it, DetailActivity::class.java)
+            intent.putExtra("openingFragment", "showEvent")
+            intent.putExtra("title", WhatsOnList!![pos].title)
+            intent.putExtra("excerpt", WhatsOnList!![pos].excerpt)
+            intent.putExtra("date", WhatsOnList!![pos].date)
+            intent.putExtra("label", WhatsOnList!![pos].label)
+            intent.putExtra("imageUrl", WhatsOnList!![pos].imageUrl)
+            intent.putExtra("url", WhatsOnList!![pos].url)
+            intent.putExtra("bookLink", WhatsOnList!![pos].bookLink)
+            intent.putExtra("index", WhatsOnList!![pos].index)
+            val options = ActivityOptions.makeSceneTransitionAnimation(activity)
+            it.startActivity(intent, options.toBundle())
+        }
 
 
     }

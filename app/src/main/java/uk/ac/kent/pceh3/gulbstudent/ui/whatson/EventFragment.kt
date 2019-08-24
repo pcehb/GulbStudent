@@ -67,20 +67,18 @@ class EventFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val event = this.arguments?.getParcelable("event") as WhatsOn
-
-        excerpt?.text = event.excerpt
-        date?.text = event.date
-        title?.text = event.title
-        label?.text = event.label
+        excerpt?.text = this.arguments?.getString("excerpt")
+        date?.text = this.arguments?.getString("date")
+        title?.text = this.arguments?.getString("title")
+        label?.text =  this.arguments?.getString("label")
         Picasso.get()
-                .load(event.imageUrl)
+                .load( this.arguments?.getString("imageUrl"))
                 .placeholder(R.drawable.logo)
                 .into(image)
 
 
         val urlRe = Regex("[^A-Za-z0-9 ]")
-        indexUrl = urlRe.replace(event.url.toString(), "")
+        indexUrl = urlRe.replace(this.arguments?.getString("url").toString(), "")
 
         isBookmarked()
 
@@ -101,7 +99,7 @@ class EventFragment : Fragment() {
 
             val newFragment = WebviewFragment()
             val args = Bundle()
-            args.putCharSequence("url", event.bookLink)
+            args.putCharSequence("url",  this.arguments?.getString("bookLink"))
 
             newFragment.arguments = args
 
@@ -115,7 +113,7 @@ class EventFragment : Fragment() {
 
         fabShare.setOnClickListener{
             val openURL = Intent(Intent.ACTION_SEND)
-            openURL.putExtra(Intent.EXTRA_TEXT, event.url)
+            openURL.putExtra(Intent.EXTRA_TEXT,  this.arguments?.getString("url"))
             openURL.type = "text/plain"
             startActivity(Intent.createChooser(openURL, "Sharing Option"))
         }
@@ -126,7 +124,7 @@ class EventFragment : Fragment() {
 
             val newFragment = WebviewFragment()
             val args = Bundle()
-            args.putCharSequence("url", event.url)
+            args.putCharSequence("url",  this.arguments?.getString("url"))
 
             newFragment.arguments = args
 
@@ -141,17 +139,25 @@ class EventFragment : Fragment() {
         bookmark.setOnClickListener {
             val alarmManager = activity!!.getSystemService(ALARM_SERVICE) as AlarmManager
 
-            var user = auth.currentUser
+            val user = auth.currentUser
             val id = System.currentTimeMillis().toInt()
+
 
             val bookmarkIntent = PendingIntent.getBroadcast(
                     context,
                     0,
                     Intent(activity, AlarmBroadcastReceiver::class.java).apply {
                         putExtra("notificationId", id)
-                        putExtra("title", event.title)
+                        putExtra("title",  this@EventFragment.arguments?.getString("title"))
                         putExtra("url", indexUrl)
                         putExtra("type", "bookmark")
+                        putExtra("openingFragment", "showEvent")
+                        putExtra("excerpt", this@EventFragment.arguments?.getString("excerpt"))
+                        putExtra("date", this@EventFragment.arguments?.getString("date"))
+                        putExtra("label", this@EventFragment.arguments?.getString("label"))
+                        putExtra("imageUrl",this@EventFragment.arguments?.getString("imageUrl"))
+                        putExtra("bookLink", this@EventFragment.arguments?.getString("bookLink"))
+                        putExtra("index", this@EventFragment.arguments?.getInt("index", 1))
                     },
                     PendingIntent.FLAG_CANCEL_CURRENT
             )
@@ -165,7 +171,7 @@ class EventFragment : Fragment() {
                         PackageManager.DONT_KILL_APP
                 )
 
-                val dateFormatted = event.date
+                val dateFormatted =  this.arguments?.getString("date")
                 val re = Regex("[^A-Za-z0-9 ]")
                 val splitDate = re.replace(dateFormatted.toString(), "")
                 val splitDate2 = splitDate.split("\\s".toRegex())
@@ -219,14 +225,14 @@ class EventFragment : Fragment() {
 
                 database = FirebaseDatabase.getInstance().reference.child("users").child(user!!.uid).child("bookmarked").child(indexUrl)
 
-                database.child("title").setValue(event.title)
+                database.child("title").setValue(this.arguments?.getString("title"))
                 database.child("year").setValue(year)
                 database.child("month").setValue(month)
                 database.child("date").setValue(day)
                 database.child("index").setValue(indexUrl)
                 database.child("id").setValue(id)
-                database.child("photoURL").setValue(event.imageUrl)
-                database.child("description").setValue(event.excerpt)
+                database.child("photoURL").setValue(this.arguments?.getString("imageUrl"))
+                database.child("description").setValue(this.arguments?.getString("excerpt"))
 
                 bookmarked = true
             }
@@ -280,7 +286,7 @@ class EventFragment : Fragment() {
 
     private fun isBookmarked(){
 
-        var user = auth.currentUser
+        val user = auth.currentUser
 
             val viewModel = ViewModelProviders.of(this).get(WhatsOnViewModel::class.java)
             viewModel.getShowBookmarked(user!!, indexUrl).observe(this, object : Observer<Boolean> {

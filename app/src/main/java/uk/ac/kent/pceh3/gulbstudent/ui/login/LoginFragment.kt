@@ -1,6 +1,8 @@
 package uk.ac.kent.pceh3.gulbstudent.ui.login
 
+import android.app.ActivityOptions
 import android.content.ContentValues.TAG
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.util.Log
@@ -9,11 +11,13 @@ import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_login.*
 import uk.ac.kent.pceh3.gulbstudent.R
 import uk.ac.kent.pceh3.gulbstudent.WhatsOnFragment
+import uk.ac.kent.pceh3.gulbstudent.ui.DetailActivity
 
 
 class LoginFragment : Fragment() {
@@ -26,7 +30,7 @@ class LoginFragment : Fragment() {
         setHasOptionsMenu(true)
         auth = FirebaseAuth.getInstance()
 
-        activity!!.toolBar.setNavigationIcon(null)
+        activity!!.toolBar.navigationIcon = null
 
         return view
     }
@@ -35,8 +39,8 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         loginButton.setOnClickListener{
-            var email = emailEditText.text.toString()
-            var password = passwordEditText.text.toString()
+            val email = emailEditText.text.toString()
+            val password = passwordEditText.text.toString()
             Log.d(TAG, "signIn:$email")
 
             auth.signInWithEmailAndPassword(email, password)
@@ -70,17 +74,28 @@ class LoginFragment : Fragment() {
         }
 
         createAccountButton.setOnClickListener{
-            activity!!.supportFragmentManager
-                    .beginTransaction()
-                    .replace(R.id.content, CreateAccountFragment())
-                    .commit()
+
+            val activity = context as AppCompatActivity
+
+            activity.let{
+                val intent = Intent (it, DetailActivity::class.java)
+                intent.putExtra("openingFragment", "create")
+
+                val options = ActivityOptions.makeSceneTransitionAnimation(activity)
+                it.startActivity(intent, options.toBundle())
+            }
         }
 
         forgotPasswordButton.setOnClickListener{
-            activity!!.supportFragmentManager
-                    .beginTransaction()
-                    .replace(R.id.content, ResetPasswordFragment())
-                    .commit()
+            val activity = context as AppCompatActivity
+
+            activity.let{
+                val intent = Intent (it, DetailActivity::class.java)
+                intent.putExtra("openingFragment", "reset")
+
+                val options = ActivityOptions.makeSceneTransitionAnimation(activity)
+                it.startActivity(intent, options.toBundle())
+            }
         }
     }
 

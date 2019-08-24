@@ -10,6 +10,7 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import uk.ac.kent.pceh3.gulbstudent.MainActivity
+import uk.ac.kent.pceh3.gulbstudent.ui.DetailActivity
 import java.time.DayOfWeek
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -35,7 +36,16 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
             Log.d(TAG, "onReceive: bookmarkNotification")
             val channelID = "uk.ac.kent.pceh3.gulbstudent"
 
-            val resultIntent = Intent(context, MainActivity::class.java)
+            val resultIntent = Intent(context, DetailActivity::class.java)
+            resultIntent.putExtra("openingFragment", "showEvent")
+            resultIntent.putExtra("title", intent.getStringExtra("title"))
+            resultIntent.putExtra("excerpt", intent.getStringExtra("excerpt"))
+            resultIntent.putExtra("date", intent.getStringExtra("date"))
+            resultIntent.putExtra("label", intent.getStringExtra("label"))
+            resultIntent.putExtra("imageUrl",intent.getStringExtra("imageUrl"))
+            resultIntent.putExtra("url", intent.getStringExtra("url"))
+            resultIntent.putExtra("bookLink", intent.getStringExtra("bookLink"))
+            resultIntent.putExtra("index", intent.getIntExtra("index", 1))
 
             val pendingIntent = PendingIntent.getActivity(
                     context,
@@ -44,7 +54,7 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
                     PendingIntent.FLAG_UPDATE_CURRENT
             )
 
-            var user = auth.currentUser
+            val user = auth.currentUser
             val indexUrl = intent.getCharSequenceExtra("url").toString()
 
             val notification = Notification.Builder(context,
@@ -75,7 +85,7 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
 
             val data = WhatsOnAjax().getWhatsOn("", intent.getCharSequenceExtra("categorySearch").toString(), formattedStartDate, formattedEndDate)
             if (data != null) {
-                val resultIntent = Intent(context, MainActivity::class.java)
+                val resultIntent = Intent(context, DetailActivity::class.java)
                 resultIntent.putExtra("openingFragment", "suggested")
                 resultIntent.putExtra("categorySearch", intent.getCharSequenceExtra("categorySearch").toString())
                 resultIntent.putExtra("startDate", formattedStartDate)

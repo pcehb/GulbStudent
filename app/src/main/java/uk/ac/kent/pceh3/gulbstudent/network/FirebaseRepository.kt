@@ -9,16 +9,13 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import uk.ac.kent.pceh3.gulbstudent.model.Blog
-import uk.ac.kent.pceh3.gulbstudent.model.Bookmarks
-import uk.ac.kent.pceh3.gulbstudent.model.Categories
-import uk.ac.kent.pceh3.gulbstudent.model.Deal
+import uk.ac.kent.pceh3.gulbstudent.model.*
 
 
 /**
  * Created by pceh3 on 07/06/2019.
  */
-class FirebaseRepository{
+class FirebaseRepository {
 
     enum class NetworkStatus {
         IDLE, LOADING
@@ -76,7 +73,7 @@ class FirebaseRepository{
     }
 
 
-    // Retrieve list of deals
+    // Retrieve size of deals
     fun getDealSize(): LiveData<Int> {
 
         var dealSize = MutableLiveData<Int>()
@@ -101,6 +98,109 @@ class FirebaseRepository{
             }
         })
         return dealSize
+    }
+
+    // Retrieve comps
+    fun getComp(): LiveData<Comp> {
+
+        val comp = MutableLiveData<Comp>()
+
+        val myRef = FirebaseDatabase.getInstance().getReference("competition")
+        networkStatus.setValue(NetworkStatus.LOADING)
+        // Read from the database
+        myRef.addValueEventListener(object : ValueEventListener {
+
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                networkStatus.setValue(NetworkStatus.IDLE)
+
+                val firevalue = dataSnapshot.getValue<Comp>(Comp::class.java)
+                val fire = Comp()
+
+
+                val closeDate1 = firevalue!!.closeDate
+                val description1 = firevalue.description
+                val photoURL1 = firevalue.photoURL
+                val title1 = firevalue.title
+
+                fire.closeDate = closeDate1 //set
+                fire.description = description1 //set
+                fire.photoURL = photoURL1 //set
+                fire.title = title1 //set
+
+                comp.value = fire
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException())
+                networkStatus.setValue(NetworkStatus.IDLE)
+            }
+        })
+        return comp
+    }
+
+    // Retrieve list of entries
+    fun getCompEntries(): LiveData<List<String>> {
+
+        val entries = MutableLiveData<List<String>>()
+        val fireList = ArrayList<String>()
+
+        val myRef = FirebaseDatabase.getInstance().getReference("competition").child("entries")
+        networkStatus.value = NetworkStatus.LOADING
+        // Read from the database
+        myRef.addValueEventListener(object : ValueEventListener {
+
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                networkStatus.value = NetworkStatus.IDLE
+
+                fireList.clear()
+                for (dataSnapshot1 in dataSnapshot.children) {
+                    val firevalue = dataSnapshot1.value as String
+
+                    fireList.add(firevalue)
+                }
+
+                entries.value = fireList
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException())
+                networkStatus.value = NetworkStatus.IDLE
+            }
+        })
+        return entries
+    }
+
+    //get gulbcard boolean for user
+    fun getGulbCard(user: FirebaseUser): LiveData<Boolean> {
+
+        var gulbCard = MutableLiveData<Boolean>()
+
+        val ref = FirebaseDatabase.getInstance().reference.child("users").child(user.uid).child("gulbCard")
+
+        ref.addValueEventListener(object : ValueEventListener {
+
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+
+                gulbCard.value = dataSnapshot.value as Boolean
+
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Failed to read value
+                Log.w(TAG, "Failed to read value.", error.toException())
+                networkStatus.value = NetworkStatus.IDLE
+            }
+        })
+        return gulbCard
     }
 
 
@@ -233,7 +333,7 @@ class FirebaseRepository{
     }
 
     // Check if particular show is bookmarked
-    fun getShowBookmarked(user: FirebaseUser, indexUrl : String):LiveData<Boolean> {
+    fun getShowBookmarked(user: FirebaseUser, indexUrl: String): LiveData<Boolean> {
 
         var bookmarkBoolean = MutableLiveData<Boolean>()
         val fireList = ArrayList<Bookmarks>()
@@ -254,7 +354,7 @@ class FirebaseRepository{
 
                     val index1 = firevalue!!.index
 
-                    if (index1 == indexUrl){
+                    if (index1 == indexUrl) {
                         bookmarkBoolean.value = true
                     }
 
@@ -289,42 +389,42 @@ class FirebaseRepository{
                 networkStatus.setValue(NetworkStatus.IDLE)
 
                 fireList.clear()
-                    val firevalue = dataSnapshot.getValue(Categories::class.java)
-                    val fire = Categories()
+                val firevalue = dataSnapshot.getValue(Categories::class.java)
+                val fire = Categories()
 
-                    val archive = firevalue!!.archive
-                    val audioDescribed = firevalue.audioDescribed
-                    val boing = firevalue.boing
-                    val cafe = firevalue.cafe
-                    val captionedSubtitles = firevalue.captionedSubtitles
-                    val comedy = firevalue.comedy
-                    val family = firevalue.family
-                    val festival = firevalue.festival
-                    val foreign = firevalue.foreign
-                    val music = firevalue.music
-                    val live= firevalue.live
-                    val relaxed = firevalue.relaxed
-                    val talks = firevalue.talks
-                    val theatreDance = firevalue.theatreDance
-                    val workshops = firevalue.workshops
+                val archive = firevalue!!.archive
+                val audioDescribed = firevalue.audioDescribed
+                val boing = firevalue.boing
+                val cafe = firevalue.cafe
+                val captionedSubtitles = firevalue.captionedSubtitles
+                val comedy = firevalue.comedy
+                val family = firevalue.family
+                val festival = firevalue.festival
+                val foreign = firevalue.foreign
+                val music = firevalue.music
+                val live = firevalue.live
+                val relaxed = firevalue.relaxed
+                val talks = firevalue.talks
+                val theatreDance = firevalue.theatreDance
+                val workshops = firevalue.workshops
 
-                    fire.archive = archive //set
-                    fire.audioDescribed = audioDescribed //set
-                    fire.boing = boing //set
-                    fire.cafe = cafe //set
-                    fire.captionedSubtitles = captionedSubtitles //set
-                    fire.comedy = comedy //set
-                    fire.family = family
-                    fire.festival = festival
-                    fire.foreign = foreign
-                    fire.music = music
-                    fire.live = live
-                    fire.relaxed = relaxed
-                    fire.talks = talks
-                    fire.theatreDance = theatreDance
-                    fire.workshops = workshops
-                    fireList.add(fire)
-                    categoriesList.value = fireList
+                fire.archive = archive //set
+                fire.audioDescribed = audioDescribed //set
+                fire.boing = boing //set
+                fire.cafe = cafe //set
+                fire.captionedSubtitles = captionedSubtitles //set
+                fire.comedy = comedy //set
+                fire.family = family
+                fire.festival = festival
+                fire.foreign = foreign
+                fire.music = music
+                fire.live = live
+                fire.relaxed = relaxed
+                fire.talks = talks
+                fire.theatreDance = theatreDance
+                fire.workshops = workshops
+                fireList.add(fire)
+                categoriesList.value = fireList
 
             }
 
@@ -337,6 +437,6 @@ class FirebaseRepository{
         return categoriesList
 
     }
-
-
 }
+
+

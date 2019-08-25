@@ -12,7 +12,6 @@ import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import com.google.android.gms.location.GeofencingClient
 import android.os.Bundle
-import android.provider.Settings
 import com.google.android.material.navigation.NavigationView
 import androidx.fragment.app.Fragment
 import androidx.core.view.GravityCompat
@@ -25,28 +24,14 @@ import com.google.firebase.auth.FirebaseAuth
 import kotlinx.android.synthetic.main.activity_main.*
 import uk.ac.kent.pceh3.gulbstudent.ui.MainActivityViewModel
 import uk.ac.kent.pceh3.gulbstudent.ui.login.LoginFragment
-import uk.ac.kent.pceh3.gulbstudent.ui.whatson.SuggestedFragment
 import android.view.View
 import androidx.lifecycle.Observer
-import android.net.Uri
-import android.os.AsyncTask
-import android.os.IBinder
-import android.preference.PreferenceManager
-import android.view.View.GONE
-import android.view.View.VISIBLE
-import androidx.annotation.NonNull
-import androidx.annotation.Nullable
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.google.android.gms.common.ConnectionResult
-import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.*
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
-import org.jetbrains.anko.toast
 import uk.ac.kent.pceh3.gulbstudent.model.Bookmarks
 import uk.ac.kent.pceh3.gulbstudent.network.*
-import uk.ac.kent.pceh3.gulbstudent.ui.DetailActivity
+import uk.ac.kent.pceh3.gulbstudent.ui.comp.CompetitionFragment
 import uk.ac.kent.pceh3.gulbstudent.ui.profile.ProfileViewModel
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener
@@ -125,6 +110,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         val adapter = ViewPagerAdapter(supportFragmentManager)
         adapter.addFragment(WhatsOnFragment(), "WHAT'S ON")
         adapter.addFragment(DealsFragment(), "DEALS")
+        adapter.addFragment(CompetitionFragment(), "WIN")
         adapter.addFragment(BlogFragment(), "BLOG")
         viewPager.adapter = adapter
 
@@ -200,9 +186,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
                 sharedPrefBlog.getInt("BLOG_SIZE", 0) < t!! -> {
                     println("BIGGER BLOG SIZE = $t")
-                    tab_layout.getTabAt(2)!!.orCreateBadge.backgroundColor = getColor(R.color.colorAccent)
-                    tab_layout.getTabAt(2)!!.orCreateBadge.isVisible = true
-                    tab_layout.getTabAt(2)!!.badge!!.number = (t - sharedPrefBlog.getInt("BLOG_SIZE", 0))
+                    tab_layout.getTabAt(3)!!.orCreateBadge.backgroundColor = getColor(R.color.colorAccent)
+                    tab_layout.getTabAt(3)!!.orCreateBadge.isVisible = true
+                    tab_layout.getTabAt(3)!!.badge!!.number = (t - sharedPrefBlog.getInt("BLOG_SIZE", 0))
                     val editor = sharedPrefBlog.edit()
                     editor.putInt("BLOG_SIZE", t)
                     editor.apply()
@@ -331,8 +317,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 this.tab_layout.visibility = View.VISIBLE
                 this.tab_layout?.getTabAt(1)?.orCreateBadge?.isVisible = false
             }
-            R.id.nav_blog -> {
+            R.id.nav_comp -> {
                 this.viewPager.currentItem = 2
+                this.content.visibility = View.GONE
+                this.viewPager.visibility = View.VISIBLE
+                this.tab_layout.visibility = View.VISIBLE
+            }
+            R.id.nav_blog -> {
+                this.viewPager.currentItem = 3
                 this.content.visibility = View.GONE
                 this.viewPager.visibility = View.VISIBLE
                 this.tab_layout.visibility = View.VISIBLE
@@ -386,6 +378,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
             R.id.nav_deals -> {
                 DealsFragment()
+            }
+            R.id.nav_comp -> {
+                CompetitionFragment()
             }
             R.id.nav_blog -> {
                 BlogFragment()

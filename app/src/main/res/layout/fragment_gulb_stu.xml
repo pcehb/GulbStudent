@@ -29,7 +29,7 @@
                 android:layout_marginBottom="16dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:text="Welcome to The GulbStudent Android Application."
+                android:text="@string/welcome_to_the_gulbstudent_android_application"
                 android:textAppearance="@style/TextAppearance.AppCompat.Light.SearchResult.Title" />
 
             <TextView
@@ -39,7 +39,7 @@
                 android:layout_marginBottom="16dp"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
-                android:text="GulbStudent is a student engagement application that allows students to view and bookmark current and upcoming shows. Students can also read a dedicated Gulbenkian blog tailored to students, get notifications when new shows are added their favourite categories, enter competitions to win tickets to shows, and view exclusive deals and discounts."
+                android:text="@string/gulbstudent_is_a_student_engagement_application_that_allows_students_to_view_and_bookmark_current_and_upcoming_shows_students_can_also_read_a_dedicated_gulbenkian_blog_tailored_to_students_get_notifications_when_new_shows_are_added_their_favourite_categories_enter_competitions_to_win_tickets_to_shows_and_view_exclusive_deals_and_discounts"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
             <LinearLayout
@@ -64,7 +64,7 @@
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
                     android:paddingTop="16dp"
-                    android:text="GulbStudent was developed by Phoebe Heath-Brown in 2019 for a Mobile Application Development MSc dissertation project."
+                    android:text="@string/gulbstudent_was_developed_by_phoebe_heath_brown_in_2019_for_a_mobile_application_development_msc_dissertation_project"
                     android:textAlignment="center"
                     android:textAppearance="@style/TextAppearance.AppCompat.Large" />
             </LinearLayout>

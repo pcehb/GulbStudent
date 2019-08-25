@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="10px">
+    android:padding="10dp">
 
 
     <androidx.core.widget.NestedScrollView
@@ -25,29 +25,39 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <Switch
+                android:id="@+id/switch1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:switchMinWidth="50dp"
+                android:switchPadding="10dp"
+                android:text="@string/gulbcard_owner"
+                android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                android:textColor="@color/colorPrimary"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:thumbTint="@color/colorAccent"
+                android:trackTint="@color/colorPrimaryDark" />
+
             <TextView
                 android:id="@+id/categoryText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:text="Favourited Categories:"
+                android:text="@string/favourited_categories"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                android:textColor="@color/colorPrimary"
                 android:textSize="28sp"
                 android:textStyle="bold" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/textView10"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="TextView" />
+                android:orientation="horizontal"
+                android:baselineAligned="false">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -58,62 +68,62 @@
                         android:id="@+id/archive"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Archive"
+                        android:text="@string/archive"
                         android:textAllCaps="true"/>
 
                     <CheckBox
                         android:id="@+id/audioDescribed"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Audio Described"
+                        android:text="@string/audio_described"
                         android:textAllCaps="true" />
 
                     <CheckBox
                         android:id="@+id/boing"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="bOing! Festival"
+                        android:text="@string/boing_festival"
                         android:textAllCaps="true" />
 
                     <CheckBox
                         android:id="@+id/cafe"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Cafe"
+                        android:text="@string/cafe"
                         android:textAllCaps="true" />
 
                     <CheckBox
                         android:id="@+id/captionedSubtitles"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Captioned Subtitles"
+                        android:text="@string/captioned_subtitles"
                         android:textAllCaps="true" />
 
                     <CheckBox
                         android:id="@+id/comedy"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Comedy"
+                        android:text="@string/comedy"
                         android:textAllCaps="true" />
 
                     <CheckBox
                         android:id="@+id/family"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Family"
+                        android:text="@string/family"
                         android:textAllCaps="true" />
 
                     <CheckBox
                         android:id="@+id/festival"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Festival"
+                        android:text="@string/festival"
                         android:textAllCaps="true" />
 
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical">
@@ -122,49 +132,49 @@
                         android:id="@+id/foreign"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Foreign language subtitles"
+                        android:text="@string/foreign_language_subtitles"
                         android:textAllCaps="true" />
 
                     <CheckBox
                         android:id="@+id/music"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Music"
+                        android:text="@string/music"
                         android:textAllCaps="true" />
 
                     <CheckBox
                         android:id="@+id/live"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Recorded &amp; Live Screening"
+                        android:text="@string/recorded_amp_live_screening"
                         android:textAllCaps="true" />
 
                     <CheckBox
                         android:id="@+id/relaxed"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Relaxed"
+                        android:text="@string/relaxed"
                         android:textAllCaps="true" />
 
                     <CheckBox
                         android:id="@+id/talks"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Talks"
+                        android:text="@string/talks"
                         android:textAllCaps="true" />
 
                     <CheckBox
                         android:id="@+id/theatreDance"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Theatre &amp; Dance"
+                        android:text="@string/theatre_amp_dance"
                         android:textAllCaps="true" />
 
                     <CheckBox
                         android:id="@+id/workshops"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Workshops"
+                        android:text="@string/workshops"
                         android:textAllCaps="true" />
 
                 </LinearLayout>
@@ -177,9 +187,10 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
-                android:text="Bookmarked Shows:"
+                android:text="@string/bookmarked_shows"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+                android:textColor="@color/colorPrimary"
                 android:textSize="28sp"
                 android:textStyle="bold" />
 
@@ -201,7 +212,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:backgroundTint="@color/colorAccent"
-        android:text="Save"
+        android:text="@string/save"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

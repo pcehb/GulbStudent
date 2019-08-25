@@ -33,12 +33,10 @@ class BlogFragment : Fragment() {
         recyclerView.layoutManager = linearLayoutManager
 
         val viewModel = ViewModelProviders.of(this).get(BlogViewModel::class.java)
-        viewModel.getBlog().observe(this, object : Observer<List<Blog>> {
-            override fun onChanged(t: List<Blog>?) {
-                val data = t
-                val rvAdapter = RvBlogAdapter(data)
-                recyclerView.adapter = rvAdapter
-            }
+        viewModel.getBlog().observe(this, Observer<List<Blog>> { t ->
+            val data = t
+            val rvAdapter = RvBlogAdapter(data)
+            recyclerView.adapter = rvAdapter
         })
     }
 

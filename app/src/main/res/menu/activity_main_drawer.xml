@@ -7,39 +7,43 @@
         <item
             android:id="@+id/nav_whatson"
             android:icon="@drawable/icons8_planner_48"
-            android:title="What's On" />
+            android:title="@string/what_s_on" />
         <item
             android:id="@+id/nav_deals"
             android:icon="@drawable/icons8_price_tag_48"
-            android:title="Deals" />
+            android:title="@string/deals" />
+        <item
+            android:id="@+id/nav_comp"
+            android:icon="@drawable/icons8_trophy_24"
+            android:title="@string/win" />
         <item
             android:id="@+id/nav_blog"
             android:icon="@drawable/icons8_news_48"
-            android:title="Blog" />
+            android:title="@string/blog" />
         <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/icons8_user_48"
-            android:title="Profile" />
+            android:title="@string/profile" />
     </group>
 
-    <item android:title="About">
+    <item android:title="@string/about">
         <menu>
             <item
                 android:id="@+id/nav_gulb"
                 android:icon="@drawable/icons8_theatre_mask_48"
-                android:title="The Gulbenkian" />
+                android:title="@string/the_gulbenkian" />
             <item
                 android:id="@+id/nav_gulbcard"
                 android:icon="@drawable/icons8_debit_card_48"
-                android:title="GulbCard" />
+                android:title="@string/gulbcard" />
             <item
                 android:id="@+id/nav_gulbuncovered"
                 android:icon="@drawable/icons8_curtains_48"
-                android:title="Gulbenkian Uncovered" />
+                android:title="@string/gulbenkian_uncovered" />
             <item
                 android:id="@+id/nav_gulbstudent"
                 android:icon="@drawable/icons8_graduate_48"
-                android:title="GulbStudent" />
+                android:title="@string/gulbstudent" />
         </menu>
     </item>
 
@@ -47,7 +51,7 @@
         <item
             android:id="@+id/nav_signout"
             android:icon="@drawable/icons8_sign_out_24"
-            android:title="Sign Out" />
+            android:title="@string/sign_out" />
     </group>
 
 </menu>

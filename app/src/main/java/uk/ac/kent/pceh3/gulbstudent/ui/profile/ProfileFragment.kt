@@ -15,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
@@ -23,6 +24,7 @@ import kotlinx.android.synthetic.main.fragment_profile.*
 import uk.ac.kent.pceh3.gulbstudent.model.Bookmarks
 import uk.ac.kent.pceh3.gulbstudent.model.Categories
 import uk.ac.kent.pceh3.gulbstudent.network.AlarmBroadcastReceiver
+import uk.ac.kent.pceh3.gulbstudent.ui.comp.CompViewModel
 import uk.ac.kent.pceh3.gulbstudent.ui.profile.ProfileAdapter
 import uk.ac.kent.pceh3.gulbstudent.ui.profile.ProfileViewModel
 import java.util.*
@@ -33,7 +35,9 @@ class ProfileFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
     private lateinit var user: FirebaseUser
     private lateinit var database: DatabaseReference
+    private lateinit var gulbDatabase: DatabaseReference
     private lateinit var linearLayoutManager: LinearLayoutManager
+    private var gulbCard : Boolean = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -44,6 +48,8 @@ class ProfileFragment : Fragment() {
 
         database = FirebaseDatabase.getInstance().reference.child("users").child(user.uid).child("categories")
 
+        gulbDatabase = FirebaseDatabase.getInstance().reference.child("users").child(user.uid).child("gulbCard")
+
         setHasOptionsMenu(true)
 
         return view
@@ -51,6 +57,25 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val viewModel = ViewModelProviders.of(this).get(CompViewModel::class.java)
+
+        viewModel.getGulbCard(user).observe(this, Observer<Boolean> { t ->
+            gulbCard = t == true
+            switch1.isChecked = gulbCard
+        })
+
+        switch1.setOnCheckedChangeListener{ _: CompoundButton, b: Boolean ->
+            if (b){
+                //push true
+                gulbDatabase.setValue(true)
+            }
+            else {
+                //push false
+                gulbDatabase.setValue(false)
+            }
+        }
+
         saveBtn.setOnClickListener {
             var categorySearch = ""
             if (archive.isChecked) {
@@ -146,7 +171,6 @@ class ProfileFragment : Fragment() {
             setNotification(categorySearch)
         }
 
-
         loadBookmarks(user)
         loadCats(user)
     }
@@ -169,82 +193,21 @@ class ProfileFragment : Fragment() {
         viewModel.getCats(user).observe(this, Observer<List<Categories>> { t ->
             if (t != null) {
 
-                if (t[0].archive) {
-                    archive.isChecked = true
-                }else {
-                    archive.isChecked = false
-                }
-                if (t[0].audioDescribed) {
-                    audioDescribed.isChecked = true
-                }else {
-                    audioDescribed.isChecked = false
-                }
-                if (t[0].boing) {
-                    boing.isChecked = true
-                }else {
-                    boing.isChecked = false
-                }
-                if (t[0].cafe) {
-                    cafe.isChecked = true
-                }else {
-                    cafe.isChecked = false
-                }
-                if (t[0].captionedSubtitles) {
-                    captionedSubtitles.isChecked = true
-                }else {
-                    captionedSubtitles.isChecked = false
-                }
-                if (t[0].comedy) {
-                    comedy.isChecked = true
-                }else {
-                    comedy.isChecked = false
-                }
-                if (t[0].family) {
-                    family.isChecked = true
-                }else {
-                    family.isChecked = false
-                }
-                if (t[0].festival) {
-                    festival.isChecked = true
-                }else {
-                    festival.isChecked = false
-                }
-                if (t[0].foreign) {
-                    foreign.isChecked = true
-                }else {
-                    foreign.isChecked = false
-                }
-                if (t[0].music) {
-                    music.isChecked = true
-                }else {
-                    music.isChecked = false
-                }
-                if (t[0].live) {
-                    live.isChecked = true
-                }else {
-                    live.isChecked = false
-                }
-                if (t[0].relaxed) {
-                    relaxed.isChecked = true
-                }else {
-                    relaxed.isChecked = false
-                }
-                if (t[0].talks) {
-                    talks.isChecked = true
-                }else {
-                    talks.isChecked = false
-                }
-                if (t[0].theatreDance) {
-                    theatreDance.isChecked = true
-                }else {
-                    theatreDance.isChecked = false
-                }
-                if (t[0].workshops) {
-                    workshops.isChecked = true
-                }else {
-                    workshops.isChecked = false
-                }
-
+                archive.isChecked = t[0].archive
+                audioDescribed.isChecked = t[0].audioDescribed
+                boing.isChecked = t[0].boing
+                cafe.isChecked = t[0].cafe
+                captionedSubtitles.isChecked = t[0].captionedSubtitles
+                comedy.isChecked = t[0].comedy
+                family.isChecked = t[0].family
+                festival.isChecked = t[0].festival
+                foreign.isChecked = t[0].foreign
+                music.isChecked = t[0].music
+                live.isChecked = t[0].live
+                relaxed.isChecked = t[0].relaxed
+                talks.isChecked = t[0].talks
+                theatreDance.isChecked = t[0].theatreDance
+                workshops.isChecked = t[0].workshops
             }
         })
     }
@@ -272,7 +235,7 @@ class ProfileFragment : Fragment() {
                 PackageManager.DONT_KILL_APP
         )
 
-        var calender = Calendar.getInstance().apply {
+        val calender = Calendar.getInstance().apply {
             set(Calendar.HOUR_OF_DAY, 9)
             set(Calendar.DAY_OF_WEEK, MONDAY)
         }

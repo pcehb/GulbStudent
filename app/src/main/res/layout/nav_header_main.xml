@@ -12,6 +12,12 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
+    <ImageView
+        android:id="@+id/gulbstudentLogo"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        app:srcCompat="@drawable/gslogocircle" />
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"

@@ -1,7 +1,6 @@
 package uk.ac.kent.pceh3.gulbstudent
 
 import android.Manifest
-import android.app.ActivityManager
 import android.app.AlarmManager
 import android.app.AlertDialog
 import android.app.PendingIntent
@@ -10,8 +9,10 @@ import androidx.lifecycle.ViewModelProviders
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
+import android.net.Uri
 import com.google.android.gms.location.GeofencingClient
 import android.os.Bundle
+import android.provider.Settings
 import com.google.android.material.navigation.NavigationView
 import androidx.fragment.app.Fragment
 import androidx.core.view.GravityCompat
@@ -25,6 +26,8 @@ import kotlinx.android.synthetic.main.activity_main.*
 import uk.ac.kent.pceh3.gulbstudent.ui.MainActivityViewModel
 import uk.ac.kent.pceh3.gulbstudent.ui.login.LoginFragment
 import android.view.View
+import androidx.annotation.NonNull
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.*
@@ -34,29 +37,12 @@ import uk.ac.kent.pceh3.gulbstudent.network.*
 import uk.ac.kent.pceh3.gulbstudent.ui.comp.CompetitionFragment
 import uk.ac.kent.pceh3.gulbstudent.ui.profile.ProfileViewModel
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener
-
-//        , GoogleApiClient.ConnectionCallbacks,
-//        GoogleApiClient.OnConnectionFailedListener, SharedPreferences.OnSharedPreferenceChangeListener
-
-{
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     lateinit var geofencingClient: GeofencingClient
     lateinit var geofence : Geofence
     private lateinit var auth: FirebaseAuth
-
-//    private var mLocationRequest: LocationRequest? = null
-//    private var mGoogleApiClient: GoogleApiClient? = null
-//    private var locationProviderClient: FusedLocationProviderClient? = null
-//
-//
-//    companion object {
-//        private val TAG = MainActivity::class.java.simpleName
-//        private val REQUEST_PERMISSIONS_REQUEST_CODE = 34
-//        private val UPDATE_INTERVAL = (10 * 1000).toLong()
-//        private val FASTEST_UPDATE_INTERVAL = UPDATE_INTERVAL / 2
-//        private val MAX_WAIT_TIME = UPDATE_INTERVAL * 3
-//    }
-
+    private val REQUEST_PERMISSIONS_REQUEST_CODE = 34
+    private val TAG = MainActivity::class.java.simpleName
 
 
     private val geofencePendingIntent: PendingIntent by lazy {
@@ -71,6 +57,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolBar)
+
+        if (!checkPermissions()) {
+            requestPermissions()
+        }
+
 
         geofencingClient = LocationServices.getGeofencingClient(applicationContext)
 
@@ -108,7 +99,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         nav_view.setNavigationItemSelectedListener(this)
 
         val adapter = ViewPagerAdapter(supportFragmentManager)
-        adapter.addFragment(WhatsOnFragment(), "WHAT'S ON")
+        adapter.addFragment(WhatsOnFragment(), "SHOWS")
         adapter.addFragment(DealsFragment(), "DEALS")
         adapter.addFragment(CompetitionFragment(), "WIN")
         adapter.addFragment(BlogFragment(), "BLOG")
@@ -128,22 +119,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 if (viewPager.currentItem == 1){
                     tab_layout.getTabAt(1)!!.orCreateBadge.isVisible = false
 
-                }else if (viewPager.currentItem == 2){
-                    tab_layout.getTabAt(2)!!.orCreateBadge.isVisible = false
+                }else if (viewPager.currentItem == 3){
+                    tab_layout.getTabAt(3)!!.orCreateBadge.isVisible = false
 
                 }
             }
         })
-
-
-//        if (!checkPermissions()) {
-//            requestPermissions()
-//        }
-
-
-        //buildGoogleApiClient()
-
-       // locationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         val sharedPref: SharedPreferences = getSharedPreferences("DEAL_SIZE", 0)
         val sharedPrefBlog: SharedPreferences = getSharedPreferences("BLOG_SIZE", 0)
@@ -202,20 +183,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         })
 
-        val sharedPrefGeo: SharedPreferences = getSharedPreferences("GEOFENCE", 0)
 
-        if (!sharedPrefGeo.getBoolean("GEOFENCE", false)) {
-            add(success = {
-                println("GEOFENCE SUCCESS")
-                val editor = sharedPrefGeo.edit()
-                editor.putBoolean("GEOFENCE", true)
-                editor.apply()
-            },
-                    failure = {
-                        println("GEOFENCE FAILURE")
-                        Toast.makeText(this, it, Toast.LENGTH_LONG).show()
-                    })
-        }
 
     }
 
@@ -237,8 +205,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .build()
 
-        if (geofence != null
-                && ContextCompat.checkSelfPermission(
+        if (ContextCompat.checkSelfPermission(
                         applicationContext,
                         Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // 2
@@ -251,6 +218,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                         // 4
                         failure(GeofenceErrorMessages.getErrorString(applicationContext, it))
                     }
+
+
         }
     }
 
@@ -278,8 +247,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     .replace(R.id.content, LoginFragment())
                     .commit()
         }
-
-        //PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(this)
 
     }
 
@@ -416,216 +383,55 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
-//
-//    private fun buildAlertMessageNoGps() {
-//
-//        val builder = AlertDialog.Builder(this)
-//        builder.setMessage("Your GPS seems to be disabled, do you want to enable it?")
-//                .setCancelable(false)
-//                .setPositiveButton("Yes") { _, _ ->
-//                    startActivityForResult(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-//                            , 11)
-//                }
-//                .setNegativeButton("No") { dialog, _ ->
-//                    dialog.cancel()
-//                    finish()
-//                }
-//        val alert: AlertDialog = builder.create()
-//        alert.show()
-//
-//
-//    }
-//
-//    private fun createLocationRequest() {
-//        mLocationRequest = LocationRequest()
-//
-//        mLocationRequest!!.interval = UPDATE_INTERVAL
-//
-//        // Sets the fastest rate for active location updates. This interval is exact, and your
-//        // application will never receive updates faster than this value.
-//        mLocationRequest!!.fastestInterval = FASTEST_UPDATE_INTERVAL
-//        mLocationRequest!!.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-//
-//        // Sets the maximum time when batched location updates are delivered. Updates may be
-//        // delivered sooner than this interval.
-//        mLocationRequest!!.maxWaitTime = MAX_WAIT_TIME
-//    }
-//
-//    fun buildGoogleApiClient() {
-//        if (mGoogleApiClient != null) {
-//            createLocationRequest()
-//            return
-//        }
-//        mGoogleApiClient = GoogleApiClient.Builder(this)
-//                .addConnectionCallbacks(this)
-//                .enableAutoManage(this, this)
-//                .addApi(LocationServices.API)
-//                .build()
-//        createLocationRequest()
-//    }
-//
-//    fun getPendingIntent(): PendingIntent {
-//        val intent = Intent(this, LocationUpdatesBroadcastReceiver::class.java)
-//        intent.action = LocationUpdatesBroadcastReceiver.ACTION_PROCESS_UPDATES
-//        return PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-//    }
-//
-//    fun checkPermissions(): Boolean {
-//        val permissionState: Int = ActivityCompat.checkSelfPermission(
-//                this,
-//                Manifest.permission.ACCESS_FINE_LOCATION
-//        )
-//        return permissionState == PackageManager.PERMISSION_GRANTED
-//    }
-//
-//
-//    private fun requestPermissions() {
-//        val shouldProvideRationale = ActivityCompat.shouldShowRequestPermissionRationale(
-//                this,
-//                Manifest.permission.ACCESS_FINE_LOCATION
-//        )
-//
-//        // Provide an additional rationale to the user. This would happen if the user denied the
-//        // request previously, but didn't check the "Don't ask again" checkbox.
-//        if (shouldProvideRationale) {
-//            Log.i(TAG, "Displaying permission rationale to provide additional context.")
-//            Snackbar.make(
-//                    findViewById(R.id.container),
-//                    R.string.permission_rationale,
-//                    Snackbar.LENGTH_INDEFINITE
-//            )
-//                    .setAction("OK", View.OnClickListener {
-//                        // Request permission
-//                        ActivityCompat.requestPermissions(
-//                                this@MainActivity,
-//                                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-//                                REQUEST_PERMISSIONS_REQUEST_CODE
-//                        )
-//                    })
-//                    .show()
-//        } else {
-//            Log.i(TAG, "Requesting permission")
-//            // Request permission. It's possible this can be auto answered if device policy
-//            // sets the permission in a given state or the user denied the permission
-//            // previously and checked "Never ask again".
-//            ActivityCompat.requestPermissions(
-//                    this@MainActivity,
-//                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-//                    REQUEST_PERMISSIONS_REQUEST_CODE
-//            )
-//        }
-//    }
-//
-//    override fun onRequestPermissionsResult(
-//            requestCode: Int, @NonNull permissions: Array<String>,
-//            @NonNull grantResults: IntArray
-//    ) {
-//        Log.i(TAG, "onRequestPermissionResult")
-//        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
-//            if (grantResults.isEmpty()) {
-//                // If user interaction was interrupted, the permission request is cancelled and you
-//                // receive empty arrays.
-//                Log.i(TAG, "User interaction was cancelled.")
-//            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                // Permission was granted. Kick off the process of building and connecting
-//                // GoogleApiClient.
-//                buildGoogleApiClient()
-//            } else {
-//                // Permission denied.
-//
-//                // Notify the user via a SnackBar that they have rejected a core permission for the
-//                // app, which makes the Activity useless. In a real app, core permissions would
-//                // typically be best requested during a welcome-screen flow.
-//
-//                // Additionally, it is important to remember that a permission might have been
-//                // rejected without asking the user for permission (device policy or "Never ask
-//                // again" prompts). Therefore, a user interface affordance is typically implemented
-//                // when permissions are denied. Otherwise, your app could appear unresponsive to
-//                // touches or interactions which have required permissions.
-//                Snackbar.make(
-//                        findViewById(R.id.container),
-//                        R.string.permission_denied_explanation,
-//                        Snackbar.LENGTH_INDEFINITE
-//                )
-//                        .setAction(R.string.settings) {
-//                            // Build intent that displays the App settings screen.
-//                            val intent = Intent()
-//                            intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-//                            val uri = Uri.fromParts(
-//                                    "package",
-//                                    BuildConfig.APPLICATION_ID, null
-//                            )
-//                            intent.data = uri
-//                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-//                            startActivity(intent)
-//                        }
-//                        .show()
-//            }
-//        }
-//    }
-//
-//
-//    override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, s: String) {
-//        if (s == LocationResultHelper.KEY_LOCATION_UPDATES_RESULT) {
-//            println(LocationResultHelper.getSavedLocationResult(this))
-//        }
-//    }
-//
-//    override fun onConnectionSuspended(p0: Int) {
-//        val text = "Connection suspended"
-//        Log.w("LOCATION", "$text: Error code: $p0")
-//    }
-//
-//    override fun onConnectionFailed(p0: ConnectionResult) {
-//        val text = "Exception while connecting to Google Play services"
-//        Log.w("LOCATION", text + ": " + p0.errorMessage)
-//    }
-//
-//    override fun onConnected(@Nullable bundle: Bundle?) {
-//        Log.i(TAG, "GoogleApiClient connected")
-//
-//        try {
-//            Log.i(TAG, "Starting location updates")
-//
-//            var updatesIntent = Intent(this, LocationUpdatesBroadcastReceiver::class.java)
-//            updatesIntent.action = "uk.ac.kent.pceh3.gulbstudent.network.action.PROCESS_UPDATES"
-//            var pendingUpdatesIntent = PendingIntent.getBroadcast(this, 0, updatesIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-//
-//            LocationServices.FusedLocationApi.requestLocationUpdates(
-//                    mGoogleApiClient, mLocationRequest, pendingUpdatesIntent)
-//
-//
-//           var fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-//            locationProviderClient?.requestLocationUpdates(mLocationRequest, getPendingIntent())
-//
-//            if (LocationResultHelper.getSavedLocationResult(this) == null) {
-//                println("Saved location result NULL")
-//            } else {
-//
-//            }
-//
-//        } catch (e: SecurityException) {
-//            e.printStackTrace()
-//        }
-//    }
 
-    // Custom method to determine whether a service is running
-    private fun isServiceRunning(serviceClass: Class<*>): Boolean {
-        val activityManager = getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+    private fun checkPermissions(): Boolean {
+        val permissionState: Int = ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+        )
+        return permissionState == PackageManager.PERMISSION_GRANTED
+    }
 
-        // Loop through the running services
-        for (service in activityManager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.name == service.service.className) {
-                // If the service is running then return true
-                return true
+    private fun requestPermissions() {
+        Log.i(TAG, "Requesting permission")
+
+        ActivityCompat.requestPermissions(
+                this@MainActivity,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_PERMISSIONS_REQUEST_CODE
+        )
+    }
+
+    override fun onRequestPermissionsResult(
+            requestCode: Int, @NonNull permissions: Array<String>,
+            @NonNull grantResults: IntArray
+    ) {
+        Log.i(TAG, "onRequestPermissionResult")
+        if (requestCode == REQUEST_PERMISSIONS_REQUEST_CODE) {
+            if (grantResults.isEmpty()) {
+
+                Log.i(TAG, "User interaction was cancelled.")
+            } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                val sharedPrefGeo: SharedPreferences = getSharedPreferences("GEOFENCE", 0)
+
+                if (!sharedPrefGeo.getBoolean("GEOFENCE", false)) {
+                    add(success = {
+                        println("GEOFENCE SUCCESS")
+                        val editor = sharedPrefGeo.edit()
+                        editor.putBoolean("GEOFENCE", true)
+                        editor.apply()
+                    },
+                            failure = {
+                                println("GEOFENCE FAILURE")
+                                Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+                            })
+                }
+            } else {
+                // Permission denied.
+                requestPermissions()
             }
         }
-        return false
     }
 
-
-// Extension function to show toast message
-    fun Context.toast(message:String){
-        Toast.makeText(applicationContext,message,Toast.LENGTH_SHORT).show()
-    }
 }

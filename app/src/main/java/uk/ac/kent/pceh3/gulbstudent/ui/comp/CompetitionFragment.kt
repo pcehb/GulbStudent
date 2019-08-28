@@ -1,6 +1,5 @@
 package uk.ac.kent.pceh3.gulbstudent.ui.comp
 
-import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -42,7 +41,7 @@ class CompetitionFragment : Fragment() {
         viewModel.getComp().observe(this, Observer<Comp> { t ->
 
             description?.text = t.description
-            date?.text = getString(R.string.closedate) + t.closeDate
+            date?.text = getString(R.string.closedate) + " " + t.closeDate
             title?.text = t.title
 
             Picasso.get()

@@ -30,166 +30,166 @@ class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
 
 
-            if (intent!!.action == "android.intent.action.BOOT_COMPLETED") {
+        if (intent!!.action == "android.intent.action.BOOT_COMPLETED") {
 
-                Log.d(ContentValues.TAG, "onReceive: BOOT_COMPLETED")
+            Log.d(ContentValues.TAG, "onReceive: BOOT_COMPLETED")
 
-                auth = FirebaseAuth.getInstance()
-                val user = auth.currentUser
+            auth = FirebaseAuth.getInstance()
+            val user = auth.currentUser
 
-                if (user != null) {
-                    FirebaseDatabase.getInstance().reference.child("users").child(user.uid).child("bookmarked")
-                            .addListenerForSingleValueEvent(object : ValueEventListener {
+            if (user != null) {
+                FirebaseDatabase.getInstance().reference.child("users").child(user.uid).child("bookmarked")
+                        .addListenerForSingleValueEvent(object : ValueEventListener {
 
-                                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                    for (snapshot: DataSnapshot in dataSnapshot.getChildren()) {
-                                        val bookmarks = snapshot.getValue(Bookmarks::class.java)
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                for (snapshot: DataSnapshot in dataSnapshot.getChildren()) {
+                                    val bookmarks = snapshot.getValue(Bookmarks::class.java)
 
-                                        val bookmarkIntent = PendingIntent.getBroadcast(
-                                                context,
-                                                bookmarks!!.id!!,
-                                                Intent(context, AlarmBroadcastReceiver::class.java).apply {
-                                                    putExtra("title", bookmarks.title!!)
-                                                    putExtra("url", snapshot.key)
-                                                    putExtra("notificationId", bookmarks.id!!)
-                                                    putExtra("type", "bookmark")
-                                                },
-                                                PendingIntent.FLAG_CANCEL_CURRENT
-                                        )
-
-                                        val alarmManager = context!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-                                        alarmManager.set(
-                                                AlarmManager.RTC_WAKEUP,
-                                                Calendar.getInstance().apply {
-                                                    set(Calendar.HOUR_OF_DAY, 9)
-                                                    set(Calendar.MINUTE, 0)
-                                                    set(Calendar.SECOND, 0)
-                                                    set(Calendar.YEAR, bookmarks!!.year!!)
-                                                    set(Calendar.MONTH, bookmarks.month!!)
-                                                    set(Calendar.DATE, bookmarks.date!!)
-                                                }.timeInMillis,
-                                                bookmarkIntent
-                                        )
-                                    }
-                                }
-
-                                override fun onCancelled(error: DatabaseError) {
-                                    // Failed to read value
-                                }
-                            })
-
-
-
-                    FirebaseDatabase.getInstance().reference.child("users").child(user.uid).child("categories")
-                            .addListenerForSingleValueEvent(object : ValueEventListener {
-                                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                    var categorySearch = ""
-                                    if (dataSnapshot.child("archive").value == true) {
-                                        categorySearch += "&event_type%5B%5D=archive"
-                                    }
-                                    if (dataSnapshot.child("audioDescribed").value == true) {
-                                        categorySearch += "&event_type%5B%5D=audio-description"
-                                    }
-                                    if (dataSnapshot.child("boing").value == true) {
-                                        categorySearch += "&event_type%5B%5D=boing-festival"
-                                    }
-                                    if (dataSnapshot.child("cafe").value == true) {
-                                        categorySearch += "&event_type%5B%5D=cafe"
-                                    }
-                                    if (dataSnapshot.child("captionedSubtitles").value == true) {
-                                        categorySearch += "&event_type%5B%5D=captioned-subtitles"
-                                    }
-                                    if (dataSnapshot.child("comedy").value == true) {
-                                        categorySearch += "event_type%5B%5D=comedy"
-                                    }
-                                    if (dataSnapshot.child("family").value == true) {
-                                        categorySearch += "&event_type%5B%5D=family"
-                                    }
-                                    if (dataSnapshot.child("festival").value == true) {
-                                        categorySearch += "&event_type%5B%5D=festival"
-                                    }
-                                    if (dataSnapshot.child("foreign").value == true) {
-                                        categorySearch += "&event_type%5B%5D=foreign-language-subtitles"
-                                    }
-                                    if (dataSnapshot.child("music").value == true) {
-                                        categorySearch += "&event_type%5B%5D=music"
-                                    }
-                                    if (dataSnapshot.child("live").value == true) {
-                                        categorySearch += "&event_type%5B%5D=recorded-live-screening"
-                                    }
-                                    if (dataSnapshot.child("relaxed").value == true) {
-                                        categorySearch += "&event_type%5B%5D=relaxed"
-                                    }
-                                    if (dataSnapshot.child("talks").value == true) {
-                                        categorySearch += "&event_type%5B%5D=talks"
-                                    }
-                                    if (dataSnapshot.child("theatreDance").value == true) {
-                                        categorySearch += "&event_type%5B%5D=theathre-dance"
-                                    }
-                                    if (dataSnapshot.child("workshops").value == true) {
-                                        categorySearch += "&event_type%5B%5D=workshops"
-                                    }
-
-                                    val categoryIntent = PendingIntent.getBroadcast(
+                                    val bookmarkIntent = PendingIntent.getBroadcast(
                                             context,
-                                            0,
+                                            bookmarks!!.id!!,
                                             Intent(context, AlarmBroadcastReceiver::class.java).apply {
-                                                putExtra("notificationId", 1)
-                                                putExtra("categorySearch", categorySearch)
-                                                putExtra("type", "category")
+                                                putExtra("title", bookmarks.title!!)
+                                                putExtra("url", snapshot.key)
+                                                putExtra("notificationId", bookmarks.id!!)
+                                                putExtra("type", "bookmark")
                                             },
-                                            PendingIntent.FLAG_UPDATE_CURRENT
+                                            PendingIntent.FLAG_CANCEL_CURRENT
                                     )
-
 
                                     val alarmManager = context!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-                                    var calender = Calendar.getInstance().apply {
-                                        set(Calendar.HOUR_OF_DAY, 9)
-                                        set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
-                                    }
-
-                                    val now = Calendar.getInstance()
-                                    now.set(Calendar.SECOND, 0)
-                                    now.set(Calendar.MILLISECOND, 0)
-
-                                    if (calender.before(now)) {
-                                        println("BEFORE")
-                                        //this condition is used for future reminder that means your reminder not fire for past time
-                                        calender.add(Calendar.DATE, 7)
-                                    }
-                                    else{
-                                        println("AFTER")
-                                    }
-
-                                    alarmManager.setInexactRepeating(
+                                    alarmManager.set(
                                             AlarmManager.RTC_WAKEUP,
-                                            calender.timeInMillis,
-                                            AlarmManager.INTERVAL_DAY * 7,
-                                            categoryIntent
+                                            Calendar.getInstance().apply {
+                                                set(Calendar.HOUR_OF_DAY, 9)
+                                                set(Calendar.MINUTE, 0)
+                                                set(Calendar.SECOND, 0)
+                                                set(Calendar.YEAR, bookmarks!!.year!!)
+                                                set(Calendar.MONTH, bookmarks.month!!)
+                                                set(Calendar.DATE, bookmarks.date!!)
+                                            }.timeInMillis,
+                                            bookmarkIntent
                                     )
                                 }
+                            }
 
-                                override fun onCancelled(error: DatabaseError) {
-                                    // Failed to read value
-                                }
-                            })
-                }
-
-                addGeo(context!!, success = {
-                    println("GEOFENCE SUCCESS")
-                    Toast.makeText(context, "SUCCESS", Toast.LENGTH_LONG).show()
-                },
-                        failure = {
-                            println("GEOFENCE FAILURE")
-                            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+                            override fun onCancelled(error: DatabaseError) {
+                                // Failed to read value
+                            }
                         })
 
-                return
+
+
+                FirebaseDatabase.getInstance().reference.child("users").child(user.uid).child("categories")
+                        .addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                                var categorySearch = ""
+                                if (dataSnapshot.child("archive").value == true) {
+                                    categorySearch += "&event_type%5B%5D=archive"
+                                }
+                                if (dataSnapshot.child("audioDescribed").value == true) {
+                                    categorySearch += "&event_type%5B%5D=audio-description"
+                                }
+                                if (dataSnapshot.child("boing").value == true) {
+                                    categorySearch += "&event_type%5B%5D=boing-festival"
+                                }
+                                if (dataSnapshot.child("cafe").value == true) {
+                                    categorySearch += "&event_type%5B%5D=cafe"
+                                }
+                                if (dataSnapshot.child("captionedSubtitles").value == true) {
+                                    categorySearch += "&event_type%5B%5D=captioned-subtitles"
+                                }
+                                if (dataSnapshot.child("comedy").value == true) {
+                                    categorySearch += "event_type%5B%5D=comedy"
+                                }
+                                if (dataSnapshot.child("family").value == true) {
+                                    categorySearch += "&event_type%5B%5D=family"
+                                }
+                                if (dataSnapshot.child("festival").value == true) {
+                                    categorySearch += "&event_type%5B%5D=festival"
+                                }
+                                if (dataSnapshot.child("foreign").value == true) {
+                                    categorySearch += "&event_type%5B%5D=foreign-language-subtitles"
+                                }
+                                if (dataSnapshot.child("music").value == true) {
+                                    categorySearch += "&event_type%5B%5D=music"
+                                }
+                                if (dataSnapshot.child("live").value == true) {
+                                    categorySearch += "&event_type%5B%5D=recorded-live-screening"
+                                }
+                                if (dataSnapshot.child("relaxed").value == true) {
+                                    categorySearch += "&event_type%5B%5D=relaxed"
+                                }
+                                if (dataSnapshot.child("talks").value == true) {
+                                    categorySearch += "&event_type%5B%5D=talks"
+                                }
+                                if (dataSnapshot.child("theatreDance").value == true) {
+                                    categorySearch += "&event_type%5B%5D=theathre-dance"
+                                }
+                                if (dataSnapshot.child("workshops").value == true) {
+                                    categorySearch += "&event_type%5B%5D=workshops"
+                                }
+
+                                val categoryIntent = PendingIntent.getBroadcast(
+                                        context,
+                                        0,
+                                        Intent(context, AlarmBroadcastReceiver::class.java).apply {
+                                            putExtra("notificationId", 1)
+                                            putExtra("categorySearch", categorySearch)
+                                            putExtra("type", "category")
+                                        },
+                                        PendingIntent.FLAG_UPDATE_CURRENT
+                                )
+
+
+                                val alarmManager = context!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+                                var calender = Calendar.getInstance().apply {
+                                    set(Calendar.HOUR_OF_DAY, 9)
+                                    set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+                                }
+
+                                val now = Calendar.getInstance()
+                                now.set(Calendar.SECOND, 0)
+                                now.set(Calendar.MILLISECOND, 0)
+
+                                if (calender.before(now)) {
+                                    println("BEFORE")
+                                    //this condition is used for future reminder that means your reminder not fire for past time
+                                    calender.add(Calendar.DATE, 7)
+                                }
+                                else{
+                                    println("AFTER")
+                                }
+
+                                alarmManager.setInexactRepeating(
+                                        AlarmManager.RTC_WAKEUP,
+                                        calender.timeInMillis,
+                                        AlarmManager.INTERVAL_DAY * 7,
+                                        categoryIntent
+                                )
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+                                // Failed to read value
+                            }
+                        })
             }
 
+            addGeo(context!!, success = {
+                println("GEOFENCE SUCCESS")
+                Toast.makeText(context, "SUCCESS", Toast.LENGTH_LONG).show()
+            },
+                    failure = {
+                        println("GEOFENCE FAILURE")
+                        Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+                    })
+
+            return
         }
+
+    }
 
     fun addGeo(context: Context, success: () -> Unit,
                failure: (error: String) -> Unit) {
@@ -222,8 +222,7 @@ class BootReceiver : BroadcastReceiver() {
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .build()
 
-        if (geofence != null
-                && ContextCompat.checkSelfPermission(
+        if (ContextCompat.checkSelfPermission(
                         context,
                         Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // 2

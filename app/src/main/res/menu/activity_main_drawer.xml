@@ -14,7 +14,7 @@
             android:title="@string/deals" />
         <item
             android:id="@+id/nav_comp"
-            android:icon="@drawable/icons8_trophy_24"
+            android:icon="@drawable/icons8_trophy_48"
             android:title="@string/win" />
         <item
             android:id="@+id/nav_blog"

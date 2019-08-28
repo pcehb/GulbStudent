@@ -56,7 +56,7 @@
     <string name="_3_paste_code_in_at_checkout">3: Paste code in at checkout</string>
     <string name="no_events_for_current_search_term">No events for current search term.</string>
     <string name="welcome_to_the_gulbstudent_android_application">Welcome to The GulbStudent Android Application.</string>
-    <string name="gulbstudent_is_a_student_engagement_application_that_allows_students_to_view_and_bookmark_current_and_upcoming_shows_students_can_also_read_a_dedicated_gulbenkian_blog_tailored_to_students_get_notifications_when_new_shows_are_added_their_favourite_categories_enter_competitions_to_win_tickets_to_shows_and_view_exclusive_deals_and_discounts">GulbStudent is a student engagement application that allows students to view and bookmark current and upcoming shows. Students can also read a dedicated Gulbenkian blog tailored to students, get notifications when new shows are added their favourite categories, enter competitions to win tickets to shows, and view exclusive deals and discounts. GulbStudent uses icons from icons9.com</string>
+    <string name="gulbstudent_is_a_student_engagement_application_that_allows_students_to_view_and_bookmark_current_and_upcoming_shows_students_can_also_read_a_dedicated_gulbenkian_blog_tailored_to_students_get_notifications_when_new_shows_are_added_their_favourite_categories_enter_competitions_to_win_tickets_to_shows_and_view_exclusive_deals_and_discounts">GulbStudent is a student engagement application that allows students to view and bookmark current and upcoming shows. Students can also read a dedicated Gulbenkian blog tailored to students, get notifications when new shows are added their favourite categories, enter competitions to win tickets to shows, and view exclusive deals and discounts. GulbStudent uses icons from icons8.com</string>
     <string name="gulbstudent_was_developed_by_phoebe_heath_brown_in_2019_for_a_mobile_application_development_msc_dissertation_project">GulbStudent was developed by Phoebe Heath-Brown in 2019 for a Mobile Application Development MSc dissertation project.</string>
     <string name="enter">ENTER</string>
     <string name="no_comps">No competitions currently open. Please check back in a few days.</string>
@@ -79,7 +79,7 @@
     <string name="favourited_categories">Favourited Categories:</string>
     <string name="gulbcard_owner">GulbCard owner:</string>
     <string name="save">Save</string>
-    <string name="what_s_on">What\'s On</string>
+    <string name="what_s_on">Shows</string>
     <string name="deals">Deals</string>
     <string name="win">Win</string>
     <string name="blog">Blog</string>
@@ -92,6 +92,6 @@
     <string name="sign_out">Sign Out</string>
     <string name="compclosed">Competition closed</string>
     <string name="entered">Entered</string>
-    <string name="closedate">Close date:</string>
+    <string name="closedate">Close date: </string>
 
 </resources>

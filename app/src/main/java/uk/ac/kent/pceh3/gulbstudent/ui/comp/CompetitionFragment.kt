@@ -12,15 +12,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_competition.*
-
 import uk.ac.kent.pceh3.gulbstudent.R
 import uk.ac.kent.pceh3.gulbstudent.model.Comp
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 
+// competition fragment
 class CompetitionFragment : Fragment() {
-
 
     private lateinit var auth: FirebaseAuth
     private var gulbCard : Boolean = false
@@ -37,22 +36,21 @@ class CompetitionFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // observe the current competition from view model
         val viewModel = ViewModelProviders.of(this).get(CompViewModel::class.java)
         viewModel.getComp().observe(this, Observer<Comp> { t ->
-
             description?.text = t.description
             date?.text = getString(R.string.closedate) + " " + t.closeDate
             title?.text = t.title
-
             Picasso.get()
                     .load(t.photoURL)
                     .placeholder(R.drawable.logo)
                     .into(image)
 
-
             val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
             val date = LocalDate.parse(t.closeDate, formatter)
 
+            // if closing date is after current date
             if (LocalDate.now().isAfter(date)){
                 enter.text = getString(R.string.compclosed)
                 enter.isEnabled = false
@@ -61,12 +59,11 @@ class CompetitionFragment : Fragment() {
             }
         })
 
-
+        // check if user has already entered
         viewModel.getEntries().observe(this, Observer<List<String>> { t ->
 
             for (entry in t){
-                if (entry == auth.currentUser!!.email)
-                {
+                if (entry == auth.currentUser!!.email) {
                     enter.text = getString(R.string.entered)
                     enter.isEnabled = false
                     enter.backgroundTintList = getColorStateList(context!!, R.color.colorPrimaryDark)

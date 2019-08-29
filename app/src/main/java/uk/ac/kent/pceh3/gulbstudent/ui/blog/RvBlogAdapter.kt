@@ -1,9 +1,7 @@
 package uk.ac.kent.pceh3.gulbstudent.ui
 
 import android.app.ActivityOptions
-import android.app.PendingIntent.getActivity
 import android.content.Intent
-import android.os.Bundle
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -13,14 +11,9 @@ import android.widget.TextView
 import uk.ac.kent.pceh3.gulbstudent.R
 import uk.ac.kent.pceh3.gulbstudent.model.Blog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.startActivity
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.activity_main.*
 
-
-/**
- * Created by pceh3 on 14/07/2019.
- */
+// adapter for blog fragment
 class RvBlogAdapter(val blogList: List<Blog>?) : RecyclerView.Adapter<RvBlogAdapter.ViewHolder>(), View.OnClickListener {
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewHolder {
         val v = LayoutInflater.from(p0.context).inflate(R.layout.adapter_blog_item_layout, p0, false)
@@ -32,6 +25,7 @@ class RvBlogAdapter(val blogList: List<Blog>?) : RecyclerView.Adapter<RvBlogAdap
         return blogList!!.size
     }
 
+    // display info from blog list position in the card
     override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
         p0.article?.text = blogList!![p1].article
         p0.date?.text = blogList[p1].date
@@ -57,9 +51,9 @@ class RvBlogAdapter(val blogList: List<Blog>?) : RecyclerView.Adapter<RvBlogAdap
         val title = itemView.findViewById<TextView>(R.id.title)
         val photo = itemView.findViewById<ImageView>(R.id.articleImage)
 
-        val activity = itemView.getContext() as AppCompatActivity
-
-        activity?.let{
+        val activity = itemView.context as AppCompatActivity
+        // open details activity with info from that blog parsed as extras
+        activity.let {
             val intent = Intent (it, DetailActivity::class.java)
             intent.putExtra("openingFragment", "article")
             intent.putExtra("title", title.text)

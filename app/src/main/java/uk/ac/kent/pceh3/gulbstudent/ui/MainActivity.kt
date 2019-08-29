@@ -9,10 +9,8 @@ import androidx.lifecycle.ViewModelProviders
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
-import android.net.Uri
 import com.google.android.gms.location.GeofencingClient
 import android.os.Bundle
-import android.provider.Settings
 import com.google.android.material.navigation.NavigationView
 import androidx.fragment.app.Fragment
 import androidx.core.view.GravityCompat
@@ -37,6 +35,8 @@ import uk.ac.kent.pceh3.gulbstudent.network.*
 import uk.ac.kent.pceh3.gulbstudent.ui.comp.CompetitionFragment
 import uk.ac.kent.pceh3.gulbstudent.ui.profile.ProfileViewModel
 
+
+// main activity
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     lateinit var geofencingClient: GeofencingClient
     lateinit var geofence : Geofence
@@ -46,9 +46,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
 
     private val geofencePendingIntent: PendingIntent by lazy {
-        val intent = Intent(this, GeofenceBroadcastReceiver::class.java)
-        // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
-        // addGeofences() and removeGeofences().
         PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 
@@ -58,17 +55,17 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolBar)
 
+        //check location permission
         if (!checkPermissions()) {
             requestPermissions()
         }
 
-
         geofencingClient = LocationServices.getGeofencingClient(applicationContext)
-
 
         toolBar.setTitle(R.string.app_name)
         toolBar.setTitleTextColor(getColor(R.color.colorAccent))
 
+        // checks if connected to internet
         val connectivityManager = this.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetwork: NetworkInfo? = connectivityManager.activeNetworkInfo
         val isConnected: Boolean = activeNetwork?.isConnectedOrConnecting == true
@@ -76,21 +73,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         if (!isConnected){
             val builder = AlertDialog.Builder(this)
-        builder.setMessage("No internet connection. Please connect to the internet to use GulbStudent.")
-                .setCancelable(false)
-                .setPositiveButton("Okay") { _, _ ->
-                    finish()
-                }
+            builder.setMessage("No internet connection. Please connect to the internet to use GulbStudent.")
+                    .setCancelable(false)
+                    .setPositiveButton("Okay") { _, _ ->
+                        //close app if no internet
+                        finish()
+                    }
 
-        val alert: AlertDialog = builder.create()
-        alert.show()
+            val alert: AlertDialog = builder.create()
+            alert.show()
         }
-
-
 
         auth = FirebaseAuth.getInstance()
 
-
+        // navigation drawer
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolBar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
@@ -98,6 +94,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         nav_view.setNavigationItemSelectedListener(this)
 
+        // view pager
         val adapter = ViewPagerAdapter(supportFragmentManager)
         adapter.addFragment(WhatsOnFragment(), "SHOWS")
         adapter.addFragment(DealsFragment(), "DEALS")
@@ -115,6 +112,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 //
             }
 
+            //remove tab badge when tab left
             override fun onTabUnselected(tab: TabLayout.Tab) {
                 if (viewPager.currentItem == 1){
                     tab_layout.getTabAt(1)!!.orCreateBadge.isVisible = false
@@ -126,6 +124,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         })
 
+        // get deal and blog size from shared prefs
         val sharedPref: SharedPreferences = getSharedPreferences("DEAL_SIZE", 0)
         val sharedPrefBlog: SharedPreferences = getSharedPreferences("BLOG_SIZE", 0)
 
@@ -139,6 +138,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     editor.putInt("DEAL_SIZE", t!!)
                     editor.apply()
                 }
+                //if bigger set tab badge to indicated to user new information to view
                 sharedPref.getInt("DEAL_SIZE", 0) < t!! -> {
                     println("BIGGER DEAL SIZE = $t")
                     tab_layout.getTabAt(1)!!.orCreateBadge.backgroundColor = getColor(R.color.colorAccent)
@@ -165,6 +165,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     editor.putInt("BLOG_SIZE", t!!)
                     editor.apply()
                 }
+                //if bigger set tab badge to indicated to user new information to view
                 sharedPrefBlog.getInt("BLOG_SIZE", 0) < t!! -> {
                     println("BIGGER BLOG SIZE = $t")
                     tab_layout.getTabAt(3)!!.orCreateBadge.backgroundColor = getColor(R.color.colorAccent)
@@ -184,31 +185,27 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         })
 
 
-
     }
 
     private fun add(success: () -> Unit,
                     failure: (error: String) -> Unit) {
-        // 1
 
         geofence = Geofence.Builder()
-                // Set the request ID of the geofence. This is a string to identify this
-                // geofence.
                 .setRequestId("gulbenkian")
-                // Set the circular region of this geofence.
+                // latlong of the gulbenkian
                 .setCircularRegion(
                         51.298564,
                         1.069307,
                         400.toFloat()
                 )
-                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER or Geofence.GEOFENCE_TRANSITION_EXIT)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER)
                 .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .build()
 
         if (ContextCompat.checkSelfPermission(
                         applicationContext,
                         Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // 2
+
             geofencingClient
                     .addGeofences(buildGeofencingRequest(geofence), geofencePendingIntent)
                     .addOnSuccessListener {
@@ -235,13 +232,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onStart() {
         super.onStart()
 
+        // if user not logged in then take to login fragment
         val currentUser = auth.currentUser
         if (currentUser == null){
             this.viewPager.visibility = View.GONE
             this.tab_layout.visibility = View.GONE
             this.content.visibility = View.VISIBLE
 
-            var fragmentManager = supportFragmentManager
+            val fragmentManager = supportFragmentManager
             fragmentManager
                     .beginTransaction()
                     .replace(R.id.content, LoginFragment())
@@ -302,22 +300,23 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 this.viewPager.visibility = View.GONE
                 this.tab_layout.visibility = View.GONE
                 this.content.visibility = View.VISIBLE
+
+                //cancel all upcoming notifications
                 val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
                 val viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
                 viewModel.getBookmarks(auth.currentUser!!).observe(this, Observer<List<Bookmarks>> { t ->
-                            for (bookmark in t){
-                                val bookmarkIntent = PendingIntent.getBroadcast(
-                                        applicationContext,
-                                        bookmark.id!!,
-                                        Intent(applicationContext, AlarmBroadcastReceiver::class.java).apply {
-                                        },
-                                        PendingIntent.FLAG_CANCEL_CURRENT
-                                )
-                                alarmManager.cancel(bookmarkIntent)
-                            }
-                        })
-
+                    for (bookmark in t) {
+                        val bookmarkIntent = PendingIntent.getBroadcast(
+                                applicationContext,
+                                bookmark.id!!,
+                                Intent(applicationContext, AlarmBroadcastReceiver::class.java).apply {
+                                },
+                                PendingIntent.FLAG_CANCEL_CURRENT
+                        )
+                        alarmManager.cancel(bookmarkIntent)
+                    }
+                })
 
 
                 val categoryIntent = PendingIntent.getBroadcast(
@@ -329,7 +328,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                 alarmManager.cancel(categoryIntent)
 
-
+                // sign user out
                 FirebaseAuth.getInstance().signOut()
             }
             else -> {
@@ -339,7 +338,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
 
-        var fragment: Fragment = when (item.itemId) {
+        val fragment: Fragment = when (item.itemId) {
             R.id.nav_whatson -> {
                 WhatsOnFragment()
             }
@@ -375,7 +374,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
 
-        var fragmentManager = supportFragmentManager
+        //display new fragment
+        val fragmentManager = supportFragmentManager
         fragmentManager
                 .beginTransaction()
                 .replace(R.id.content, fragment)
@@ -384,6 +384,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return true
     }
 
+    //check location permission
     private fun checkPermissions(): Boolean {
         val permissionState: Int = ActivityCompat.checkSelfPermission(
                 this,
@@ -392,6 +393,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         return permissionState == PackageManager.PERMISSION_GRANTED
     }
 
+    //request location permission
     private fun requestPermissions() {
         Log.i(TAG, "Requesting permission")
 
@@ -412,6 +414,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
                 Log.i(TAG, "User interaction was cancelled.")
             } else if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                //if granted then add geofence
 
                 val sharedPrefGeo: SharedPreferences = getSharedPreferences("GEOFENCE", 0)
 

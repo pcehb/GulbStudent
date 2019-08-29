@@ -9,16 +9,8 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_blog_article.*
 import uk.ac.kent.pceh3.gulbstudent.R
 
-
-
-
-/**
- * Created by pceh3 on 14/07/2019.
- */
-
+// blog article fragment
 class BlogArticleFragment : Fragment() {
-
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
@@ -26,7 +18,6 @@ class BlogArticleFragment : Fragment() {
 
         return view
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -39,7 +30,6 @@ class BlogArticleFragment : Fragment() {
                 .load(this.arguments?.getString("photoURL"))
                 .placeholder(R.drawable.logo)
                 .into(articleImage)
-
     }
 
 }

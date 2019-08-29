@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.fragment_create_account.*
 import uk.ac.kent.pceh3.gulbstudent.R
 import uk.ac.kent.pceh3.gulbstudent.WhatsOnFragment
 
-
+// create account fragment
 class CreateAccountFragment: Fragment() {
 
     private lateinit var auth: FirebaseAuth
@@ -43,10 +43,12 @@ class CreateAccountFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         createAccountButton.setOnClickListener{
-            var email = emailEditText.text.toString()
-            var password = passwordEditText.text.toString()
+            // get entered details
+            val email = emailEditText.text.toString()
+            val password = passwordEditText.text.toString()
             Log.d(ContentValues.TAG, "signIn:$email")
 
+            // create user
             auth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this.requireActivity()) { task ->
                         if (task.isSuccessful) {
@@ -54,19 +56,19 @@ class CreateAccountFragment: Fragment() {
                             Log.d(TAG, "createUserWithEmail:success")
                             val user = auth.currentUser
 
-                            activity!!.viewPager.setCurrentItem(0)
+                            activity!!.viewPager.currentItem = 0
                             activity!!.content.visibility = View.GONE
                             activity!!.viewPager.visibility = View.VISIBLE
                             activity!!.tab_layout.visibility = View.VISIBLE
 
                             activity!!.toolBar.setNavigationIcon(R.drawable.icons8_menu_24)
 
-
                             activity!!.supportFragmentManager
                                     .beginTransaction()
                                     .replace(R.id.content, WhatsOnFragment())
                                     .commit()
 
+                            // initialise firebase data for user
                             database = database.child("users").child(user!!.uid)
                             database.child("categories").child("archive").setValue(false)
                             database.child("categories").child("audioDescribed").setValue(false)

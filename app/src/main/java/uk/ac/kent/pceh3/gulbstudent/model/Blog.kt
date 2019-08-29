@@ -1,8 +1,7 @@
 package uk.ac.kent.pceh3.gulbstudent.model
 
-/**
- * Created by pceh3 on 14/07/2019.
- */
+// Class for student blog
+
 class Blog {
     var article: String?
     var date : String?
@@ -10,9 +9,7 @@ class Blog {
     var photoURL : String?
 
 
-    constructor():this("","", "", "") {
-
-    }
+    constructor() : this("", "", "", "")
 
     constructor(article: String?, date: String?, title: String?, photoURL : String?) {
         this.article = article

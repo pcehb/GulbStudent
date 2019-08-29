@@ -1,6 +1,5 @@
 package uk.ac.kent.pceh3.gulbstudent.ui.login
 
-import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -11,11 +10,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_reset_password.*
 import uk.ac.kent.pceh3.gulbstudent.R
-import uk.ac.kent.pceh3.gulbstudent.WhatsOnFragment
 
+//reset password fragment
 class ResetPasswordFragment : Fragment() {
 
     private lateinit var auth: FirebaseAuth
@@ -37,7 +35,8 @@ class ResetPasswordFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         resetButton.setOnClickListener{
-            var email = emailEditText.text.toString()
+            //get entered details
+            val email = emailEditText.text.toString()
             Log.d(TAG, "signIn:$email")
 
             auth.sendPasswordResetEmail(email)

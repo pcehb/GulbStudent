@@ -12,7 +12,7 @@ import uk.ac.kent.pceh3.gulbstudent.R
 import uk.ac.kent.pceh3.gulbstudent.model.WhatsOn
 import uk.ac.kent.pceh3.gulbstudent.ui.WhatsOnViewModel
 
-
+// suggested fragment (category notification page)
 class SuggestedFragment : Fragment() {
 
     private lateinit var layoutManager: LinearLayoutManager
@@ -32,24 +32,21 @@ class SuggestedFragment : Fragment() {
         val startDate = bundle.getString("startDate")
         val endDate = bundle.getString("endDate")
 
-        println("$categorySearch, $startDate, $endDate")
-
         loadFeed("", categorySearch!!, startDate!!, endDate!!)
     }
 
-    fun loadFeed(search:String, eventType: String, startDate: String, endDate: String){
+    //load feed with the search queries
+    private fun loadFeed(search: String, eventType: String, startDate: String, endDate: String) {
         progressBar.visibility = VISIBLE
         val viewModel = ViewModelProviders.of(this).get(WhatsOnViewModel::class.java)
-        viewModel.getWhatsOn(search, eventType, startDate, endDate).observe(this, object : Observer<List<WhatsOn>> {
-            override fun onChanged(t: List<WhatsOn>?) {
-                val data = t
-                if (data != null){
-                    recyclerViewWO.layoutManager = layoutManager
-                    val rvWhatsOnAdapter = RvWhatsOnAdapter(data)
-                    recyclerViewWO.adapter = rvWhatsOnAdapter
-                    rvWhatsOnAdapter.updateData(data)
-                    progressBar.visibility = GONE
-                }
+        viewModel.getWhatsOn(search, eventType, startDate, endDate).observe(this, Observer<List<WhatsOn>> { t ->
+            if (t != null) {
+                //show data result in RV
+                recyclerViewWO.layoutManager = layoutManager
+                val rvWhatsOnAdapter = RvWhatsOnAdapter(t)
+                recyclerViewWO.adapter = rvWhatsOnAdapter
+                rvWhatsOnAdapter.updateData(t)
+                progressBar.visibility = GONE
             }
         })
     }

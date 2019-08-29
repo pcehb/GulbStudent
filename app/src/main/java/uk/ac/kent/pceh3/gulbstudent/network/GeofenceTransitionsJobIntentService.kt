@@ -6,11 +6,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.JobIntentService
-import androidx.core.app.NotificationCompat
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingEvent
 import com.google.firebase.database.DataSnapshot
@@ -18,11 +14,10 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import uk.ac.kent.pceh3.gulbstudent.MainActivity
-import uk.ac.kent.pceh3.gulbstudent.ui.MainActivityViewModel
-import java.time.DayOfWeek
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.time.temporal.TemporalAdjusters
+
+//Job service for geofence
 
 class GeofenceTransitionsJobIntentService : JobIntentService() {
     private var notificationManager: NotificationManager? = null
@@ -61,17 +56,22 @@ class GeofenceTransitionsJobIntentService : JobIntentService() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // This method is called once with the initial value
 
-                message = dataSnapshot.value.toString()
+                message = dataSnapshot.value.toString() // get geofence message from firebase
+                //if entered
                 if (event.geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
 
+
+                    // get current date
                     val current = LocalDateTime.now()
                     val formatter = DateTimeFormatter.BASIC_ISO_DATE
                     val formattedStartDate = current.format(formatter)
 
-
+                    // get lift time geofence was entered from shared prefs
                     val sharedPref: SharedPreferences = getSharedPreferences("GULB_VISIT", 0)
 
+                    // if didnt enter geofence already today
                     if (sharedPref.getString("GULB_VISIT", "") != formattedStartDate) {
+                        // put today's date in shared prefs
                         val editor = sharedPref.edit()
                         editor.putString("GULB_VISIT", formattedStartDate)
                         editor.apply()
@@ -96,6 +96,7 @@ class GeofenceTransitionsJobIntentService : JobIntentService() {
                                 PendingIntent.FLAG_UPDATE_CURRENT
                         )
 
+                        // build and show geofence notification
                         val notification = Notification.Builder(applicationContext,
                                 channelID)
                                 .setContentTitle("GulbStudent")

@@ -3,14 +3,11 @@ package uk.ac.kent.pceh3.gulbstudent.ui
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseUser
-import uk.ac.kent.pceh3.gulbstudent.model.Bookmarks
 import uk.ac.kent.pceh3.gulbstudent.model.WhatsOn
 import uk.ac.kent.pceh3.gulbstudent.network.FirebaseRepository
 import uk.ac.kent.pceh3.gulbstudent.network.WhatsOnAjax
 
-/**
- * Created by pceh3 on 14/07/2019.
- */
+// view model for shows page
 class WhatsOnViewModel : ViewModel() {
 
     private var whatsOnLiveData: LiveData<List<WhatsOn>>? = null

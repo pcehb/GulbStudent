@@ -29,7 +29,7 @@ import uk.ac.kent.pceh3.gulbstudent.network.AlarmBroadcastReceiver
 import uk.ac.kent.pceh3.gulbstudent.ui.DetailActivity
 import java.util.*
 
-
+//login fragment
 class LoginFragment : Fragment() {
 
     private lateinit var auth: FirebaseAuth
@@ -51,10 +51,12 @@ class LoginFragment : Fragment() {
         val activity = context as AppCompatActivity
 
         loginButton.setOnClickListener {
+            // get entered details
             val email = emailEditText.text.toString()
             val password = passwordEditText.text.toString()
             Log.d(TAG, "signIn:$email")
 
+            //signin
             auth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this.requireActivity()) { task ->
                         if (task.isSuccessful) {
@@ -65,10 +67,11 @@ class LoginFragment : Fragment() {
 
                             println("USER: " + user?.uid)
 
+                            //set bookmark notifications
                             FirebaseDatabase.getInstance().reference.child("users").child(user!!.uid).child("bookmarked")
                                     .addListenerForSingleValueEvent(object : ValueEventListener {
                                         override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                            for (snapshot: DataSnapshot in dataSnapshot.getChildren()) {
+                                            for (snapshot: DataSnapshot in dataSnapshot.children) {
                                                 val bookmarks = snapshot.getValue(Bookmarks::class.java)
 
                                                 val bookmarkIntent = PendingIntent.getBroadcast(
@@ -85,13 +88,14 @@ class LoginFragment : Fragment() {
 
                                                 val alarmManager = activity.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
+                                                //set notification 9am of show day
                                                 alarmManager.set(
                                                         AlarmManager.RTC_WAKEUP,
                                                         Calendar.getInstance().apply {
                                                             set(Calendar.HOUR_OF_DAY, 9)
                                                             set(Calendar.MINUTE, 0)
                                                             set(Calendar.SECOND, 0)
-                                                            set(Calendar.YEAR, bookmarks!!.year!!)
+                                                            set(Calendar.YEAR, bookmarks.year!!)
                                                             set(Calendar.MONTH, bookmarks.month!!)
                                                             set(Calendar.DATE, bookmarks.date!!)
                                                         }.timeInMillis,
@@ -106,8 +110,8 @@ class LoginFragment : Fragment() {
                                     })
 
 
-
-                            FirebaseDatabase.getInstance().reference.child("users").child(user!!.uid).child("categories")
+                            //set categories notification
+                            FirebaseDatabase.getInstance().reference.child("users").child(user.uid).child("categories")
                                     .addListenerForSingleValueEvent(object : ValueEventListener {
                                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                                             var categorySearch = ""
@@ -171,7 +175,7 @@ class LoginFragment : Fragment() {
 
                                             val alarmManager = activity.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-                                            var calender = Calendar.getInstance().apply {
+                                            val calender = Calendar.getInstance().apply {
                                                 set(Calendar.HOUR_OF_DAY, 9)
                                                 set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
                                             }
@@ -182,13 +186,12 @@ class LoginFragment : Fragment() {
 
                                             if (calender.before(now)) {
                                                 println("BEFORE")
-                                                //this condition is used for future reminder that means your reminder not fire for past time
                                                 calender.add(Calendar.DATE, 7)
-                                            }
-                                            else{
+                                            } else {
                                                 println("AFTER")
                                             }
 
+                                            // set repeat every monday 9am
                                             alarmManager.setInexactRepeating(
                                                     AlarmManager.RTC_WAKEUP,
                                                     calender.timeInMillis,
@@ -202,15 +205,15 @@ class LoginFragment : Fragment() {
                                         }
                                     })
 
-                            activity!!.viewPager.currentItem = 0
-                            activity!!.content.visibility = View.GONE
-                            activity!!.viewPager.visibility = View.VISIBLE
-                            activity!!.tab_layout.visibility = View.VISIBLE
+                            activity.viewPager.currentItem = 0
+                            activity.content.visibility = View.GONE
+                            activity.viewPager.visibility = View.VISIBLE
+                            activity.tab_layout.visibility = View.VISIBLE
 
-                            activity!!.toolBar.setNavigationIcon(R.drawable.icons8_menu_24)
+                            activity.toolBar.setNavigationIcon(R.drawable.icons8_menu_24)
 
 
-                            activity!!.supportFragmentManager
+                            activity.supportFragmentManager
                                     .beginTransaction()
                                     .replace(R.id.content, WhatsOnFragment())
                                     .commit()

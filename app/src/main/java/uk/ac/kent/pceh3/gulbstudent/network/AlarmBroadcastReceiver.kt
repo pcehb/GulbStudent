@@ -9,21 +9,23 @@ import android.graphics.Color
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import uk.ac.kent.pceh3.gulbstudent.MainActivity
 import uk.ac.kent.pceh3.gulbstudent.ui.DetailActivity
 import java.time.DayOfWeek
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAdjusters
 
+// Broadcast receiver for notifications
+
 class AlarmBroadcastReceiver : BroadcastReceiver() {
     private var notificationManager: NotificationManager? = null
     private lateinit var auth: FirebaseAuth
 
     override fun onReceive(context: Context?, intent: Intent?) {
+
         auth = FirebaseAuth.getInstance()
-        notificationManager =
-                context!!.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        notificationManager = context!!.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         createNotificationChannel(
                 "uk.ac.kent.pceh3.gulbstudent",
@@ -32,10 +34,13 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
 
         Log.d(TAG, "onReceive: a notification")
 
+
+        // if the notification is a bookmark notification
         if (intent!!.getCharSequenceExtra("type").toString() == "bookmark"){
             Log.d(TAG, "onReceive: bookmarkNotification")
             val channelID = "uk.ac.kent.pceh3.gulbstudent"
 
+            // put extras of values to be used in details activity
             val resultIntent = Intent(context, DetailActivity::class.java)
             resultIntent.putExtra("openingFragment", "showEvent")
             resultIntent.putExtra("title", intent.getStringExtra("title"))
@@ -57,6 +62,8 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
             val user = auth.currentUser
             val indexUrl = intent.getCharSequenceExtra("url").toString()
 
+
+            // create notification
             val notification = Notification.Builder(context,
                     channelID)
                     .setContentTitle("GulbStudent")
@@ -67,15 +74,18 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
                     .setAutoCancel(true)
                     .build()
 
-
+            //show notification
             notificationManager?.notify(intent.getIntExtra("notificationId", 0), notification)
 
+            //remove notification bookmark from the users firebase
             FirebaseDatabase.getInstance().reference.child("users").child(user!!.uid).child("bookmarked").child(indexUrl).removeValue()
         }
+        // if the notification is a category notification
         else if(intent.getCharSequenceExtra("type").toString() == "category") {
             Log.d(TAG, "onReceive: categoryNotification")
             val channelID = "uk.ac.kent.pceh3.gulbstudent"
 
+            //get next monday and monday after
             val fieldISO = TemporalAdjusters.next(DayOfWeek.MONDAY)
             val current = LocalDateTime.now()
             val formatter = DateTimeFormatter.BASIC_ISO_DATE
@@ -83,6 +93,7 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
             val next = current.with(fieldISO)
             val formattedEndDate = next.format(formatter)
 
+            //do search of shows with the users desired categories for the upcoming week
             val data = WhatsOnAjax().getWhatsOn("", intent.getCharSequenceExtra("categorySearch").toString(), formattedStartDate, formattedEndDate)
             if (data != null) {
                 val resultIntent = Intent(context, DetailActivity::class.java)
@@ -98,6 +109,7 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
                         PendingIntent.FLAG_UPDATE_CURRENT
                 )
 
+                //create and display notification
                 val notification = Notification.Builder(context,
                         channelID)
                         .setContentTitle("GulbStudent")

@@ -15,7 +15,7 @@ import uk.ac.kent.pceh3.gulbstudent.model.WhatsOn
 import uk.ac.kent.pceh3.gulbstudent.ui.whatson.RvWhatsOnAdapter
 import uk.ac.kent.pceh3.gulbstudent.ui.WhatsOnViewModel
 
-
+// whats on shows fragment
 class WhatsOnFragment : Fragment() {
 
     private lateinit var layoutManager: LinearLayoutManager
@@ -31,6 +31,7 @@ class WhatsOnFragment : Fragment() {
 
         layoutManager = LinearLayoutManager(this.context)
 
+        // load feed with no search term for all dates
         loadFeed("", "&event_type=", "")
     }
 
@@ -38,13 +39,15 @@ class WhatsOnFragment : Fragment() {
         progressBar.visibility = VISIBLE
         val viewModel = ViewModelProviders.of(this).get(WhatsOnViewModel::class.java)
         viewModel.getWhatsOn(search, eventType, date, "").observe(this, Observer<List<WhatsOn>> { data ->
-                recyclerViewWO.layoutManager = layoutManager
-                val rvWhatsOnAdapter = RvWhatsOnAdapter(data)
-                recyclerViewWO.adapter = rvWhatsOnAdapter
-                rvWhatsOnAdapter.updateData(data)
-                progressBar.visibility = GONE
-                noSearchResults.visibility = GONE
-           if(data.isEmpty()){
+            //display results in RV
+            recyclerViewWO.layoutManager = layoutManager
+            val rvWhatsOnAdapter = RvWhatsOnAdapter(data)
+            recyclerViewWO.adapter = rvWhatsOnAdapter
+            rvWhatsOnAdapter.updateData(data)
+            progressBar.visibility = GONE
+            noSearchResults.visibility = GONE
+            if (data.isEmpty()) {
+                //if no search results inform user
                 noSearchResults.visibility = VISIBLE}
 
         })
@@ -87,7 +90,7 @@ class WhatsOnFragment : Fragment() {
                 //display the popup window
                 popupWindow.showAtLocation(relativeLayout, Gravity.CENTER, 0, 0)
 
-                popupWindow.setFocusable(true)
+                popupWindow.isFocusable = true
                 popupWindow.update()
 
                 var categorySearch = ""
@@ -97,6 +100,7 @@ class WhatsOnFragment : Fragment() {
                 val calendarView = customView.findViewById(R.id.dateCal) as CalendarView
                 calendarView.visibility = GONE
 
+                //if user wants to search by date
                 dateSwitch.setOnCheckedChangeListener{ _, isChecked ->
                     if (isChecked) {
                         calendarView.visibility = VISIBLE
@@ -112,6 +116,7 @@ class WhatsOnFragment : Fragment() {
                     val monthReceived = (month + 1)
                     var monthFormatted = monthReceived.toString()
 
+                    // if < 10 add 0 in front for search term format
                     if (monthReceived < 10){
                         monthFormatted = "0$monthReceived"
                     }
@@ -126,12 +131,11 @@ class WhatsOnFragment : Fragment() {
                 }
 
                 //close the popup window on button click
-                closePopupBtn.setOnClickListener(View.OnClickListener {
+                closePopupBtn.setOnClickListener {
                     val searchText = customView.findViewById(R.id.searchText) as EditText
-                    var search = ""
-                    search = searchText.text.toString()
+                    var search = searchText.text.toString()
 
-
+                    // append search query to string if checked
                     if (archive.isChecked) {
                         categorySearch += "&event_type%5B%5D=archive"
                     }
@@ -181,9 +185,10 @@ class WhatsOnFragment : Fragment() {
                     println(search)
                     println(categorySearch)
 
+                    // load feed with the query
                     loadFeed(search, categorySearch, date)
                     popupWindow.dismiss()
-                })
+                }
 
                 true
             }

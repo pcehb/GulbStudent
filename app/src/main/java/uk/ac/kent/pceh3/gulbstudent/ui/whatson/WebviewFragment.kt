@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import uk.ac.kent.pceh3.gulbstudent.R
 import kotlinx.android.synthetic.main.fragment_webview.*
 
+//webview fragment
 class WebviewFragment : Fragment() {
 
 
@@ -21,6 +22,7 @@ class WebviewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        //load url in webview
         val url = this.arguments?.getString("url")
         webView.loadUrl(url)
     }

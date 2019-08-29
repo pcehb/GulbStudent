@@ -22,7 +22,7 @@ import uk.ac.kent.pceh3.gulbstudent.R
 import uk.ac.kent.pceh3.gulbstudent.model.Bookmarks
 import uk.ac.kent.pceh3.gulbstudent.network.AlarmBroadcastReceiver
 
-
+// profile RV adapter
 class ProfileAdapter (var BookmarkedList: List<Bookmarks>?) : RecyclerView.Adapter<ProfileAdapter.ViewHolder>(), View.OnClickListener {
     private lateinit var auth: FirebaseAuth
 
@@ -63,6 +63,8 @@ class ProfileAdapter (var BookmarkedList: List<Bookmarks>?) : RecyclerView.Adapt
                     PendingIntent.FLAG_CANCEL_CURRENT
             )
             alarmManager.cancel(bookmarkIntent)
+
+            //delete bookmark from firebase
             FirebaseDatabase.getInstance().reference.child("users").child(user!!.uid).child("bookmarked").child(indexUrl).removeValue()
         }
         // Display a neutral button on alert dialog

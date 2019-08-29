@@ -12,33 +12,23 @@ import androidx.fragment.app.Fragment
 import androidx.core.content.ContextCompat.getColorStateList
 import androidx.core.view.ViewCompat
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
-import android.view.View.GONE
-import android.view.View.INVISIBLE
 import android.view.ViewGroup
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment_event.*
-import kotlinx.android.synthetic.main.fragment_profile.*
-import uk.ac.kent.pceh3.gulbstudent.MainActivity
 import uk.ac.kent.pceh3.gulbstudent.R
-import uk.ac.kent.pceh3.gulbstudent.model.Bookmarks
-import uk.ac.kent.pceh3.gulbstudent.model.WhatsOn
 import uk.ac.kent.pceh3.gulbstudent.network.AlarmBroadcastReceiver
 import uk.ac.kent.pceh3.gulbstudent.ui.WhatsOnViewModel
-import uk.ac.kent.pceh3.gulbstudent.ui.profile.ProfileAdapter
-import uk.ac.kent.pceh3.gulbstudent.ui.profile.ProfileViewModel
 import java.lang.Double.parseDouble
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.Calendar.*
 
+//event fragment
 @Suppress("DEPRECATION")
 class EventFragment : Fragment() {
     private var isFABOpen: Boolean? = false
@@ -82,9 +72,7 @@ class EventFragment : Fragment() {
 
         isBookmarked()
 
-
-
-
+        //show fabs
         fabPlus.setOnClickListener {
             if (!isFABOpen!!) {
                 showFABMenu()
@@ -93,6 +81,7 @@ class EventFragment : Fragment() {
             }
         }
 
+        //allows user to buy ticket on gulb website (in webview)
         fabBuy.setOnClickListener{
 
             val activity = context as AppCompatActivity
@@ -110,7 +99,7 @@ class EventFragment : Fragment() {
                     .commit()
 
         }
-
+        //allows user to share link to show (website link)
         fabShare.setOnClickListener{
             val openURL = Intent(Intent.ACTION_SEND)
             openURL.putExtra(Intent.EXTRA_TEXT,  this.arguments?.getString("url"))
@@ -118,6 +107,7 @@ class EventFragment : Fragment() {
             startActivity(Intent.createChooser(openURL, "Sharing Option"))
         }
 
+        //allows user to view show on gulb website (in webview)
         fabWeb.setOnClickListener{
 
             val activity = context as AppCompatActivity
@@ -136,12 +126,12 @@ class EventFragment : Fragment() {
 
         }
 
+        //set bookmark for show
         bookmark.setOnClickListener {
             val alarmManager = activity!!.getSystemService(ALARM_SERVICE) as AlarmManager
 
             val user = auth.currentUser
-            val id = System.currentTimeMillis().toInt()
-
+            val id = System.currentTimeMillis().toInt() //unique id of current time
 
             val bookmarkIntent = PendingIntent.getBroadcast(
                     context,
@@ -161,6 +151,7 @@ class EventFragment : Fragment() {
                     },
                     PendingIntent.FLAG_CANCEL_CURRENT
             )
+
             if (!bookmarked) {
 
                 val receiver = ComponentName(context!!, AlarmBroadcastReceiver::class.java)
@@ -206,6 +197,7 @@ class EventFragment : Fragment() {
                     }
                 }
 
+                // set alarm to go off at 9am on day of show
                 alarmManager.set(
                         AlarmManager.RTC_WAKEUP,
                         Calendar.getInstance().apply {
@@ -223,6 +215,8 @@ class EventFragment : Fragment() {
                 bookmark.text = "Event Bookmarked"
                 bookmark.setTextColor(resources.getColor(R.color.colorAccent))
 
+
+                // add bookmark to firebase under user
                 database = FirebaseDatabase.getInstance().reference.child("users").child(user!!.uid).child("bookmarked").child(indexUrl)
 
                 database.child("title").setValue(this.arguments?.getString("title"))
@@ -235,8 +229,7 @@ class EventFragment : Fragment() {
                 database.child("description").setValue(this.arguments?.getString("excerpt"))
 
                 bookmarked = true
-            }
-            else{
+            } else {
                 val receiver = ComponentName(context!!, AlarmBroadcastReceiver::class.java)
 
                 this.context!!.packageManager.setComponentEnabledSetting(
@@ -249,8 +242,10 @@ class EventFragment : Fragment() {
                 bookmark.text = "Bookmark"
                 bookmark.setTextColor(resources.getColor(R.color.colorPrimaryDark))
 
+                //remove bookmark from firebase
                 FirebaseDatabase.getInstance().reference.child("users").child(user!!.uid).child("bookmarked").child(indexUrl).removeValue()
 
+                //cancel bookmark notification
                 alarmManager.cancel(bookmarkIntent)
 
                 bookmarked = false
@@ -288,27 +283,26 @@ class EventFragment : Fragment() {
 
         val user = auth.currentUser
 
-            val viewModel = ViewModelProviders.of(this).get(WhatsOnViewModel::class.java)
-            viewModel.getShowBookmarked(user!!, indexUrl).observe(this, object : Observer<Boolean> {
-                override fun onChanged(t: Boolean?) {
-                   if (t == true){
-                       bookmark.backgroundTintList = getColorStateList(context!!, R.color.colorPrimaryDark)
-                       bookmark.text = "Event Bookmarked"
-                       bookmark.setTextColor(resources.getColor(R.color.colorAccent))
+        val viewModel = ViewModelProviders.of(this).get(WhatsOnViewModel::class.java)
+        viewModel.getShowBookmarked(user!!, indexUrl).observe(this, object : Observer<Boolean> {
+            override fun onChanged(t: Boolean?) {
+                if (t == true) {
+                    bookmark.backgroundTintList = getColorStateList(context!!, R.color.colorPrimaryDark)
+                    bookmark.text = "Event Bookmarked"
+                    bookmark.setTextColor(resources.getColor(R.color.colorAccent))
 
-                       bookmarked = true
-                   }
-                    else {
+                    bookmarked = true
+                } else {
 
-                       bookmark.backgroundTintList = getColorStateList(context!!, R.color.colorAccent)
-                       bookmark.text = "Bookmark"
-                       bookmark.setTextColor(resources.getColor(R.color.colorPrimaryDark))
+                    bookmark.backgroundTintList = getColorStateList(context!!, R.color.colorAccent)
+                    bookmark.text = "Bookmark"
+                    bookmark.setTextColor(resources.getColor(R.color.colorPrimaryDark))
 
-                       bookmarked = false
-                   }
-
+                    bookmarked = false
                 }
-            })
+
+            }
+        })
     }
 
 }

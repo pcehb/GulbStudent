@@ -13,6 +13,8 @@ import uk.ac.kent.pceh3.gulbstudent.ui.login.ResetPasswordFragment
 import uk.ac.kent.pceh3.gulbstudent.ui.whatson.EventFragment
 import uk.ac.kent.pceh3.gulbstudent.ui.whatson.SuggestedFragment
 
+
+// details activity
 @Suppress("DEPRECATION")
 class DetailActivity : AppCompatActivity() {
 
@@ -21,35 +23,35 @@ class DetailActivity : AppCompatActivity() {
         setAnimation()
         setContentView(R.layout.activity_detail)
 
-
         setSupportActionBar(toolbar)
         toolbar.setTitle(R.string.app_name)
         toolbar.setTitleTextColor(getColor(R.color.colorAccent))
 
+        //back buttons
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
+        // change colour to accent colour
         toolbar.navigationIcon?.setColorFilter(resources.getColor(R.color.colorAccent), PorterDuff.Mode.SRC_ATOP)
 
-
+        // find which fragment to show from getExtra
         val extras = intent.getStringExtra("openingFragment")
         if (extras != null && extras == "article") {
             println("BLOG ARTICLE")
             val newFragment = BlogArticleFragment()
-        val args = Bundle()
-        args.putCharSequence("title", intent.getStringExtra("title"))
-        args.putCharSequence("date", intent.getStringExtra("date"))
-        args.putCharSequence("article", intent.getStringExtra("article"))
-        args.putCharSequence("photoURL", intent.getStringExtra("photoURL"))
-        newFragment.arguments = args
+            val args = Bundle()
+            args.putCharSequence("title", intent.getStringExtra("title"))
+            args.putCharSequence("date", intent.getStringExtra("date"))
+            args.putCharSequence("article", intent.getStringExtra("article"))
+            args.putCharSequence("photoURL", intent.getStringExtra("photoURL"))
+            newFragment.arguments = args
 
             val fragmentManager = supportFragmentManager
             fragmentManager
-                .beginTransaction()
-                .replace(R.id.content, newFragment)
-                .commit()
+                    .beginTransaction()
+                    .replace(R.id.content, newFragment)
+                    .commit()
 
-        }
-        else if (extras != null && extras == "showEvent") {
+        } else if (extras != null && extras == "showEvent") {
             println("EVENT")
             val newFragment = EventFragment()
             val args = Bundle()
@@ -71,8 +73,7 @@ class DetailActivity : AppCompatActivity() {
                     .replace(R.id.content, newFragment)
                     .commit()
 
-        }
-        else if (extras != null&&extras.equals("suggested")) {
+        } else if (extras != null && extras.equals("suggested")) {
             println("SUGGESTED")
 
             val fragment = SuggestedFragment()
@@ -87,8 +88,7 @@ class DetailActivity : AppCompatActivity() {
                     .beginTransaction()
                     .replace(R.id.content, fragment)
                     .commit()
-        }
-        else if (extras != null && extras == "create") {
+        } else if (extras != null && extras == "create") {
             println("CREATE")
             val newFragment = CreateAccountFragment()
             val fragmentManager = supportFragmentManager
@@ -97,8 +97,7 @@ class DetailActivity : AppCompatActivity() {
                     .replace(R.id.content, newFragment)
                     .commit()
 
-        }
-        else if (extras != null && extras == "reset") {
+        } else if (extras != null && extras == "reset") {
             println("RESET")
             val newFragment = ResetPasswordFragment()
 
@@ -112,6 +111,7 @@ class DetailActivity : AppCompatActivity() {
 
     }
 
+    // set animation for changing pages
     private fun setAnimation() {
         val slide = Slide()
         slide.slideEdge = Gravity.END

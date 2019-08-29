@@ -1,10 +1,7 @@
 package uk.ac.kent.pceh3.gulbstudent
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.*
-import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import uk.ac.kent.pceh3.gulbstudent.model.Deal
@@ -14,11 +11,10 @@ import kotlinx.android.synthetic.main.fragment_deals.*
 import uk.ac.kent.pceh3.gulbstudent.ui.DealsViewModel
 import uk.ac.kent.pceh3.gulbstudent.ui.RvAdapter
 
-
+// deals fragment
 class DealsFragment : Fragment() {
 
     private lateinit var linearLayoutManager: LinearLayoutManager
-
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_deals, container, false)
@@ -32,9 +28,10 @@ class DealsFragment : Fragment() {
         linearLayoutManager = LinearLayoutManager(this.context)
 
         recyclerView.layoutManager = linearLayoutManager
-
+        // observe deals data
         val viewModel = ViewModelProviders.of(this).get(DealsViewModel::class.java)
         viewModel.getDeals().observe(this, Observer<List<Deal>> { t ->
+            // parse data to adapter
             val rvAdapter = RvAdapter(t)
             recyclerView.adapter = rvAdapter
         })

@@ -18,18 +18,19 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import uk.ac.kent.pceh3.gulbstudent.model.Bookmarks
 import java.util.*
-import java.util.Calendar.MONDAY
+
+// broadcast receiver for boot
 
 class BootReceiver : BroadcastReceiver() {
 
-        private lateinit var auth: FirebaseAuth
+    private lateinit var auth: FirebaseAuth
 
     lateinit var geofence : Geofence
 
 
     override fun onReceive(context: Context?, intent: Intent?) {
 
-
+// if phone booted
         if (intent!!.action == "android.intent.action.BOOT_COMPLETED") {
 
             Log.d(ContentValues.TAG, "onReceive: BOOT_COMPLETED")
@@ -37,12 +38,14 @@ class BootReceiver : BroadcastReceiver() {
             auth = FirebaseAuth.getInstance()
             val user = auth.currentUser
 
+            // if the user is logged in set notifications
             if (user != null) {
+                //bookmark notifications
                 FirebaseDatabase.getInstance().reference.child("users").child(user.uid).child("bookmarked")
                         .addListenerForSingleValueEvent(object : ValueEventListener {
 
                             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                for (snapshot: DataSnapshot in dataSnapshot.getChildren()) {
+                                for (snapshot: DataSnapshot in dataSnapshot.children) {
                                     val bookmarks = snapshot.getValue(Bookmarks::class.java)
 
                                     val bookmarkIntent = PendingIntent.getBroadcast(
@@ -59,13 +62,14 @@ class BootReceiver : BroadcastReceiver() {
 
                                     val alarmManager = context!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
+                                    // set alarm to show 9am on date of show
                                     alarmManager.set(
                                             AlarmManager.RTC_WAKEUP,
                                             Calendar.getInstance().apply {
                                                 set(Calendar.HOUR_OF_DAY, 9)
                                                 set(Calendar.MINUTE, 0)
                                                 set(Calendar.SECOND, 0)
-                                                set(Calendar.YEAR, bookmarks!!.year!!)
+                                                set(Calendar.YEAR, bookmarks.year!!)
                                                 set(Calendar.MONTH, bookmarks.month!!)
                                                 set(Calendar.DATE, bookmarks.date!!)
                                             }.timeInMillis,
@@ -80,7 +84,7 @@ class BootReceiver : BroadcastReceiver() {
                         })
 
 
-
+                // category notifications
                 FirebaseDatabase.getInstance().reference.child("users").child(user.uid).child("categories")
                         .addListenerForSingleValueEvent(object : ValueEventListener {
                             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -145,7 +149,7 @@ class BootReceiver : BroadcastReceiver() {
 
                                 val alarmManager = context!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-                                var calender = Calendar.getInstance().apply {
+                                val calender = Calendar.getInstance().apply {
                                     set(Calendar.HOUR_OF_DAY, 9)
                                     set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
                                 }
@@ -156,13 +160,13 @@ class BootReceiver : BroadcastReceiver() {
 
                                 if (calender.before(now)) {
                                     println("BEFORE")
-                                    //this condition is used for future reminder that means your reminder not fire for past time
                                     calender.add(Calendar.DATE, 7)
                                 }
                                 else{
                                     println("AFTER")
                                 }
 
+                                //set to repeat every monday at 9am
                                 alarmManager.setInexactRepeating(
                                         AlarmManager.RTC_WAKEUP,
                                         calender.timeInMillis,
@@ -177,6 +181,7 @@ class BootReceiver : BroadcastReceiver() {
                         })
             }
 
+            // add geofence
             addGeo(context!!, success = {
                 println("GEOFENCE SUCCESS")
                 Toast.makeText(context, "SUCCESS", Toast.LENGTH_LONG).show()
@@ -209,10 +214,8 @@ class BootReceiver : BroadcastReceiver() {
         val geofencingClient: GeofencingClient = LocationServices.getGeofencingClient(context)
 
         geofence = Geofence.Builder()
-                // Set the request ID of the geofence. This is a string to identify this
-                // geofence.
                 .setRequestId("gulbenkian")
-                // Set the circular region of this geofence.
+                // latlong of the gulbenkian
                 .setCircularRegion(
                         51.298564,
                         1.069307,

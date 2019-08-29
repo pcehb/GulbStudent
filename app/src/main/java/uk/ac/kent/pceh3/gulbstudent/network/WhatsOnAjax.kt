@@ -2,27 +2,24 @@ package uk.ac.kent.pceh3.gulbstudent.network
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.google.android.gms.tasks.Tasks.await
-import org.jetbrains.anko.doAsync
 import org.jetbrains.anko.doAsyncResult
 import org.jetbrains.anko.uiThread
 import org.jsoup.Jsoup
 import uk.ac.kent.pceh3.gulbstudent.model.WhatsOn
 
-/**
- * Created by pceh3 on 14/07/2019.
- */
+// class to get what's on show data from Gulb website
 class WhatsOnAjax {
+
     val whatsOnList = MutableLiveData<List<WhatsOn>>()
 
     fun getWhatsOn(search: String, eventType : String, startDate : String, endDate : String): LiveData<List<WhatsOn>> {
 
         val eventList = ArrayList<WhatsOn>()
         doAsyncResult {
-            //1. Fetching the HTML from a given URL
+            //fetching the HTML from gulb site URL
 
             Jsoup.connect("https://thegulbenkian.co.uk/wp-admin/admin-ajax.php?numPosts=200&pageNumber="+eventType+"&event_category=&searchEvents="+search+"&start_date="+startDate+"&end_date="+endDate+"&action=whatson_loop_handler").get().run {
-                //2. Parses and scrapes the HTML response
+                //parses and scrapes the HTML response
                 select("div.item-wrapper").forEachIndexed { index, element ->
                     val labelAnchor = element.select("div.image-container a div.labels")
                     val label = labelAnchor.text()

@@ -7,6 +7,8 @@ import uk.ac.kent.pceh3.gulbstudent.model.Bookmarks
 import uk.ac.kent.pceh3.gulbstudent.model.Categories
 import uk.ac.kent.pceh3.gulbstudent.network.FirebaseRepository
 
+
+//view model for profile
 class ProfileViewModel : ViewModel(){
 
     private var bookmarkLiveData: LiveData<List<Bookmarks>>? = null

@@ -2,7 +2,6 @@ package uk.ac.kent.pceh3.gulbstudent.ui.whatson
 
 import android.app.ActivityOptions
 import android.content.Intent
-import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
@@ -10,16 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import kotlinx.android.synthetic.main.activity_main.*
 import uk.ac.kent.pceh3.gulbstudent.R
 import uk.ac.kent.pceh3.gulbstudent.model.WhatsOn
 import com.squareup.picasso.Picasso
 import uk.ac.kent.pceh3.gulbstudent.ui.DetailActivity
 
 
-/**
- * Created by pceh3 on 14/07/2019.
- */
+// shows adapter
 class RvWhatsOnAdapter(var WhatsOnList: List<WhatsOn>?) : RecyclerView.Adapter<RvWhatsOnAdapter.ViewHolder>(), View.OnClickListener {
 
     fun updateData(newsFeed: List<WhatsOn>) {
@@ -37,6 +33,7 @@ class RvWhatsOnAdapter(var WhatsOnList: List<WhatsOn>?) : RecyclerView.Adapter<R
         return WhatsOnList!!.size
     }
 
+    // show data for show at that index in cardview
     override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
         p0.article?.text = WhatsOnList!![p1].excerpt
         p0.date?.text = WhatsOnList!![p1].date
@@ -63,8 +60,9 @@ class RvWhatsOnAdapter(var WhatsOnList: List<WhatsOn>?) : RecyclerView.Adapter<R
         val pos = itemView.findViewById<TextView>(R.id.title).tag.toString().toInt()
 
 
-        val activity = itemView.getContext() as AppCompatActivity
+        val activity = itemView.context as AppCompatActivity
 
+        //start details activity parsing the extras of all the data
         activity.let{
             val intent = Intent (it, DetailActivity::class.java)
             intent.putExtra("openingFragment", "showEvent")

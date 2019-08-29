@@ -15,9 +15,7 @@ import com.squareup.picasso.Picasso
 import uk.ac.kent.pceh3.gulbstudent.R
 import uk.ac.kent.pceh3.gulbstudent.model.Deal
 
-/**
- * Created by pceh3 on 11/06/2019.
- */
+// recycler view adapter for deals fragment
 class RvAdapter(val dealList: List<Deal>?) : RecyclerView.Adapter<RvAdapter.ViewHolder>() {
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ViewHolder {
         val v = LayoutInflater.from(p0.context).inflate(R.layout.adapter_item_layout, p0, false)
@@ -26,6 +24,8 @@ class RvAdapter(val dealList: List<Deal>?) : RecyclerView.Adapter<RvAdapter.View
     override fun getItemCount(): Int {
         return dealList!!.size
     }
+
+    // display deal data in cardview
     override fun onBindViewHolder(p0: ViewHolder, p1: Int) {
         p0.code?.text = dealList!![p1].code
         p0.description?.text = dealList[p1].description
@@ -34,12 +34,14 @@ class RvAdapter(val dealList: List<Deal>?) : RecyclerView.Adapter<RvAdapter.View
                 .placeholder(R.drawable.logo)
                 .into(p0.photo)
 
+        // when copy clicked, copy to clipboard
         p0.copy.setOnClickListener { view ->
+
+            // check boolean for CLIPBOARD
             val sharedPref: SharedPreferences = view.context.getSharedPreferences("CLIPBOARD", 0)
 
-            if(sharedPref.getBoolean("CLIPBOARD", true))
-            {
-
+            // if CLIPBOARD is true show popup instructions
+            if (sharedPref.getBoolean("CLIPBOARD", true)) {
                 val layoutInflater = view.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
                 val customView = layoutInflater.inflate(R.layout.deal_popup, null)
 
@@ -54,6 +56,7 @@ class RvAdapter(val dealList: List<Deal>?) : RecyclerView.Adapter<RvAdapter.View
                 popupWindow.isFocusable = true
                 popupWindow.update()
 
+                // set CLIPBOARD to false
                 stopPopupBtn.setOnClickListener{
                     val editor = sharedPref.edit()
                     editor.putBoolean("CLIPBOARD", false)
@@ -66,7 +69,7 @@ class RvAdapter(val dealList: List<Deal>?) : RecyclerView.Adapter<RvAdapter.View
                 }
             }
 
-
+            // copy code to clipboard
             val clipboard = view.context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip = ClipData.newPlainText("label", p0.code?.text)
             clipboard.primaryClip = clip
@@ -74,6 +77,7 @@ class RvAdapter(val dealList: List<Deal>?) : RecyclerView.Adapter<RvAdapter.View
             Snackbar.make(p0.copy, R.string.clipboard, Snackbar.LENGTH_SHORT).show()
         }
     }
+
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val code = itemView.findViewById<TextView>(R.id.code)
         val description = itemView.findViewById<TextView>(R.id.description)

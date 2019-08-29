@@ -30,7 +30,7 @@ import uk.ac.kent.pceh3.gulbstudent.ui.profile.ProfileViewModel
 import java.util.*
 import java.util.Calendar.MONDAY
 
-
+// profile fragment
 class ProfileFragment : Fragment() {
     private lateinit var auth: FirebaseAuth
     private lateinit var user: FirebaseUser
@@ -60,6 +60,7 @@ class ProfileFragment : Fragment() {
 
         val viewModel = ViewModelProviders.of(this).get(CompViewModel::class.java)
 
+        //check if user owns gulbcard and set switch appropriately
         viewModel.getGulbCard(user).observe(this, Observer<Boolean> { t ->
             gulbCard = t == true
             switch1.isChecked = gulbCard
@@ -76,6 +77,7 @@ class ProfileFragment : Fragment() {
             }
         }
 
+        // adds categories to search string when saved
         saveBtn.setOnClickListener {
             var categorySearch = ""
             if (archive.isChecked) {
@@ -168,9 +170,11 @@ class ProfileFragment : Fragment() {
             } else {
                 database.child("workshops").setValue(false)
             }
+            // set notification with string
             setNotification(categorySearch)
         }
 
+        // load bookmarks and categories for user
         loadBookmarks(user)
         loadCats(user)
     }
@@ -179,6 +183,8 @@ class ProfileFragment : Fragment() {
         val viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
         viewModel.getBookmarks(user).observe(this, Observer<List<Bookmarks>> { t ->
             if (t != null) {
+
+                //sends data to be shown in RV
                 linearLayoutManager = LinearLayoutManager(context)
                 showsRV.layoutManager = linearLayoutManager
                 val profileAdapter = ProfileAdapter(t)
@@ -192,7 +198,7 @@ class ProfileFragment : Fragment() {
         val viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
         viewModel.getCats(user).observe(this, Observer<List<Categories>> { t ->
             if (t != null) {
-
+                // checks box if true, uncheck if false
                 archive.isChecked = t[0].archive
                 audioDescribed.isChecked = t[0].audioDescribed
                 boing.isChecked = t[0].boing
@@ -212,6 +218,7 @@ class ProfileFragment : Fragment() {
         })
     }
 
+    // category notification
     private fun setNotification(category: String) {
 
         val alarmManager = activity!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -248,11 +255,11 @@ class ProfileFragment : Fragment() {
             println("BEFORE")
             //this condition is used for future reminder that means your reminder not fire for past time
             calender.add(Calendar.DATE, 7)
-        }
-        else{
+        } else {
             println("AFTER")
         }
 
+        // show notification 9am every monday
         alarmManager.setInexactRepeating(
                 AlarmManager.RTC_WAKEUP,
                 calender.timeInMillis,

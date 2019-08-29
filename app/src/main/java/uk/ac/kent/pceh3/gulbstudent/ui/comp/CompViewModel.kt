@@ -2,11 +2,12 @@ package uk.ac.kent.pceh3.gulbstudent.ui.comp
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import uk.ac.kent.pceh3.gulbstudent.model.Comp
 import uk.ac.kent.pceh3.gulbstudent.network.FirebaseRepository
 
+
+// view model for competition
 class CompViewModel: ViewModel(){
 
     private var compLiveData: LiveData<Comp>? = null
@@ -24,15 +25,15 @@ class CompViewModel: ViewModel(){
     }
 
     fun getGulbCard(user: FirebaseUser): LiveData<Boolean> {
-            // Load from server
-            gulbCardLiveData = repository.getGulbCard(user)
+        // Load from server
+        gulbCardLiveData = repository.getGulbCard(user)
 
         return gulbCardLiveData
     }
 
     fun getEntries(): LiveData<List<String>> {
         // Load from server
-       entriesLiveData = repository.getCompEntries()
+        entriesLiveData = repository.getCompEntries()
 
         return entriesLiveData as LiveData<List<String>>
     }

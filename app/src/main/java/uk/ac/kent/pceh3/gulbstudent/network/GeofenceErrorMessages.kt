@@ -5,6 +5,7 @@ import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.location.GeofenceStatusCodes
 import uk.ac.kent.pceh3.gulbstudent.R
 
+// error messages for geofences
 object GeofenceErrorMessages {
     fun getErrorString(context: Context, e: Exception): String {
         return if (e is ApiException) {

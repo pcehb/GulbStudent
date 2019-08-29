@@ -14,7 +14,7 @@ import uk.ac.kent.pceh3.gulbstudent.model.Blog
 import uk.ac.kent.pceh3.gulbstudent.ui.BlogViewModel
 import uk.ac.kent.pceh3.gulbstudent.ui.RvBlogAdapter
 
-
+// blog fragment
 class BlogFragment : Fragment() {
 
     private lateinit var linearLayoutManager: LinearLayoutManager
@@ -32,10 +32,11 @@ class BlogFragment : Fragment() {
 
         recyclerView.layoutManager = linearLayoutManager
 
+        // observe blog data
         val viewModel = ViewModelProviders.of(this).get(BlogViewModel::class.java)
         viewModel.getBlog().observe(this, Observer<List<Blog>> { t ->
-            val data = t
-            val rvAdapter = RvBlogAdapter(data)
+            // parse data to adapter
+            val rvAdapter = RvBlogAdapter(t)
             recyclerView.adapter = rvAdapter
         })
     }

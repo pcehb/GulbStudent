@@ -7,7 +7,7 @@ import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 
-
+// about gulbStudent fragment
 class GulbStuFragment : Fragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

@@ -1,5 +1,6 @@
 package uk.ac.kent.pceh3.gulbstudent.model
 
+// Class for categories bookmarked by user
 class Categories {
     var archive: Boolean = false
     var audioDescribed: Boolean = false

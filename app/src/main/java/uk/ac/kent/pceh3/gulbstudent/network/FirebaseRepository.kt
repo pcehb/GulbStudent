@@ -11,22 +11,8 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import uk.ac.kent.pceh3.gulbstudent.model.*
 
-
-/**
- * Created by pceh3 on 07/06/2019.
- */
+// get information from firebase
 class FirebaseRepository {
-
-    enum class NetworkStatus {
-        IDLE, LOADING
-    }
-
-    private val networkStatus = MutableLiveData<NetworkStatus>()
-
-    fun getNetworkStatus(): LiveData<NetworkStatus> {
-        return networkStatus
-    }
-
 
     // Retrieve list of deals
     fun getDeals(): LiveData<List<Deal>> {
@@ -35,14 +21,13 @@ class FirebaseRepository {
         val fireList = ArrayList<Deal>()
 
         val myRef = FirebaseDatabase.getInstance().getReference("deals")
-        networkStatus.setValue(NetworkStatus.LOADING)
+
         // Read from the database
         myRef.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                networkStatus.setValue(NetworkStatus.IDLE)
 
                 fireList.clear()
                 for (dataSnapshot1 in dataSnapshot.children) {
@@ -58,7 +43,7 @@ class FirebaseRepository {
                     fire.photoURL = photoURL1 //set
                     fireList.add(fire)
                 }
-                fireList.reverse()
+                fireList.reverse() //reverse list so most recent is at the start
                 dealList.value = fireList
 
             }
@@ -66,7 +51,6 @@ class FirebaseRepository {
             override fun onCancelled(error: DatabaseError) {
                 // Failed to read value
                 Log.w(TAG, "Failed to read value.", error.toException())
-                networkStatus.setValue(NetworkStatus.IDLE)
             }
         })
         return dealList
@@ -76,17 +60,16 @@ class FirebaseRepository {
     // Retrieve size of deals
     fun getDealSize(): LiveData<Int> {
 
-        var dealSize = MutableLiveData<Int>()
+        val dealSize = MutableLiveData<Int>()
 
         val myRef = FirebaseDatabase.getInstance().getReference("deals")
-        networkStatus.setValue(NetworkStatus.LOADING)
+
         // Read from the database
         myRef.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                networkStatus.setValue(NetworkStatus.IDLE)
 
                 dealSize.value = dataSnapshot.childrenCount.toInt()
             }
@@ -94,26 +77,25 @@ class FirebaseRepository {
             override fun onCancelled(error: DatabaseError) {
                 // Failed to read value
                 Log.w(TAG, "Failed to read value.", error.toException())
-                networkStatus.setValue(NetworkStatus.IDLE)
+
             }
         })
         return dealSize
     }
 
-    // Retrieve comps
+    // Retrieve comp
     fun getComp(): LiveData<Comp> {
 
         val comp = MutableLiveData<Comp>()
 
         val myRef = FirebaseDatabase.getInstance().getReference("competition")
-        networkStatus.setValue(NetworkStatus.LOADING)
+
         // Read from the database
         myRef.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                networkStatus.setValue(NetworkStatus.IDLE)
 
                 val firevalue = dataSnapshot.getValue<Comp>(Comp::class.java)
                 val fire = Comp()
@@ -135,7 +117,7 @@ class FirebaseRepository {
             override fun onCancelled(error: DatabaseError) {
                 // Failed to read value
                 Log.w(TAG, "Failed to read value.", error.toException())
-                networkStatus.setValue(NetworkStatus.IDLE)
+
             }
         })
         return comp
@@ -148,14 +130,13 @@ class FirebaseRepository {
         val fireList = ArrayList<String>()
 
         val myRef = FirebaseDatabase.getInstance().getReference("competition").child("entries")
-        networkStatus.value = NetworkStatus.LOADING
+
         // Read from the database
         myRef.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                networkStatus.value = NetworkStatus.IDLE
 
                 fireList.clear()
                 for (dataSnapshot1 in dataSnapshot.children) {
@@ -171,7 +152,7 @@ class FirebaseRepository {
             override fun onCancelled(error: DatabaseError) {
                 // Failed to read value
                 Log.w(TAG, "Failed to read value.", error.toException())
-                networkStatus.value = NetworkStatus.IDLE
+
             }
         })
         return entries
@@ -180,7 +161,7 @@ class FirebaseRepository {
     //get gulbcard boolean for user
     fun getGulbCard(user: FirebaseUser): LiveData<Boolean> {
 
-        var gulbCard = MutableLiveData<Boolean>()
+        val gulbCard = MutableLiveData<Boolean>()
 
         val ref = FirebaseDatabase.getInstance().reference.child("users").child(user.uid).child("gulbCard")
 
@@ -197,7 +178,7 @@ class FirebaseRepository {
             override fun onCancelled(error: DatabaseError) {
                 // Failed to read value
                 Log.w(TAG, "Failed to read value.", error.toException())
-                networkStatus.value = NetworkStatus.IDLE
+
             }
         })
         return gulbCard
@@ -211,14 +192,13 @@ class FirebaseRepository {
         val fireList = ArrayList<Blog>()
 
         val myRef = FirebaseDatabase.getInstance().getReference("blog")
-        networkStatus.setValue(NetworkStatus.LOADING)
+
         // Read from the database
         myRef.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                networkStatus.setValue(NetworkStatus.IDLE)
 
                 fireList.clear()
                 for (dataSnapshot1 in dataSnapshot.children) {
@@ -237,7 +217,7 @@ class FirebaseRepository {
                     fireList.add(fire)
                     blogList.value = fireList
                 }
-                fireList.reverse()
+                fireList.reverse() //reverse list so most recent is at the start
                 blogList.value = fireList
 
             }
@@ -245,26 +225,25 @@ class FirebaseRepository {
             override fun onCancelled(error: DatabaseError) {
                 // Failed to read value
                 Log.w(TAG, "Failed to read value.", error.toException())
-                networkStatus.setValue(NetworkStatus.IDLE)
+
             }
         })
         return blogList
     }
 
-    // Retrieve list of deals
+    // Retrieve size of blog
     fun getBlogSize(): LiveData<Int> {
 
-        var blogSize = MutableLiveData<Int>()
+        val blogSize = MutableLiveData<Int>()
 
         val myRef = FirebaseDatabase.getInstance().getReference("blog")
-        networkStatus.setValue(NetworkStatus.LOADING)
+
         // Read from the database
         myRef.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                networkStatus.setValue(NetworkStatus.IDLE)
 
                 blogSize.value = dataSnapshot.childrenCount.toInt()
             }
@@ -272,27 +251,26 @@ class FirebaseRepository {
             override fun onCancelled(error: DatabaseError) {
                 // Failed to read value
                 Log.w(TAG, "Failed to read value.", error.toException())
-                networkStatus.setValue(NetworkStatus.IDLE)
+
             }
         })
         return blogSize
     }
 
-    // Retrieve list of bookmarks
+    // Retrieve list of bookmarks for user
     fun getBookmarks(user: FirebaseUser): LiveData<List<Bookmarks>> {
 
         val bookmarksList = MutableLiveData<List<Bookmarks>>()
         val fireList = ArrayList<Bookmarks>()
 
         val myRef = FirebaseDatabase.getInstance().reference.child("users").child(user.uid).child("bookmarked")
-        networkStatus.setValue(NetworkStatus.LOADING)
+
         // Read from the database
         myRef.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                networkStatus.setValue(NetworkStatus.IDLE)
 
                 fireList.clear()
                 for (dataSnapshot1 in dataSnapshot.children) {
@@ -315,8 +293,8 @@ class FirebaseRepository {
                     fire.year = year1 //set
                     fire.index = index1 //set
                     fire.id = id1 //set
-                    fire.photoURL = photoURL
-                    fire.description = description
+                    fire.photoURL = photoURL //set
+                    fire.description = description //set
                     fireList.add(fire)
                     bookmarksList.value = fireList
                 }
@@ -326,7 +304,7 @@ class FirebaseRepository {
             override fun onCancelled(error: DatabaseError) {
                 // Failed to read value
                 Log.w(TAG, "Failed to read value.", error.toException())
-                networkStatus.setValue(NetworkStatus.IDLE)
+
             }
         })
         return bookmarksList
@@ -335,18 +313,17 @@ class FirebaseRepository {
     // Check if particular show is bookmarked
     fun getShowBookmarked(user: FirebaseUser, indexUrl: String): LiveData<Boolean> {
 
-        var bookmarkBoolean = MutableLiveData<Boolean>()
+        val bookmarkBoolean = MutableLiveData<Boolean>()
         val fireList = ArrayList<Bookmarks>()
 
         val myRef = FirebaseDatabase.getInstance().reference.child("users").child(user.uid).child("bookmarked")
-        networkStatus.setValue(NetworkStatus.LOADING)
+
         // Read from the database
         myRef.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                networkStatus.setValue(NetworkStatus.IDLE)
 
                 fireList.clear()
                 for (dataSnapshot1 in dataSnapshot.children) {
@@ -365,7 +342,7 @@ class FirebaseRepository {
             override fun onCancelled(error: DatabaseError) {
                 // Failed to read value
                 Log.w(TAG, "Failed to read value.", error.toException())
-                networkStatus.setValue(NetworkStatus.IDLE)
+
             }
         })
         return bookmarkBoolean
@@ -379,14 +356,13 @@ class FirebaseRepository {
         val fireList = ArrayList<Categories>()
 
         val myRef = FirebaseDatabase.getInstance().reference.child("users").child(user.uid).child("categories")
-        networkStatus.setValue(NetworkStatus.LOADING)
+
         // Read from the database
         myRef.addValueEventListener(object : ValueEventListener {
 
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                networkStatus.setValue(NetworkStatus.IDLE)
 
                 fireList.clear()
                 val firevalue = dataSnapshot.getValue(Categories::class.java)
@@ -414,15 +390,15 @@ class FirebaseRepository {
                 fire.cafe = cafe //set
                 fire.captionedSubtitles = captionedSubtitles //set
                 fire.comedy = comedy //set
-                fire.family = family
-                fire.festival = festival
-                fire.foreign = foreign
-                fire.music = music
-                fire.live = live
-                fire.relaxed = relaxed
-                fire.talks = talks
-                fire.theatreDance = theatreDance
-                fire.workshops = workshops
+                fire.family = family //set
+                fire.festival = festival //set
+                fire.foreign = foreign //set
+                fire.music = music //set
+                fire.live = live //set
+                fire.relaxed = relaxed //set
+                fire.talks = talks //set
+                fire.theatreDance = theatreDance //set
+                fire.workshops = workshops //set
                 fireList.add(fire)
                 categoriesList.value = fireList
 
@@ -431,7 +407,6 @@ class FirebaseRepository {
             override fun onCancelled(error: DatabaseError) {
                 // Failed to read value
                 Log.w(TAG, "Failed to read value.", error.toException())
-                networkStatus.setValue(NetworkStatus.IDLE)
             }
         })
         return categoriesList

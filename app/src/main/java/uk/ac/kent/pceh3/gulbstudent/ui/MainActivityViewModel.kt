@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import uk.ac.kent.pceh3.gulbstudent.network.FirebaseRepository
 
+// main activity viewmodel
 class MainActivityViewModel: ViewModel() {
 
     private lateinit var dealSize : LiveData<Int>

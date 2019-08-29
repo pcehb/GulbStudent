@@ -1,5 +1,6 @@
 package uk.ac.kent.pceh3.gulbstudent.model
 
+// Class for competition run by Gulbenkian
 class Comp {
 
     var closeDate: String?
@@ -8,9 +9,7 @@ class Comp {
     var title: String?
 
 
-    constructor():this("","", "",  "") {
-
-    }
+    constructor() : this("", "", "", "")
 
     constructor(closeDate: String?, description: String?, photoURL: String?, title: String?) {
         this.closeDate = closeDate

@@ -5,11 +5,8 @@ import androidx.lifecycle.ViewModel
 import uk.ac.kent.pceh3.gulbstudent.model.Blog
 import uk.ac.kent.pceh3.gulbstudent.network.FirebaseRepository
 
-/**
- * Created by pceh3 on 14/07/2019.
- */
+// view model for blog fragment
 class BlogViewModel : ViewModel() {
-
 
     private var blogLiveData: LiveData<List<Blog>>? = null
 

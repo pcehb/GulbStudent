@@ -1,5 +1,7 @@
 package uk.ac.kent.pceh3.gulbstudent.model
 
+// Class for user bookmarks of shows
+
 class Bookmarks {
     var title : String?
     var index : String?
@@ -10,8 +12,7 @@ class Bookmarks {
     var photoURL: String?
     var description: String?
 
-    constructor():this("", "",1, 1, 2019, 0, "", "") {
-    }
+    constructor() : this("", "", 1, 1, 2019, 0, "", "")
 
     constructor(title: String?, index: String?, date: Int?, month: Int?, year: Int?, id: Int?, photoURL: String?, description: String?) {
         this.title = title
